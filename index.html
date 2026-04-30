@@ -475,6 +475,60 @@ img{max-width:100%;display:block}
   border-top:1px solid var(--gray-100);
 }
 
+/* explainer card — always-visible pedagogy */
+.explainer{
+  background:linear-gradient(135deg,var(--navy-light) 0%,#F4F7FB 100%);
+  border:1px solid var(--navy-light);
+  border-radius:var(--radius-md);
+  padding:18px 20px;
+  margin:0 0 22px;
+}
+.explainer-tag{
+  display:inline-block;
+  font-size:9.5px;font-weight:800;letter-spacing:1.2px;
+  color:var(--orange);text-transform:uppercase;
+  margin-bottom:5px;
+}
+.explainer-body{
+  font-size:14px;color:var(--navy);
+  line-height:1.55;
+}
+.explainer-body strong{color:var(--navy)}
+.explainer-block{
+  background:var(--white);
+  border-radius:8px;
+  padding:11px 14px;
+  margin-top:10px;
+  font-size:13px;color:var(--gray-700);
+  line-height:1.5;
+  border-left:3px solid var(--orange);
+}
+.explainer-block.rec{border-left-color:var(--success)}
+.explainer-block.rec strong{color:var(--success)}
+.explainer-block strong{color:var(--navy)}
+.explainer-bullets{
+  margin:6px 0 0 18px;
+  font-size:13px;color:var(--gray-700);
+  line-height:1.6;
+}
+
+/* "Recomendado" badge on options */
+.opt{position:relative}
+.opt-rec-badge{
+  position:absolute;top:-10px;right:14px;
+  background:var(--success);color:var(--white);
+  font-size:9px;font-weight:800;letter-spacing:.8px;
+  padding:4px 10px;border-radius:99px;
+  text-transform:uppercase;
+  box-shadow:0 4px 10px rgba(39,174,96,.3);
+}
+.opt-hint{
+  font-size:12px;color:var(--gray-400);
+  text-align:center;
+  margin-top:-8px;margin-bottom:18px;
+  font-style:italic;
+}
+
 /* educational visualization */
 .viz{
   background:linear-gradient(135deg,var(--navy-light),var(--white));
@@ -1019,11 +1073,11 @@ img{max-width:100%;display:block}
 const state = {
   type:null,
   gmm:{step:0,who:'individual',age:35,sex:'F',smoker:false,deductible:25000,coinsurance:10,hospitalTier:'platino',sumInsured:10,addons:[]},
-  auto:{step:0,brand:'',model:'',year:2020,use:'particular',coverage:'amplia',deductibleTheft:5,deductibleDamage:5,addons:[]},
+  auto:{step:0,brand:'',model:'',year:2020,use:'particular',coverage:'amplia',deductibleTheft:10,deductibleDamage:5,addons:['vial']},
   vida:{step:0,age:35,smoker:false,sumInsured:1,term:20,beneficiaries:1},
   mascota:{step:0,species:'perro',petAge:3,sumInsured:30000,deductible:1500,addons:[]},
   ahorro:{step:0,age:35,monthly:2000,horizon:20,risk:'medio'},
-  patrimonial:{step:0,homeValue:2000000,contentsValue:300000,addons:[]},
+  patrimonial:{step:0,homeValue:2000000,contentsValue:300000,addons:['rcfam']},
   contact:{name:'',phone:'',email:'',city:'',timing:'ya'},
   finalAmount:0,
   finalSummaryLines:[]
@@ -1235,6 +1289,18 @@ function stepDotsHTML(currentStep, totalSteps, label){
   return `<div class="step-dots">${dots}<span class="step-dots-label">${label||''}</span></div>`;
 }
 
+function explainerHTML({intro, body, example, rec, bullets}){
+  return `<div class="explainer">
+    ${intro?`<span class="explainer-tag">${intro}</span>`:''}
+    <div class="explainer-body">${body}</div>
+    ${bullets?`<ul class="explainer-bullets">${bullets.map(b=>`<li>${b}</li>`).join('')}</ul>`:''}
+    ${example?`<div class="explainer-block"><strong>Ejemplo real:</strong> ${example}</div>`:''}
+    ${rec?`<div class="explainer-block rec"><strong>Lo que te recomiendo:</strong> ${rec}</div>`:''}
+  </div>`;
+}
+const REC_BADGE = '<span class="opt-rec-badge">Recomendado</span>';
+const OPT_HINT = '<div class="opt-hint">Si dudas, deja la recomendación de Andy.</div>';
+
 /* ============================================== */
 /* ============ GMM WIZARD ====================== */
 /* ============================================== */
@@ -1258,19 +1324,30 @@ function renderGmm(){
 }
 function gmmStepWho(){
   return `${stepDotsHTML(0, gmmSteps.length)}
-  <h3 class="step-title">¿Quién va a estar cubierto?</h3>
-  <p class="step-help">Esto cambia mucho la prima. Un plan familiar es proporcionalmente más barato que individuales separados.</p>
+  <h3 class="step-title">Empezamos: ¿quién va a estar cubierto?</h3>
+  ${explainerHTML({
+    intro:'Antes de empezar',
+    body:`Este es un seguro de <strong>gastos médicos mayores</strong>. Cubre cosas grandes — hospitalizaciones, cirugías, enfermedades graves. <strong>No</strong> cubre consultas con tu médico ni medicina del día a día.<br><br>Te voy a hacer 8 preguntas. En cada una te explico qué significa, qué te recomiendo y cómo cambia el precio.`,
+    example:`Una familia de 3 con seguros individuales paga ~$7,200/mes. La misma familia con un plan familiar paga ~$5,400/mes. La diferencia es real.`,
+    rec:`Si estás casado/a o tienes hijos, casi siempre conviene un plan familiar.`
+  })}
   <div class="opts opts-3">
-    ${[['individual','Individual','Solo yo'],['pareja','Pareja','Yo + mi pareja'],['familia','Familia','Yo + pareja + hijos']].map(([k,l,m])=>`
+    ${[['individual','Individual','Solo yo',false],['pareja','Pareja','Yo + mi pareja',false],['familia','Familia','Yo + pareja + hijos',true]].map(([k,l,m,r])=>`
     <button class="opt ${state.gmm.who===k?'selected':''}" data-who="${k}">
+      ${r?REC_BADGE:''}
       <div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div>
     </button>`).join('')}
   </div>`;
 }
 function gmmStepAge(){
   return `${stepDotsHTML(1, gmmSteps.length)}
-  <h3 class="step-title">¿Tu edad?</h3>
-  <p class="step-help">Es el factor #1 que define la prima. Cada año que pasa sube ~3%.</p>
+  <h3 class="step-title">Tu edad y sexo</h3>
+  ${explainerHTML({
+    intro:'¿Por qué te lo pregunto?',
+    body:`La edad es el factor que <strong>más mueve el precio</strong>. Cada año arriba de 30 años, la prima sube ~3-4%. Es así para todas las aseguradoras — son estadísticas de salud, no es personal.`,
+    example:`Persona sana, no fumadora, mismo plan: a los 35 años paga ~$2,500/mes. A los 50 años, ~$4,200/mes. A los 65 años, ~$8,500/mes.`,
+    rec:`No hay nada que decidir aquí — solo poner tu edad real. Pero contratar joven sale mucho más barato a largo plazo, porque la prima se calcula con la edad de ingreso.`
+  })}
   <div class="slider-wrap">
     <div class="slider-row">
       <div><span class="slider-value" id="ageVal">${state.gmm.age}</span><span class="slider-suffix">años</span></div>
@@ -1278,7 +1355,7 @@ function gmmStepAge(){
     <input type="range" min="18" max="75" value="${state.gmm.age}" class="slider" id="ageSlider">
     <div class="slider-marks"><span>18</span><span>30</span><span>45</span><span>60</span><span>75</span></div>
   </div>
-  <div class="step-help" style="margin-top:24px"><strong>Sexo</strong> (afecta prima ~5%)</div>
+  <div class="step-help" style="margin-top:24px"><strong>Sexo</strong> · afecta la prima ~5% (mujeres antes de 50, hombres después)</div>
   <div class="opts opts-2">
     <button class="opt ${state.gmm.sex==='F'?'selected':''}" data-sex="F">
       <div class="opt-body"><div class="opt-label">Femenino</div></div>
@@ -1290,15 +1367,23 @@ function gmmStepAge(){
 }
 function gmmStepHealth(){
   return `${stepDotsHTML(2, gmmSteps.length)}
-  <h3 class="step-title">Hábitos y salud
-    <button class="info-btn" onclick="info('preexisting')">?</button>
-  </h3>
-  <p class="step-help">Necesario declarar con honestidad. <button class="info-btn" onclick="info('smoker')">?</button></p>
-  <div class="step-help" style="margin-top:18px"><strong>¿Fumas?</strong></div>
+  <h3 class="step-title">Hábitos: ¿fumas?</h3>
+  ${explainerHTML({
+    intro:'Por qué importa',
+    body:`Los fumadores pagan más prima — son estadísticas de salud. Si fumas y <strong>no lo declaras</strong>, cuando haya un siniestro y se compruebe (autopsia, expediente médico), <strong>la aseguradora anula tu póliza y no paga</strong>.`,
+    example:`Misma persona, 35 años, mismo plan. No fumadora: $2,500/mes. Fumadora: $3,150/mes. Diferencia anual: $7,800.`,
+    rec:`Sé honesta. Vale más pagar la prima correcta que dejar a tu familia sin cobertura cuando más se necesita. Si dejas de fumar 12 meses seguidos, casi todas las aseguradoras te bajan a tarifa de no fumador.`
+  })}
   <div class="opts opts-2">
-    <button class="opt ${!state.gmm.smoker?'selected':''}" data-smoker="false"><div class="opt-body"><div class="opt-label">No fumo</div><div class="opt-meta">Prima base</div></div></button>
-    <button class="opt ${state.gmm.smoker?'selected':''}" data-smoker="true"><div class="opt-body"><div class="opt-label">Sí fumo</div><div class="opt-meta">+25% en prima · honestidad obligatoria</div></div></button>
-  </div>`;
+    <button class="opt ${!state.gmm.smoker?'selected':''}" data-smoker="false">
+      ${REC_BADGE}
+      <div class="opt-body"><div class="opt-label">No fumo</div><div class="opt-meta">Prima base</div></div>
+    </button>
+    <button class="opt ${state.gmm.smoker?'selected':''}" data-smoker="true">
+      <div class="opt-body"><div class="opt-label">Sí fumo</div><div class="opt-meta">+25% en prima · declaración obligatoria</div></div>
+    </button>
+  </div>
+  <p class="step-help" style="margin-top:18px;font-size:12px;color:var(--gray-400)"><strong>Sobre condiciones preexistentes</strong> (diabetes, hipertensión, etc.): si las tienes, hay que declararlas. Algunos seguros las cubren después de 12-24 meses de espera. Andy te ayuda a elegir el producto correcto.</p>`;
 }
 function gmmStepDeductible(){
   const val = state.gmm.deductible;
@@ -1306,13 +1391,21 @@ function gmmStepDeductible(){
   const youPay = Math.min(val,ex);
   const insPay = Math.max(0,ex-val);
   return `${stepDotsHTML(3, gmmSteps.length)}
-  <h3 class="step-title">Elige tu deducible
-    <button class="info-btn" onclick="info('deductible')">?</button>
-  </h3>
-  <p class="step-help">Es lo que <strong>tú pagas antes</strong> de que el seguro entre. Más alto = prima más barata. Mira cómo cambia la cuenta abajo.</p>
+  <h3 class="step-title">El deducible</h3>
+  ${explainerHTML({
+    intro:'¿Qué es el deducible?',
+    body:`Es lo que <strong>tú pagas de tu bolsillo</strong> antes de que la aseguradora empiece a cubrir. Aplica una sola vez por padecimiento, no cada vez que vas al hospital.`,
+    bullets:[
+      `Deducible <strong>alto</strong> → prima mensual más barata, pero pagas más cuando te internas.`,
+      `Deducible <strong>bajo</strong> → prima más cara cada mes, pero menos golpe cuando lo usas.`
+    ],
+    example:`Te internas y la cuenta del hospital es $80,000. Con deducible $25,000: tú pones $25k y la aseguradora $55k. Mira la gráfica abajo — cambia conforme eliges.`,
+    rec:`<strong>$25,000</strong> funciona para mayoría — equilibrio entre prima accesible y golpe manejable. Si tienes ahorro de emergencia ($50k+), elige $50,000 y baja tu prima ~15%. Si no tienes colchón, $10,000.`
+  })}
   <div class="opts opts-3">
     ${[5000,10000,25000,50000].map(d=>`
       <button class="opt ${state.gmm.deductible===d?'selected':''}" data-deductible="${d}">
+        ${d===25000?REC_BADGE:''}
         <div class="opt-body"><div class="opt-label">${fmtMx(d)}</div><div class="opt-meta">${d===5000?'prima alta':d===10000?'común':d===25000?'estándar':'prima baja'}</div></div>
       </button>`).join('')}
   </div>
@@ -1334,18 +1427,22 @@ function gmmStepDeductible(){
 }
 function gmmStepCoinsurance(){
   return `${stepDotsHTML(4, gmmSteps.length)}
-  <h3 class="step-title">Coaseguro
-    <button class="info-btn" onclick="info('coinsurance')">?</button>
-  </h3>
-  <p class="step-help">Después del deducible, ¿qué % de los gastos absorbes tú?</p>
+  <h3 class="step-title">El coaseguro</h3>
+  ${explainerHTML({
+    intro:'Lo que mucha gente no entiende',
+    body:`Después de pagar tu deducible, <strong>todavía pagas un porcentaje</strong> de lo que sobra. Eso es el coaseguro. Casi siempre tiene un tope anual (típicamente $50,000-$80,000), o sea no puede crecer infinito.`,
+    example:`Hospitalización: $200,000. Deducible: $25,000. Coaseguro 10%. Después de pagar el deducible, quedan $175,000 — tú pones 10% = $17,500, aseguradora pone $157,500. <strong>Total que sale de tu bolsillo: $42,500.</strong>`,
+    rec:`<strong>10%</strong> es el estándar de mercado y el balance recomendado. 0% existe pero la prima sube mucho — solo conviene si esperas hospitalizaciones recurrentes.`
+  })}
   <div class="opts opts-3">
     ${[
-      [0,'0%','Premium · prima alta'],
-      [10,'10%','Estándar recomendado'],
+      [0,'0%','Prima muy alta'],
+      [10,'10%','Estándar'],
       [20,'20%','Prima reducida'],
-      [30,'30%','Prima mínima · pagas más en siniestro']
+      [30,'30%','Prima mínima — pagas mucho más en siniestro']
     ].map(([v,l,m])=>`
       <button class="opt ${state.gmm.coinsurance===v?'selected':''}" data-coinsurance="${v}">
+        ${v===10?REC_BADGE:''}
         <div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div>
       </button>`).join('')}
   </div>
@@ -1364,10 +1461,19 @@ function gmmStepCoinsurance(){
 }
 function gmmStepHospital(){
   return `${stepDotsHTML(5, gmmSteps.length)}
-  <h3 class="step-title">Nivel hospitalario
-    <button class="info-btn" onclick="info('hospitalTier')">?</button>
-  </h3>
-  <p class="step-help">GNP Estrella maneja cinco niveles. Define exactamente a qué hospitales puedes llegar y mueve la prima 30-60% entre extremos.</p>
+  <h3 class="step-title">Nivel de hospitales</h3>
+  ${explainerHTML({
+    intro:'La decisión más importante del precio',
+    body:`GNP tiene <strong>cinco niveles</strong> de red hospitalaria. Cada nivel define exactamente a qué hospitales puedes ir cuando te internas. <strong>La diferencia de prima entre el más alto y el más bajo puede ser 60%.</strong> Mucha gente compra "barato" y descubre demasiado tarde que su hospital favorito no está en la red.`,
+    bullets:[
+      `<strong>Premium:</strong> ABC, Médica Sur, Ángeles, Star Médica, Español. Todos los caros.`,
+      `<strong>Platino:</strong> red alta — mayoría de privados de primer nivel.`,
+      `<strong>Índigo:</strong> red media-alta — privados sólidos, sin los más caros.`,
+      `<strong>Ámbar:</strong> red media — privados regionales.`,
+      `<strong>Cuarzo:</strong> red básica — privados de entrada.`
+    ],
+    rec:`<strong>Platino o Índigo</strong> cubren la mayoría de buenos hospitales privados sin pagar Premium. Si vives en CDMX o Guadalajara y siempre quieres tener acceso a Médica Sur o ABC, sí necesitas Premium. En provincia muchas veces Platino ya es suficiente.`
+  })}
   <div class="opts">
     <button class="opt ${state.gmm.hospitalTier==='premium'?'selected':''}" data-tier="premium">
       <div class="opt-body">
@@ -1377,6 +1483,7 @@ function gmmStepHospital(){
       <span class="opt-pill" style="background:var(--orange)">prima alta</span>
     </button>
     <button class="opt ${state.gmm.hospitalTier==='platino'?'selected':''}" data-tier="platino">
+      ${REC_BADGE}
       <div class="opt-body">
         <div class="opt-label">Platino</div>
         <div class="opt-meta">Red alta. Mayoría de privados de primer nivel del país.</div>
@@ -1406,13 +1513,17 @@ function gmmStepHospital(){
 }
 function gmmStepSum(){
   return `${stepDotsHTML(6, gmmSteps.length)}
-  <h3 class="step-title">Suma asegurada
-    <button class="info-btn" onclick="info('sumInsured')">?</button>
-  </h3>
-  <p class="step-help">El máximo anual. Una hospitalización grave puede pasar de $1M sin problema.</p>
+  <h3 class="step-title">Suma asegurada</h3>
+  ${explainerHTML({
+    intro:'Tu tope anual',
+    body:`Es el <strong>máximo</strong> que la aseguradora pagará en gastos médicos al año. Pasada esa cifra, tú asumes el resto. Una hospitalización grave puede llegar fácil a varios millones — la suma asegurada baja te deja descubierta justo cuando más se necesita.`,
+    example:`Una semana en terapia intensiva por COVID grave: <strong>$2-3M</strong>. Tratamiento de cáncer (1er año): <strong>$1.5-4M</strong>. Trasplante: <strong>$2-5M</strong>.`,
+    rec:`<strong>$10M</strong> es el estándar para alguien con dependientes. $5M solo si nadie depende económicamente de ti. $25M+ si quieres dormir tranquila contra eventos catastróficos. Subir de $10M a $25M no duplica la prima — es un buen upgrade.`
+  })}
   <div class="opts opts-3">
     ${[[5,'$5M','Básica'],[10,'$10M','Estándar'],[25,'$25M','Robusta'],[50,'$50M','Premium']].map(([v,l,m])=>`
       <button class="opt ${state.gmm.sumInsured===v?'selected':''}" data-sum="${v}">
+        ${v===10?REC_BADGE:''}
         <div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div>
       </button>`).join('')}
   </div>`;
@@ -1420,18 +1531,22 @@ function gmmStepSum(){
 function gmmStepAddons(){
   const ad = state.gmm.addons;
   const items = [
-    ['maternidad','','Maternidad','Embarazo, parto y complicaciones. 10 meses de espera.',380],
-    ['dental','','Dental','Limpiezas, ortodoncia, urgencias dentales',220],
-    ['vision','','Visión','Lentes, exámenes, cirugía láser',160],
-    ['graves','','Enfermedades graves','Cáncer, infarto, ACV — pago suma fija',450]
+    ['maternidad','','Maternidad','Embarazo, parto y complicaciones. 10 meses de espera desde firma.',380],
+    ['dental','','Dental','Limpiezas, ortodoncia, urgencias dentales.',220],
+    ['vision','','Visión','Lentes, exámenes, cirugía láser.',160],
+    ['graves','','Enfermedades graves','Pago de suma fija si te diagnostican cáncer, infarto, ACV.',450]
   ];
   return `${stepDotsHTML(7, gmmSteps.length)}
-  <h3 class="step-title">Coberturas opcionales</h3>
-  <p class="step-help">Suma a tu prima base. Puedes agregar las que quieras o ninguna.</p>
+  <h3 class="step-title">Último paso: extras</h3>
+  ${explainerHTML({
+    intro:'Coberturas opcionales',
+    body:`El seguro base ya cubre lo grave (hospitalización, cirugía, enfermedades). Estas coberturas <strong>se agregan a tu prima mensual</strong> y cubren situaciones específicas. <strong>Ninguna es obligatoria.</strong>`,
+    example:`Maternidad tiene <strong>10 meses de espera</strong> — solo la actives si planeas embarazo en los próximos 2 años, si no, gastas de más.`,
+    rec:`Si no estás segura, <strong>no agregues nada</strong>. El seguro base ya cubre lo que más quema. Es más fácil agregar después que pagar de más todo el año.`
+  })}
   <div class="opts">
     ${items.map(([k,e,l,m,p])=>`
       <button class="opt ${ad.includes(k)?'selected':''}" data-addon="${k}">
-        
         <div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div>
         <span class="opt-pill">+$${p}/mes</span>
       </button>`).join('')}
@@ -1521,8 +1636,13 @@ function renderAuto(){
 }
 function autoStepBasic(){
   return `${stepDotsHTML(0, autoSteps.length)}
-  <h3 class="step-title">Tu auto</h3>
-  <p class="step-help">Marca, modelo y año. Esto define la base del precio.</p>
+  <h3 class="step-title">Empezamos: ¿qué auto vas a asegurar?</h3>
+  ${explainerHTML({
+    intro:'Antes de empezar',
+    body:`Te voy a hacer 5 preguntas. Las respuestas determinan tu prima. <strong>Pon datos reales</strong> — la aseguradora los verifica con la factura del auto cuando emites la póliza.`,
+    example:`Mientras más nuevo y más caro tu auto, más cara la prima. Un Versa 2018 cuesta mucho menos asegurar que un Honda HRV 2024.`,
+    rec:`Si no recuerdas el modelo exacto, está bien. Andy te ayuda a confirmar después.`
+  })}
   <div class="field-grid">
     <div class="field"><label class="field-label">Marca</label><input class="field-input" id="autoBrand" placeholder="Nissan, Toyota, etc." value="${state.auto.brand}"></div>
     <div class="field"><label class="field-label">Modelo</label><input class="field-input" id="autoModel" placeholder="Sentra, Corolla..." value="${state.auto.model}"></div>
@@ -1537,10 +1657,15 @@ function autoStepBasic(){
 }
 function autoStepUse(){
   return `${stepDotsHTML(1, autoSteps.length)}
-  <h3 class="step-title">¿Para qué lo usas?</h3>
-  <p class="step-help">Uso comercial sube prima ~30%. Las aseguradoras lo verifican: si reportas particular y lo usas para Uber/reparto, no te pagan en siniestro.</p>
+  <h3 class="step-title">¿Para qué usas tu auto?</h3>
+  ${explainerHTML({
+    intro:'Por qué importa',
+    body:`Si usas tu auto para <strong>generar ingreso</strong> (Uber, DiDi, repartos, taxi), la aseguradora lo considera comercial. La prima sube ~30%. Las aseguradoras lo verifican — y si reportas "particular" pero lo usas comercialmente, en un siniestro <strong>te pueden negar el pago</strong>.`,
+    rec:`Sé honesta. Si usas tu auto comercialmente más del 20% del tiempo, declara comercial. La prima sube pero tienes cobertura real cuando algo pase.`
+  })}
   <div class="opts opts-2">
     <button class="opt ${state.auto.use==='particular'?'selected':''}" data-use="particular">
+      ${REC_BADGE}
       <div class="opt-body"><div class="opt-label">Particular</div><div class="opt-meta">Uso personal/familiar</div></div>
     </button>
     <button class="opt ${state.auto.use==='comercial'?'selected':''}" data-use="comercial">
@@ -1550,24 +1675,30 @@ function autoStepUse(){
 }
 function autoStepCoverage(){
   return `${stepDotsHTML(2, autoSteps.length)}
-  <h3 class="step-title">Tipo de cobertura
-    <button class="info-btn" onclick="info('coverageType')">?</button>
-  </h3>
-  <p class="step-help">Lo más importante en seguro de auto. Cada nivel cubre cosas muy diferentes.</p>
+  <h3 class="step-title">Tipo de cobertura</h3>
+  ${explainerHTML({
+    intro:'La decisión más importante del seguro de auto',
+    body:`Hay <strong>3 niveles</strong> de cobertura. La diferencia entre ellos es enorme — define qué cubre y qué no cuando hay un siniestro.`,
+    bullets:[
+      `<strong>RC (Responsabilidad Civil):</strong> solo daños a TERCEROS — otra persona, otro auto. Tu auto no está cubierto en ningún caso. Es el mínimo legal.`,
+      `<strong>Limitada:</strong> RC + robo total + asistencia vial. Si chocas tu propio auto, no entra.`,
+      `<strong>Amplia:</strong> todo lo anterior + daños materiales (choques, vandalismo, fenómenos naturales). Cubre TU auto pase lo que pase.`
+    ],
+    example:`Chocas tu auto contra un poste. Daños $80,000. <strong>Con RC:</strong> tú pagas todo. <strong>Con Amplia:</strong> pagas el deducible (5% del valor del auto, ~$15k) y la aseguradora paga el resto.`,
+    rec:`<strong>Si tu auto vale más de $150,000, contrata Amplia.</strong> La diferencia de prima la recuperas en un solo siniestro. RC solo tiene sentido para autos viejos que ya no valen mucho.`
+  })}
   <div class="opts">
     <button class="opt ${state.auto.coverage==='rc'?'selected':''}" data-coverage="rc">
-      
       <div class="opt-body"><div class="opt-label">Solo RC (Responsabilidad Civil)</div><div class="opt-meta"><strong>Tu auto NO está cubierto.</strong> Solo pagas por daños a otros.</div></div>
       <span class="opt-pill" style="background:var(--success)">−60%</span>
     </button>
     <button class="opt ${state.auto.coverage==='limitada'?'selected':''}" data-coverage="limitada">
-      
       <div class="opt-body"><div class="opt-label">Limitada</div><div class="opt-meta">RC + robo total + asistencia. Choques NO cubiertos.</div></div>
       <span class="opt-pill" style="background:var(--gray-400)">−30%</span>
     </button>
     <button class="opt ${state.auto.coverage==='amplia'?'selected':''}" data-coverage="amplia">
-      
-      <div class="opt-body"><div class="opt-label">Amplia (recomendada)</div><div class="opt-meta">Todo: RC + robo + daños + fenómenos naturales. La que tiene sentido si tu auto vale +$150k.</div></div>
+      ${REC_BADGE}
+      <div class="opt-body"><div class="opt-label">Amplia</div><div class="opt-meta">Todo: RC + robo + daños + fenómenos naturales. La que tiene sentido si tu auto vale +$150k.</div></div>
       <span class="opt-pill" style="background:var(--orange)">base</span>
     </button>
   </div>`;
@@ -1576,43 +1707,54 @@ function autoStepDeductible(){
   if(state.auto.coverage==='rc'){
     return `${stepDotsHTML(3, autoSteps.length)}
     <h3 class="step-title">RC no tiene deducible</h3>
-    <p class="step-help">Como Responsabilidad Civil solo cubre a terceros, no aplica deducible. Saltamos al siguiente.</p>`;
+    ${explainerHTML({
+      body:`Como Responsabilidad Civil solo cubre a terceros, no hay deducible. Saltamos al siguiente paso.`
+    })}`;
   }
   return `${stepDotsHTML(3, autoSteps.length)}
-  <h3 class="step-title">Deducible
-    <button class="info-btn" onclick="info('deductibleAuto')">?</button>
-  </h3>
-  <p class="step-help">En auto el deducible es % del valor del coche, no monto fijo.</p>
-  <div class="step-help" style="margin-top:14px"><strong>Robo total</strong></div>
+  <h3 class="step-title">El deducible</h3>
+  ${explainerHTML({
+    intro:'¿Cuánto pones tú si pasa algo?',
+    body:`En auto, el deducible <strong>NO es un monto fijo</strong> — es un <strong>porcentaje del valor de tu auto</strong>. Cuando hay siniestro, tú pones ese porcentaje y la aseguradora paga el resto.`,
+    example:`Auto valor $300,000 con deducible robo 10%: si te lo roban, tú pones $30,000 y la aseguradora $270,000. Con deducible robo 5%: pones solo $15,000 pero pagaste prima más alta todo el año.`,
+    rec:`<strong>Daños materiales 5%, robo total 10%</strong> son los estándares de mercado y dan buen balance. Bajarlos sube tu prima; subirlos la baja.`
+  })}
+  <div class="step-help" style="margin-top:14px"><strong>Robo total</strong> · si te roban el auto completo</div>
   <div class="opts opts-3">
     ${[5,10,15].map(v=>`
       <button class="opt ${state.auto.deductibleTheft===v?'selected':''}" data-dt="${v}">
+        ${v===10?REC_BADGE:''}
         <div class="opt-body"><div class="opt-label">${v}%</div><div class="opt-meta">${v===5?'prima alta':v===10?'estándar':'prima baja'}</div></div>
       </button>`).join('')}
   </div>
-  <div class="step-help" style="margin-top:14px"><strong>Daños materiales</strong></div>
+  <div class="step-help" style="margin-top:14px"><strong>Daños materiales</strong> · si chocas o te chocan</div>
   <div class="opts opts-3">
     ${[3,5,10].map(v=>`
       <button class="opt ${state.auto.deductibleDamage===v?'selected':''}" data-dd="${v}">
-        <div class="opt-body"><div class="opt-label">${v}%</div></div>
+        ${v===5?REC_BADGE:''}
+        <div class="opt-body"><div class="opt-label">${v}%</div><div class="opt-meta">${v===3?'prima alta':v===5?'estándar':'prima baja'}</div></div>
       </button>`).join('')}
   </div>`;
 }
 function autoStepAddons(){
   const ad = state.auto.addons;
   const items = [
-    ['vial','','Asistencia vial','Grúa, batería, llantas',80],
-    ['sustituto','','Auto sustituto','Auto rentado mientras reparan el tuyo',150],
-    ['legal','','Asistencia legal','Abogado en accidentes, defensa',60],
-    ['cero','','Deducible 0 en accidente','Si chocas, no pagas nada de deducible',180]
+    ['vial','','Asistencia vial','Grúa, batería, llantas, gasolina si te quedas tirado.',80],
+    ['sustituto','','Auto sustituto','Auto rentado mientras reparan el tuyo (10-30 días).',150],
+    ['legal','','Asistencia legal','Abogado en accidentes graves o disputas.',60],
+    ['cero','','Deducible cero en accidente','Si chocas tu auto, no pagas el deducible — la aseguradora cubre todo.',180]
   ];
   return `${stepDotsHTML(4, autoSteps.length)}
-  <h3 class="step-title">Extras (opcional)</h3>
-  <p class="step-help">Servicios que valen la pena evaluar.</p>
+  <h3 class="step-title">Último paso: extras</h3>
+  ${explainerHTML({
+    intro:'Servicios opcionales',
+    body:`Ninguno es obligatorio. Cada uno suma a tu prima mensual.`,
+    rec:`<strong>Asistencia vial vale la pena</strong> — son $80/mes y te ahorran un dolor de cabeza cuando te quedas tirada (grúa puede costar $1,500). <strong>Auto sustituto</strong> solo si dependes diario del coche y no tienes otro. Los demás son lujos.`
+  })}
   <div class="opts">
     ${items.map(([k,e,l,m,p])=>`
       <button class="opt ${ad.includes(k)?'selected':''}" data-aaddon="${k}">
-        
+        ${k==='vial'?REC_BADGE:''}
         <div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div>
         <span class="opt-pill">+$${p}/mes</span>
       </button>`).join('')}
@@ -1684,27 +1826,42 @@ const GENERIC_FLOWS = {
     steps:['age','sumInsured','term'],
     render:{
       age:()=>`${stepDotsHTML(0, 3)}
-        <h3 class="step-title">Tu edad y hábitos</h3>
-        <p class="step-help">Vida cotiza por edad y si fumas. Honestidad obligatoria. <button class="info-btn" onclick="info('smoker')">?</button></p>
+        <h3 class="step-title">Empezamos: tu edad y si fumas</h3>
+        ${explainerHTML({
+          intro:'Sobre el seguro de vida',
+          body:`Un seguro de vida le da <strong>dinero a tu familia si tú faltas</strong>. Cubre hipoteca, educación de hijos, gastos para que vivan tranquilos por años. La prima depende mucho de tu edad y si fumas.`,
+          example:`Hombre de 30 años, no fumador, $1M de cobertura: ~$245/mes. Misma persona fumadora: ~$343/mes (+40%).`,
+          rec:`Sé honesta sobre fumar. Si lo niegas y se descubre en el siniestro (autopsia, expediente), la aseguradora no paga y tu familia se queda sin nada.`
+        })}
         <div class="slider-wrap">
           <div class="slider-row"><div><span class="slider-value" id="vAgeVal">${state.vida.age}</span><span class="slider-suffix">años</span></div></div>
           <input type="range" min="18" max="70" value="${state.vida.age}" class="slider" id="vAgeSlider">
         </div>
         <div class="opts opts-2">
-          <button class="opt ${!state.vida.smoker?'selected':''}" data-vsmoker="false"><div class="opt-body"><div class="opt-label">No fumo</div></div></button>
+          <button class="opt ${!state.vida.smoker?'selected':''}" data-vsmoker="false">${REC_BADGE}<div class="opt-body"><div class="opt-label">No fumo</div></div></button>
           <button class="opt ${state.vida.smoker?'selected':''}" data-vsmoker="true"><div class="opt-body"><div class="opt-label">Sí fumo</div><div class="opt-meta">+40% en prima vs no fumador</div></div></button>
         </div>`,
       sumInsured:()=>`${stepDotsHTML(1, 3)}
         <h3 class="step-title">¿Cuánto recibe tu familia si tú faltas?</h3>
-        <p class="step-help">Regla común: 5-10x tu ingreso anual. Suficiente para cubrir hipoteca, educación de hijos, gastos por años.</p>
+        ${explainerHTML({
+          intro:'La cifra que define todo',
+          body:`Es lo que la aseguradora le da a tus beneficiarios en un solo pago. Tienen que poder vivir con eso sin tu ingreso por varios años.`,
+          example:`<strong>Regla común:</strong> 5 a 10 veces tu ingreso anual. Si ganas $30k/mes ($360k/año), una suma de $2-4M es razonable. Si tienes hipoteca de $2M, súmale eso.`,
+          rec:`<strong>$2M</strong> es lo común para personas con dependientes y sin grandes deudas. <strong>$5M</strong> si tienes hijos pequeños y/o hipoteca grande. <strong>$1M</strong> es el mínimo útil — solo para gastos funerarios y seis meses de transición.`
+        })}
         <div class="opts opts-3">
-          ${[1,2,5,10].map(v=>`<button class="opt ${state.vida.sumInsured===v?'selected':''}" data-vsum="${v}"><div class="opt-body"><div class="opt-label">$${v}M</div><div class="opt-meta">${v===1?'mínimo':v===2?'común':v===5?'recomendado':'protección alta'}</div></div></button>`).join('')}
+          ${[1,2,5,10].map(v=>`<button class="opt ${state.vida.sumInsured===v?'selected':''}" data-vsum="${v}">${v===2?REC_BADGE:''}<div class="opt-body"><div class="opt-label">$${v}M</div><div class="opt-meta">${v===1?'mínimo':v===2?'común':v===5?'protección alta':'protección máxima'}</div></div></button>`).join('')}
         </div>`,
       term:()=>`${stepDotsHTML(2, 3)}
-        <h3 class="step-title">Plazo del seguro</h3>
-        <p class="step-help">Vida temporal: cubre x años, prima fija. Vida permanente: dura toda la vida (más cara, pero acumula valor).</p>
+        <h3 class="step-title">¿Por cuántos años?</h3>
+        ${explainerHTML({
+          intro:'Temporal vs Permanente',
+          body:`<strong>Temporal:</strong> te cubre x años. Si mueres dentro de ese plazo, paga. Si llegas vivo al final, no recibes nada — pero pagaste mucho menos prima.<br><br><strong>Permanente:</strong> dura toda tu vida. La aseguradora <em>seguro</em> va a pagar (todos morimos). Por eso es 2-3x más cara, y acumula valor en efectivo que puedes retirar.`,
+          example:`Persona de 30 años, $1M cobertura: 20 años temporal ~$245/mes. Permanente ~$580/mes — pero acumula valor.`,
+          rec:`<strong>Temporal a 20-30 años</strong> es lo más común y eficiente — cubre los años en que tu familia depende más de ti (hijos pequeños, hipoteca activa). Permanente solo si quieres dejar herencia garantizada.`
+        })}
         <div class="opts opts-3">
-          ${[10,20,30,99].map(v=>`<button class="opt ${state.vida.term===v?'selected':''}" data-vterm="${v}"><div class="opt-body"><div class="opt-label">${v===99?'Permanente':v+' años'}</div><div class="opt-meta">${v===99?'toda la vida':'temporal'}</div></div></button>`).join('')}
+          ${[10,20,30,99].map(v=>`<button class="opt ${state.vida.term===v?'selected':''}" data-vterm="${v}">${v===20?REC_BADGE:''}<div class="opt-body"><div class="opt-label">${v===99?'Permanente':v+' años'}</div><div class="opt-meta">${v===99?'toda la vida':'temporal'}</div></div></button>`).join('')}
         </div>`
     },
     bind:()=>{
@@ -1735,10 +1892,13 @@ const GENERIC_FLOWS = {
     steps:['species','sumInsured','deductible','addons'],
     render:{
       species:()=>`${stepDotsHTML(0, 4)}
-        <h3 class="step-title">Tu mascota
-          <button class="info-btn" onclick="info('petPlan')">?</button>
-        </h3>
-        <p class="step-help">GNP Mi Mascota cubre perros y gatos entre 3 meses y 9 años. La edad de ingreso afecta la prima.</p>
+        <h3 class="step-title">Empezamos: tu mascota</h3>
+        ${explainerHTML({
+          intro:'Sobre GNP Mi Mascota',
+          body:`Cubre <strong>gastos médicos veterinarios</strong> por accidente o enfermedad — cirugías, hospitalización, análisis. También incluye RC (si tu perro muerde a alguien), orientación vet 24/7 y cremación.<br><br><strong>Mascotas elegibles:</strong> perros y gatos entre 3 meses y 9 años. Razas peligrosas (Pitbull, Rottweiler, etc.) tienen condiciones especiales.`,
+          example:`<strong>Periodos de espera:</strong> 10 días para accidentes, 180 días para enfermedades. Si contratas hoy, los accidentes están cubiertos en 10 días, pero las enfermedades hasta dentro de 6 meses.`,
+          rec:`Mientras más joven contratas, más barata la prima — y la mascota está protegida cuando empiezan las enfermedades de mayor edad.`
+        })}
         <div class="opts opts-2">
           <button class="opt ${state.mascota.species==='perro'?'selected':''}" data-pspecies="perro"><div class="opt-body"><div class="opt-label">Perro</div></div></button>
           <button class="opt ${state.mascota.species==='gato'?'selected':''}" data-pspecies="gato"><div class="opt-body"><div class="opt-label">Gato</div></div></button>
@@ -1750,7 +1910,12 @@ const GENERIC_FLOWS = {
         </div>`,
       sumInsured:()=>`${stepDotsHTML(1, 4)}
         <h3 class="step-title">Suma asegurada anual</h3>
-        <p class="step-help">El máximo que GNP cubrirá en gastos médicos veterinarios al año. Una cirugía mayor en perro grande puede pasar fácil de $30,000.</p>
+        ${explainerHTML({
+          intro:'El tope anual',
+          body:`Es el máximo que GNP cubrirá en gastos veterinarios al año. Pasada esa cifra, tú asumes el resto.`,
+          example:`Cirugía mayor en perro grande (ej. obstrucción intestinal): ~$25-40k. Tratamiento oncológico: $30k+ por meses. Hospitalización por accidente: $10-20k.`,
+          rec:`<strong>$30,000</strong> es el balance común — cubre la mayoría de eventos médicos sin pagar prima de lujo. Si tu mascota es de raza grande o ya tiene años, sube a $50k.`
+        })}
         <div class="slider-wrap">
           <div class="slider-row"><div><span class="slider-value" id="petSumVal">$${fmt(state.mascota.sumInsured)}</span></div></div>
           <input type="range" min="15000" max="80000" step="5000" value="${state.mascota.sumInsured}" class="slider" id="petSumSlider">
@@ -1758,16 +1923,25 @@ const GENERIC_FLOWS = {
         </div>`,
       deductible:()=>`${stepDotsHTML(2, 4)}
         <h3 class="step-title">Deducible por evento</h3>
-        <p class="step-help">Lo que pagas tú antes de que GNP cubra. Aplica por cada evento, no anual.</p>
+        ${explainerHTML({
+          intro:'Por cada evento, no anual',
+          body:`Es lo que tú pagas antes de que GNP cubra. <strong>Aplica por cada evento</strong> — si tu mascota tiene 2 eventos en el año, pagas el deducible 2 veces.`,
+          example:`Tu perro se intoxica. Cuenta vet: $8,000. Con deducible $1,500: tú pagas $1,500, GNP $6,500.`,
+          rec:`<strong>$1,500</strong> es el balance estándar. $500 si quieres prima baja en el evento pero más alta cada mes; $3,000 si tienes ahorro y quieres prima mensual menor.`
+        })}
         <div class="opts opts-3">
-          ${[500,1500,3000].map(v=>`<button class="opt ${state.mascota.deductible===v?'selected':''}" data-pded="${v}"><div class="opt-body"><div class="opt-label">$${fmt(v)}</div><div class="opt-meta">${v===500?'prima alta':v===1500?'estándar':'prima baja'}</div></div></button>`).join('')}
+          ${[500,1500,3000].map(v=>`<button class="opt ${state.mascota.deductible===v?'selected':''}" data-pded="${v}">${v===1500?REC_BADGE:''}<div class="opt-body"><div class="opt-label">$${fmt(v)}</div><div class="opt-meta">${v===500?'prima alta':v===1500?'estándar':'prima baja'}</div></div></button>`).join('')}
         </div>`,
       addons:()=>{
         const ad = state.mascota.addons;
-        const items = [['fallece','','Fallecimiento','Indemnización por fallecimiento por enfermedad o accidente',60],['robo','','Robo con violencia','Indemnización tras acta del MP',40],['rc','','RC mascota ampliada','Daños a terceros — la mordida importa',45]];
+        const items = [['fallece','','Fallecimiento','Indemnización por fallecimiento por enfermedad o accidente.',60],['robo','','Robo con violencia','Indemnización tras presentar acta ante el MP.',40],['rc','','RC mascota ampliada','Cobertura ampliada de daños a terceros — la mordida importa.',45]];
         return `${stepDotsHTML(3, 4)}
-        <h3 class="step-title">Coberturas opcionales</h3>
-        <p class="step-help">Periodos de espera de GNP: <strong>10 días para accidentes, 180 días para enfermedades</strong>. Aplica desde la firma.</p>
+        <h3 class="step-title">Último paso: extras</h3>
+        ${explainerHTML({
+          intro:'Coberturas opcionales',
+          body:`El plan base ya cubre lo principal. Estas son agregables.`,
+          rec:`Si tu mascota es <strong>perro de raza grande o protección</strong>, agrega RC ampliada — una mordida puede costar caro en demanda. Los demás son opcionales según tu caso.`
+        })}
         <div class="opts">
           ${items.map(([k,e,l,m,p])=>`<button class="opt ${ad.includes(k)?'selected':''}" data-padon="${k}"><div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div><span class="opt-pill">+$${p}/mes</span></button>`).join('')}
         </div>`;
@@ -1811,21 +1985,35 @@ const GENERIC_FLOWS = {
     steps:['age','horizon','monthly','risk'],
     render:{
       age:()=>`${stepDotsHTML(0, 4)}
-        <h3 class="step-title">¿Cuántos años tienes?</h3>
-        <p class="step-help">Mientras más joven, más se compone tu ahorro. Sí, importa.</p>
+        <h3 class="step-title">Empezamos: tu edad</h3>
+        ${explainerHTML({
+          intro:'Sobre el Plan Personal de Retiro (PPR)',
+          body:`Es una cuenta donde guardas dinero a largo plazo para tu retiro. Lo que aportas es <strong>deducible de ISR</strong> — pagas menos impuestos. El dinero crece con interés compuesto.`,
+          example:`Mientras más joven empiezas, más se compone. $2,000/mes a partir de los 30 años en perfil balanceado: a los 60 tienes ~$2.8M. Esos mismos $2k empezando a los 45: solo ~$650k.`,
+          rec:`No hay nada que decidir aquí — solo poner tu edad real. Pero el mensaje es claro: empezar joven multiplica tu retiro.`
+        })}
         <div class="slider-wrap">
           <div class="slider-row"><div><span class="slider-value" id="ahAgeVal">${state.ahorro.age}</span><span class="slider-suffix">años</span></div></div>
           <input type="range" min="20" max="60" value="${state.ahorro.age}" class="slider" id="ahAgeSlider">
         </div>`,
       horizon:()=>`${stepDotsHTML(1, 4)}
         <h3 class="step-title">¿En cuántos años quieres tu dinero?</h3>
-        <p class="step-help">Plazos largos permiten más rendimiento. Plazos cortos protegen capital.</p>
+        ${explainerHTML({
+          intro:'Tu horizonte',
+          body:`El plazo determina tu estrategia. <strong>Plazos largos</strong> (20+ años) toleran volatilidad y permiten más renta variable = mayor rendimiento esperado. <strong>Plazos cortos</strong> protegen capital — mejor renta fija.`,
+          rec:`Si te faltan 20+ años para retiro, elige plazo largo. Si te faltan 5-10, perfil más conservador.`
+        })}
         <div class="opts opts-3">
-          ${[5,10,20,30].map(v=>`<button class="opt ${state.ahorro.horizon===v?'selected':''}" data-ahorizon="${v}"><div class="opt-body"><div class="opt-label">${v} años</div></div></button>`).join('')}
+          ${[5,10,20,30].map(v=>`<button class="opt ${state.ahorro.horizon===v?'selected':''}" data-ahorizon="${v}">${v===20?REC_BADGE:''}<div class="opt-body"><div class="opt-label">${v} años</div></div></button>`).join('')}
         </div>`,
       monthly:()=>`${stepDotsHTML(2, 4)}
-        <h3 class="step-title">¿Cuánto puedes ahorrar al mes?</h3>
-        <p class="step-help">Cualquier monto cuenta. Lo importante es la consistencia.</p>
+        <h3 class="step-title">¿Cuánto puedes aportar al mes?</h3>
+        ${explainerHTML({
+          intro:'La consistencia gana',
+          body:`Cualquier monto cuenta — lo importante es <strong>aportar todos los meses</strong>. Puedes cambiar el monto cuando quieras. <strong>Tope fiscal:</strong> hasta el 10% de tu ingreso anual o ~$181,000 (5 UMA), lo que sea menor, es deducible de ISR.`,
+          example:`$2,000/mes durante 30 años en perfil balanceado (~7% real): valor final proyectado ~$2.8M.`,
+          rec:`Si recién empiezas, $1,000-2,000/mes es buen arranque. Lo importante es la consistencia, no el monto inicial.`
+        })}
         <div class="slider-wrap">
           <div class="slider-row"><div><span class="slider-value" id="ahMVal">${fmt(state.ahorro.monthly)}</span><span class="slider-suffix">MXN/mes</span></div></div>
           <input type="range" min="500" max="20000" step="500" value="${state.ahorro.monthly}" class="slider" id="ahMSlider">
@@ -1833,10 +2021,19 @@ const GENERIC_FLOWS = {
         </div>`,
       risk:()=>`${stepDotsHTML(3, 4)}
         <h3 class="step-title">Tu perfil de riesgo</h3>
-        <p class="step-help">Define la cartera del PPR. Más exposición a renta variable internacional eleva el rendimiento esperado y la volatilidad.</p>
+        ${explainerHTML({
+          intro:'Cuánta volatilidad toleras',
+          body:`Define la mezcla de tu cartera. Más renta variable = más volatilidad año a año, pero más rendimiento esperado a 20-30 años. Más renta fija = más estabilidad pero menos crecimiento.`,
+          bullets:[
+            `<strong>Conservador (~4%):</strong> casi todo CETES/UDIBONOS. Bajo riesgo, bajo rendimiento real.`,
+            `<strong>Balanceado (~7%):</strong> mezcla de bonos mexicanos + S&P 500 internacional. El óptimo para mayoría.`,
+            `<strong>Crecimiento (~9%):</strong> alta exposición a renta variable internacional. Volátil año a año.`
+          ],
+          rec:`<strong>Balanceado</strong> es el sweet spot para retiro. Solo elige Crecimiento si tienes 20+ años y aguantas ver tu cuenta caer 30% en años malos sin sacar el dinero.`
+        })}
         <div class="opts opts-3">
           <button class="opt ${state.ahorro.risk==='bajo'?'selected':''}" data-arisk="bajo"><div class="opt-body"><div class="opt-label">Conservador</div><div class="opt-meta">~4%/año real esperado</div></div></button>
-          <button class="opt ${state.ahorro.risk==='medio'?'selected':''}" data-arisk="medio"><div class="opt-body"><div class="opt-label">Balanceado</div><div class="opt-meta">~7%/año real esperado</div></div></button>
+          <button class="opt ${state.ahorro.risk==='medio'?'selected':''}" data-arisk="medio">${REC_BADGE}<div class="opt-body"><div class="opt-label">Balanceado</div><div class="opt-meta">~7%/año real esperado</div></div></button>
           <button class="opt ${state.ahorro.risk==='alto'?'selected':''}" data-arisk="alto"><div class="opt-body"><div class="opt-label">Crecimiento</div><div class="opt-meta">~9%/año real esperado</div></div></button>
         </div>`
     },
@@ -1867,8 +2064,13 @@ const GENERIC_FLOWS = {
     steps:['homeValue','contentsValue','addons'],
     render:{
       homeValue:()=>`${stepDotsHTML(0, 3)}
-        <h3 class="step-title">Valor de tu casa</h3>
-        <p class="step-help">Valor de reconstrucción, no comercial. Cuánto costaría reconstruirla si se quema/colapsa.</p>
+        <h3 class="step-title">Empezamos: valor de reconstrucción</h3>
+        ${explainerHTML({
+          intro:'Sobre el seguro de hogar',
+          body:`Protege tu casa contra <strong>incendio, robo, fenómenos naturales</strong> (huracanes, sismo, inundación), explosiones y daños eléctricos. Es distinto del valor comercial — aquí necesitas el <strong>valor de reconstrucción</strong>.`,
+          example:`Si tu casa vale $4M comercial pero reconstruirla costaría $2.5M (terreno aparte), aseguras los $2.5M. Pagar más es desperdicio; pagar menos te deja descubierta.`,
+          rec:`Si no sabes el valor exacto, una regla aproximada: $12,000-$18,000 por m² de construcción según zona. Andy te ayuda a calcular preciso.`
+        })}
         <div class="slider-wrap">
           <div class="slider-row"><div><span class="slider-value" id="hvVal">$${fmt(state.patrimonial.homeValue)}</span></div></div>
           <input type="range" min="500000" max="10000000" step="100000" value="${state.patrimonial.homeValue}" class="slider" id="hvSlider">
@@ -1876,7 +2078,12 @@ const GENERIC_FLOWS = {
         </div>`,
       contentsValue:()=>`${stepDotsHTML(1, 3)}
         <h3 class="step-title">Valor de los contenidos</h3>
-        <p class="step-help">Muebles, electrónicos, ropa, joyas. Lo que hay <em>dentro</em> de tu casa.</p>
+        ${explainerHTML({
+          intro:'Lo que hay dentro',
+          body:`Muebles, electrónicos, ropa, electrodomésticos, joyas, arte. Si se queman o roban, esto es lo que la aseguradora te repone. <strong>Sin esta cobertura, solo te pagan la casa, no las cosas.</strong>`,
+          example:`Casa promedio amueblada: TV $20k + lavadora/secadora $30k + muebles $80k + electrónicos $40k + ropa $30k + utensilios $20k = ~$220,000.`,
+          rec:`<strong>15-20% del valor de la casa</strong> suele ser realista. Joyas y arte de alto valor se aseguran aparte con cobertura específica.`
+        })}
         <div class="slider-wrap">
           <div class="slider-row"><div><span class="slider-value" id="cvVal">$${fmt(state.patrimonial.contentsValue)}</span></div></div>
           <input type="range" min="50000" max="2000000" step="50000" value="${state.patrimonial.contentsValue}" class="slider" id="cvSlider">
@@ -1884,12 +2091,16 @@ const GENERIC_FLOWS = {
         </div>`,
       addons:()=>{
         const ad = state.patrimonial.addons;
-        const items = [['rcfam','','RC familiar','Cubre daños que tú/familia causen a terceros',60],['cristales','','Cristales y rotura','Ventanas, ventanales, espejos',40],['equipos','','Equipos electrónicos extra','Cobertura adicional para laptops, cámaras',80],['robosin','','Robo sin violencia','Si te roban sin forzar entrada',100]];
+        const items = [['rcfam','','RC familiar','Cubre daños que tú o tu familia causen a terceros (ej. tu hijo rompe algo en una tienda).',60],['cristales','','Cristales y rotura','Ventanas, ventanales, espejos rotos accidentalmente.',40],['equipos','','Equipos electrónicos extra','Cobertura ampliada para laptops, cámaras, audio costoso.',80],['robosin','','Robo sin violencia','Si te roban sin forzar entrada (ej. olvidaste cerrar).',100]];
         return `${stepDotsHTML(2, 3)}
-        <h3 class="step-title">Coberturas extra</h3>
-        <p class="step-help">Protecciones adicionales recomendadas.</p>
+        <h3 class="step-title">Último paso: extras</h3>
+        ${explainerHTML({
+          intro:'Coberturas opcionales',
+          body:`El plan base ya cubre lo grande (incendio, robo con violencia, fenómenos naturales). Estas son protecciones adicionales para situaciones específicas.`,
+          rec:`<strong>RC familiar</strong> vale cada peso — son $60/mes y te cubren si tú o tus hijos causan daño accidental a un tercero. Una demanda civil cuesta cientos de miles. Los demás son evaluables según tu caso.`
+        })}
         <div class="opts">
-          ${items.map(([k,e,l,m,p])=>`<button class="opt ${ad.includes(k)?'selected':''}" data-padon="${k}" data-pcost="${p}"><div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div><span class="opt-pill">+$${p}/mes</span></button>`).join('')}
+          ${items.map(([k,e,l,m,p])=>`<button class="opt ${ad.includes(k)?'selected':''}" data-padon="${k}" data-pcost="${p}">${k==='rcfam'?REC_BADGE:''}<div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div><span class="opt-pill">+$${p}/mes</span></button>`).join('')}
         </div>`;
       }
     },
