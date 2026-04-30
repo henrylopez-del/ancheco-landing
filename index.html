@@ -1072,8 +1072,8 @@ img{max-width:100%;display:block}
 /* ============ APP STATE ============ */
 const state = {
   type:null,
-  gmm:{step:0,who:'individual',age:35,sex:'F',smoker:false,deductible:25000,coinsurance:10,hospitalTier:'platino',sumInsured:10,addons:[]},
-  auto:{step:0,brand:'',model:'',year:2020,use:'particular',coverage:'amplia',deductibleTheft:10,deductibleDamage:5,addons:['vial']},
+  gmm:{step:0,who:'individual',age:35,sex:'F',smoker:false,partnerAge:35,kidsCount:1,kidsAvgAge:8,deductible:25000,coinsurance:10,hospitalTier:'platino',sumInsured:10,addons:[]},
+  auto:{step:0,brand:'',model:'',year:2020,vehicleValue:300000,use:'particular',coverage:'amplia',deductibleTheft:10,deductibleDamage:5,addons:['vial']},
   vida:{step:0,age:35,smoker:false,sumInsured:1,term:20,beneficiaries:1},
   mascota:{step:0,species:'perro',petAge:3,sumInsured:30000,deductible:1500,addons:[]},
   ahorro:{step:0,age:35,monthly:2000,horizon:20,risk:'medio'},
@@ -1340,14 +1340,17 @@ function gmmStepWho(){
   </div>`;
 }
 function gmmStepAge(){
+  const showPartner = state.gmm.who !== 'individual';
+  const showKids = state.gmm.who === 'familia';
   return `${stepDotsHTML(1, gmmSteps.length)}
-  <h3 class="step-title">Tu edad y sexo</h3>
+  <h3 class="step-title">Edad${showKids||showPartner?'es':''} y sexo</h3>
   ${explainerHTML({
     intro:'¿Por qué te lo pregunto?',
-    body:`La edad es el factor que <strong>más mueve el precio</strong>. Cada año arriba de 30 años, la prima sube ~3-4%. Es así para todas las aseguradoras — son estadísticas de salud, no es personal.`,
-    example:`Persona sana, no fumadora, mismo plan: a los 35 años paga ~$2,500/mes. A los 50 años, ~$4,200/mes. A los 65 años, ~$8,500/mes.`,
-    rec:`No hay nada que decidir aquí — solo poner tu edad real. Pero contratar joven sale mucho más barato a largo plazo, porque la prima se calcula con la edad de ingreso.`
+    body:`La edad es el factor que <strong>más mueve el precio</strong>. Cada año arriba de 30 años, la prima sube ~3-4%. Es así para todas las aseguradoras — son estadísticas de salud, no es personal.${showPartner?' En planes de pareja/familia, cada miembro suma según su propia edad.':''}`,
+    example:`Persona sana, no fumadora, mismo plan: a los 35 años paga ~$2,500/mes. A los 50 años, ~$4,200/mes. A los 65 años, ~$8,500/mes.${showKids?' Los hijos menores de 10 años son más baratos de asegurar.':''}`,
+    rec:`Pon edades reales. Contratar joven sale mucho más barato a largo plazo, porque la prima se calcula con la edad de ingreso.`
   })}
+  <div class="step-help" style="margin-top:6px"><strong>${showPartner?'Tu edad':'Edad'}</strong></div>
   <div class="slider-wrap">
     <div class="slider-row">
       <div><span class="slider-value" id="ageVal">${state.gmm.age}</span><span class="slider-suffix">años</span></div>
@@ -1355,7 +1358,7 @@ function gmmStepAge(){
     <input type="range" min="18" max="75" value="${state.gmm.age}" class="slider" id="ageSlider">
     <div class="slider-marks"><span>18</span><span>30</span><span>45</span><span>60</span><span>75</span></div>
   </div>
-  <div class="step-help" style="margin-top:24px"><strong>Sexo</strong> · afecta la prima ~5% (mujeres antes de 50, hombres después)</div>
+  <div class="step-help" style="margin-top:18px"><strong>Sexo</strong> · afecta la prima ~5% (mujeres antes de 50, hombres después)</div>
   <div class="opts opts-2">
     <button class="opt ${state.gmm.sex==='F'?'selected':''}" data-sex="F">
       <div class="opt-body"><div class="opt-label">Femenino</div></div>
@@ -1363,7 +1366,24 @@ function gmmStepAge(){
     <button class="opt ${state.gmm.sex==='M'?'selected':''}" data-sex="M">
       <div class="opt-body"><div class="opt-label">Masculino</div></div>
     </button>
-  </div>`;
+  </div>
+  ${showPartner?`
+  <div class="step-help" style="margin-top:24px;padding-top:18px;border-top:1px solid var(--gray-100)"><strong>Edad de tu pareja</strong></div>
+  <div class="slider-wrap">
+    <div class="slider-row"><div><span class="slider-value" id="partnerAgeVal">${state.gmm.partnerAge}</span><span class="slider-suffix">años</span></div></div>
+    <input type="range" min="18" max="75" value="${state.gmm.partnerAge}" class="slider" id="partnerAgeSlider">
+  </div>`:''}
+  ${showKids?`
+  <div class="step-help" style="margin-top:24px;padding-top:18px;border-top:1px solid var(--gray-100)"><strong>¿Cuántos hijos van a estar cubiertos?</strong></div>
+  <div class="opts opts-3">
+    ${[1,2,3,4].map(n=>`<button class="opt ${state.gmm.kidsCount===n?'selected':''}" data-kidscount="${n}"><div class="opt-body"><div class="opt-label">${n}${n===4?'+':''}</div></div></button>`).join('')}
+  </div>
+  <div class="step-help" style="margin-top:14px"><strong>Edad promedio de tus hijos</strong></div>
+  <div class="slider-wrap">
+    <div class="slider-row"><div><span class="slider-value" id="kidsAgeVal">${state.gmm.kidsAvgAge}</span><span class="slider-suffix">años</span></div></div>
+    <input type="range" min="0" max="25" value="${state.gmm.kidsAvgAge}" class="slider" id="kidsAgeSlider">
+    <div class="slider-marks"><span>0</span><span>10</span><span>18</span><span>25</span></div>
+  </div>`:''}`;
 }
 function gmmStepHealth(){
   return `${stepDotsHTML(2, gmmSteps.length)}
@@ -1560,46 +1580,70 @@ function bindGmm(){
   document.querySelectorAll('[data-coinsurance]').forEach(b=>b.addEventListener('click',()=>{state.gmm.coinsurance=parseInt(b.dataset.coinsurance);renderGmm();renderGmmQuote()}));
   document.querySelectorAll('[data-tier]').forEach(b=>b.addEventListener('click',()=>{state.gmm.hospitalTier=b.dataset.tier;renderGmm();renderGmmQuote()}));
   document.querySelectorAll('[data-sum]').forEach(b=>b.addEventListener('click',()=>{state.gmm.sumInsured=parseInt(b.dataset.sum);renderGmm();renderGmmQuote()}));
+  document.querySelectorAll('[data-kidscount]').forEach(b=>b.addEventListener('click',()=>{state.gmm.kidsCount=parseInt(b.dataset.kidscount);renderGmm();renderGmmQuote()}));
   document.querySelectorAll('[data-addon]').forEach(b=>b.addEventListener('click',()=>{
     const k=b.dataset.addon;const i=state.gmm.addons.indexOf(k);
     if(i>=0)state.gmm.addons.splice(i,1);else state.gmm.addons.push(k);
     renderGmm();renderGmmQuote();
   }));
   const slider = document.getElementById('ageSlider');
-  if(slider){
-    slider.addEventListener('input',()=>{state.gmm.age=parseInt(slider.value);document.getElementById('ageVal').textContent=slider.value;renderGmmQuote()});
-  }
+  if(slider){slider.addEventListener('input',()=>{state.gmm.age=parseInt(slider.value);document.getElementById('ageVal').textContent=slider.value;renderGmmQuote()})}
+  const pSlider = document.getElementById('partnerAgeSlider');
+  if(pSlider){pSlider.addEventListener('input',()=>{state.gmm.partnerAge=parseInt(pSlider.value);document.getElementById('partnerAgeVal').textContent=pSlider.value;renderGmmQuote()})}
+  const kSlider = document.getElementById('kidsAgeSlider');
+  if(kSlider){kSlider.addEventListener('input',()=>{state.gmm.kidsAvgAge=parseInt(kSlider.value);document.getElementById('kidsAgeVal').textContent=kSlider.value;renderGmmQuote()})}
 }
+function gmmAgeFactor(age){return 1 + Math.max(0,(age-30))*0.035}
 function gmmCalcPrice(){
-  let base = 2200;
-  base *= 1 + Math.max(0,(state.gmm.age-30))*0.035;
-  if(state.gmm.smoker) base *= 1.25;
-  if(state.gmm.sex==='F' && state.gmm.age<50) base *= 1.05;
+  // Per-person base before tier/deductible/coinsurance/sum multipliers
+  function personBase(age, sex, isSelf){
+    let p = 2200 * gmmAgeFactor(age);
+    if(isSelf && state.gmm.smoker) p *= 1.25;
+    if(sex==='F' && age<50) p *= 1.05;
+    return p;
+  }
+  let aggregate = personBase(state.gmm.age, state.gmm.sex, true);
+  if(state.gmm.who !== 'individual'){
+    const partnerSex = state.gmm.sex==='F'?'M':'F';
+    aggregate += personBase(state.gmm.partnerAge, partnerSex, false) * 0.95;
+  }
+  if(state.gmm.who === 'familia'){
+    const kc = state.gmm.kidsCount || 1;
+    const ka = state.gmm.kidsAvgAge || 8;
+    // Children base: ~$1,200/mes per child, scaled by age (younger cheaper), with bulk discount
+    const kidBase = 1200 * (ka < 10 ? 0.7 : ka < 18 ? 0.85 : 1.05);
+    const bulkFactor = kc === 1 ? 1.0 : kc === 2 ? 1.85 : kc === 3 ? 2.55 : 3.10;
+    aggregate += kidBase * bulkFactor;
+  }
   const tierMult = {cuarzo:0.65,ambar:0.82,indigo:1.0,platino:1.25,premium:1.6}[state.gmm.hospitalTier];
-  base *= tierMult;
+  aggregate *= tierMult;
   const dedMult = {5000:1.4,10000:1.2,25000:1.0,50000:0.85}[state.gmm.deductible];
-  base *= dedMult;
+  aggregate *= dedMult;
   const coMult = {0:1.3,10:1.0,20:0.85,30:0.75}[state.gmm.coinsurance];
-  base *= coMult;
+  aggregate *= coMult;
   const sumMult = {5:0.85,10:1.0,25:1.2,50:1.45}[state.gmm.sumInsured];
-  base *= sumMult;
-  if(state.gmm.who==='pareja') base *= 1.85;
-  if(state.gmm.who==='familia') base *= 2.6;
+  aggregate *= sumMult;
   const addonsCost = state.gmm.addons.reduce((s,k)=>s+({maternidad:380,dental:220,vision:160,graves:450}[k]||0),0);
-  return Math.round(base + addonsCost);
+  return Math.round(aggregate + addonsCost);
 }
 function gmmSummaryLines(){
   const tierLbl = {cuarzo:'Cuarzo',ambar:'Ámbar',indigo:'Índigo',platino:'Platino',premium:'Premium'}[state.gmm.hospitalTier];
   const whoLbl = {individual:'Individual',pareja:'Pareja',familia:'Familia'}[state.gmm.who];
   const lines = [
     ['Cobertura',whoLbl],
-    ['Edad',state.gmm.age+' años · '+(state.gmm.sex==='F'?'Femenino':'Masculino')],
-    ['Fumador',state.gmm.smoker?'Sí':'No'],
-    ['Deducible',fmtMx(state.gmm.deductible)],
-    ['Coaseguro',state.gmm.coinsurance+'%'],
-    ['Hospitales',tierLbl],
-    ['Suma asegurada','$'+state.gmm.sumInsured+'M'],
+    ['Tu edad',state.gmm.age+' años · '+(state.gmm.sex==='F'?'F':'M')],
   ];
+  if(state.gmm.who !== 'individual'){
+    lines.push(['Pareja',state.gmm.partnerAge+' años']);
+  }
+  if(state.gmm.who === 'familia'){
+    lines.push(['Hijos',state.gmm.kidsCount+(state.gmm.kidsCount===4?'+':'')+' · prom '+state.gmm.kidsAvgAge+' años']);
+  }
+  lines.push(['Fumador',state.gmm.smoker?'Sí':'No']);
+  lines.push(['Deducible',fmtMx(state.gmm.deductible)]);
+  lines.push(['Coaseguro',state.gmm.coinsurance+'%']);
+  lines.push(['Hospitales',tierLbl]);
+  lines.push(['Suma asegurada','$'+state.gmm.sumInsured+'M']);
   if(state.gmm.addons.length){
     lines.push(['Extras',state.gmm.addons.map(a=>({maternidad:'Maternidad',dental:'Dental',vision:'Visión',graves:'Graves'}[a])).join(', ')]);
   }
@@ -1647,12 +1691,19 @@ function autoStepBasic(){
     <div class="field"><label class="field-label">Marca</label><input class="field-input" id="autoBrand" placeholder="Nissan, Toyota, etc." value="${state.auto.brand}"></div>
     <div class="field"><label class="field-label">Modelo</label><input class="field-input" id="autoModel" placeholder="Sentra, Corolla..." value="${state.auto.model}"></div>
   </div>
+  <div class="step-help" style="margin-top:18px"><strong>Año del modelo</strong></div>
   <div class="slider-wrap">
     <div class="slider-row">
       <div><span class="slider-value" id="yearVal">${state.auto.year}</span><span class="slider-suffix">año</span></div>
     </div>
     <input type="range" min="2005" max="2026" value="${state.auto.year}" class="slider" id="yearSlider">
     <div class="slider-marks"><span>2005</span><span>2015</span><span>2020</span><span>2026</span></div>
+  </div>
+  <div class="step-help" style="margin-top:14px"><strong>Valor aproximado del auto</strong> · es el factor #1 que define tu prima de auto. Valor de mercado actual, no lo que pagaste cuando lo compraste nuevo.</div>
+  <div class="slider-wrap">
+    <div class="slider-row"><div><span class="slider-value" id="vvalVal">$${fmt(state.auto.vehicleValue)}</span></div></div>
+    <input type="range" min="80000" max="1500000" step="10000" value="${state.auto.vehicleValue}" class="slider" id="vvalSlider">
+    <div class="slider-marks"><span>$80k</span><span>$300k</span><span>$700k</span><span>$1.5M</span></div>
   </div>`;
 }
 function autoStepUse(){
@@ -1764,6 +1815,7 @@ function bindAuto(){
   const b = document.getElementById('autoBrand');if(b)b.addEventListener('input',()=>{state.auto.brand=b.value;renderAutoQuote()});
   const m = document.getElementById('autoModel');if(m)m.addEventListener('input',()=>{state.auto.model=m.value;renderAutoQuote()});
   const y = document.getElementById('yearSlider');if(y)y.addEventListener('input',()=>{state.auto.year=parseInt(y.value);document.getElementById('yearVal').textContent=y.value;renderAutoQuote()});
+  const vv = document.getElementById('vvalSlider');if(vv)vv.addEventListener('input',()=>{state.auto.vehicleValue=parseInt(vv.value);document.getElementById('vvalVal').textContent='$'+fmt(parseInt(vv.value));renderAutoQuote()});
   document.querySelectorAll('[data-use]').forEach(b=>b.addEventListener('click',()=>{state.auto.use=b.dataset.use;renderAuto();renderAutoQuote()}));
   document.querySelectorAll('[data-coverage]').forEach(b=>b.addEventListener('click',()=>{state.auto.coverage=b.dataset.coverage;renderAuto();renderAutoQuote()}));
   document.querySelectorAll('[data-dt]').forEach(b=>b.addEventListener('click',()=>{state.auto.deductibleTheft=parseInt(b.dataset.dt);renderAuto();renderAutoQuote()}));
@@ -1775,12 +1827,16 @@ function bindAuto(){
   }));
 }
 function autoCalcPrice(){
-  let base = 800;
-  // age of car
-  const age = 2026 - state.auto.year;
-  base *= 1 + Math.max(0,age-3)*0.04;
+  // Annual prima auto ≈ 3.5%-5% del valor del auto. Mensualizamos.
+  // Cobertura amplia base ≈ 4% anual del valor / 12.
+  const v = state.auto.vehicleValue || 300000;
+  let base = (v * 0.04) / 12; // base mensual cobertura amplia
+  // Auto antiguo sube prima por mayor riesgo de pérdida total/repuestos
+  const age = Math.max(0, 2026 - state.auto.year);
+  if(age >= 8) base *= 1.18;
+  else if(age >= 5) base *= 1.08;
   if(state.auto.use==='comercial') base *= 1.3;
-  const covMult = {rc:0.4,limitada:0.7,amplia:1.0}[state.auto.coverage];
+  const covMult = {rc:0.35,limitada:0.65,amplia:1.0}[state.auto.coverage];
   base *= covMult;
   if(state.auto.coverage!=='rc'){
     const dtMult = {5:1.15,10:1.0,15:0.9}[state.auto.deductibleTheft];
@@ -1794,7 +1850,8 @@ function autoCalcPrice(){
 function autoSummaryLines(){
   const covLbl = {rc:'Solo RC',limitada:'Limitada',amplia:'Amplia'}[state.auto.coverage];
   const lines = [
-    ['Vehículo',(state.auto.brand||'-')+' '+(state.auto.model||'')+' '+state.auto.year],
+    ['Vehículo',((state.auto.brand||'-')+' '+(state.auto.model||'')).trim()+' '+state.auto.year],
+    ['Valor','$'+fmt(state.auto.vehicleValue)],
     ['Uso',state.auto.use==='particular'?'Particular':'Comercial'],
     ['Cobertura',covLbl]
   ];
