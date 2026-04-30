@@ -1,0 +1,1905 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANCHECO — Encuentra tu seguro perfecto</title>
+<meta name="description" content="Cotiza tu seguro paso a paso con ANCHECO. Aprende mientras eliges. Paz, tranquilidad y confianza.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+/* ============ ANCHECO BRAND TOKENS ============ */
+:root{
+  --orange:#F26A2E;
+  --orange-dark:#D9521A;
+  --orange-light:#FFE5D6;
+  --navy:#1E3A5F;
+  --navy-dark:#142841;
+  --navy-light:#E8EEF5;
+  --white:#FFFFFF;
+  --gray-50:#F7F8FA;
+  --gray-100:#EDEFF3;
+  --gray-200:#D9DCE3;
+  --gray-400:#8B92A1;
+  --gray-700:#3A4253;
+  --success:#27AE60;
+  --warning:#F2B544;
+  --danger:#E74C3C;
+  --shadow-sm:0 2px 8px rgba(30,58,95,.08);
+  --shadow-md:0 8px 24px rgba(30,58,95,.12);
+  --shadow-lg:0 20px 60px rgba(30,58,95,.18);
+  --radius-sm:8px;
+  --radius-md:14px;
+  --radius-lg:24px;
+  --transition:cubic-bezier(.4,.0,.2,1);
+}
+
+/* ============ RESET ============ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  height:100%;
+  font-family:'Montserrat',-apple-system,BlinkMacSystemFont,sans-serif;
+  color:var(--navy);
+  background:var(--gray-50);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select{font-family:inherit;font-size:inherit;color:inherit}
+img{max-width:100%;display:block}
+
+/* ============ APP SHELL ============ */
+.app{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+
+/* ============ TOP BAR ============ */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:var(--white);
+  border-bottom:1px solid var(--gray-100);
+  padding:14px 24px;
+  display:flex;align-items:center;gap:20px;
+  box-shadow:var(--shadow-sm);
+}
+.brand{
+  display:flex;align-items:center;gap:10px;
+  font-weight:900;font-size:22px;letter-spacing:1.5px;
+  color:var(--navy);
+}
+.brand-mark{
+  width:34px;height:34px;
+  background:var(--orange);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+}
+.brand-mark::before{
+  content:"";
+  width:18px;height:18px;
+  background:var(--navy);
+  -webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8z M12 6v12 M6 12h12 M7 7l10 10 M17 7l-10 10' fill='none' stroke='black' stroke-width='2'/></svg>") center/contain no-repeat;
+          mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8z M12 6v12 M6 12h12 M7 7l10 10 M17 7l-10 10' fill='none' stroke='black' stroke-width='2'/></svg>") center/contain no-repeat;
+}
+.brand-tag{
+  font-size:9px;font-weight:600;letter-spacing:1.5px;
+  color:var(--gray-400);
+  margin-top:-3px;
+}
+.brand-wrap{display:flex;flex-direction:column;line-height:1}
+.progress-wrap{flex:1;max-width:460px}
+.progress-bar{
+  height:8px;background:var(--gray-100);
+  border-radius:99px;overflow:hidden;position:relative;
+}
+.progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--orange) 0%,var(--orange-dark) 100%);
+  border-radius:99px;
+  width:0%;
+  transition:width .5s var(--transition);
+}
+.progress-label{
+  font-size:11px;font-weight:600;color:var(--gray-400);
+  margin-top:4px;letter-spacing:.5px;text-transform:uppercase;
+}
+.topbar-cta{
+  font-size:13px;font-weight:600;
+  color:var(--navy);text-decoration:none;
+  display:flex;align-items:center;gap:6px;
+}
+.topbar-cta:hover{color:var(--orange)}
+
+/* ============ STAGE SYSTEM ============ */
+.stages{
+  flex:1;
+  position:relative;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding:40px 24px 60px;
+}
+.stage{
+  display:none;
+  width:100%;
+  max-width:1100px;
+  animation:slideIn .55s var(--transition);
+}
+.stage.active{display:block}
+@keyframes slideIn{
+  from{opacity:0;transform:translateX(40px)}
+  to{opacity:1;transform:translateX(0)}
+}
+
+/* ============ HERO ============ */
+.hero{
+  display:grid;
+  grid-template-columns:1.2fr .8fr;
+  gap:48px;
+  align-items:center;
+  padding:30px 0 20px;
+}
+@media(max-width:880px){
+  .hero{grid-template-columns:1fr;text-align:center;gap:32px}
+  .hero-portrait{order:-1;max-width:280px;margin:0 auto}
+}
+.hero-text{text-align:left}
+@media(max-width:880px){.hero-text{text-align:center}}
+.hero-portrait{
+  position:relative;
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  aspect-ratio:4/5;
+  background:var(--navy-light);
+  background-size:cover;
+  background-position:center top;
+  box-shadow:var(--shadow-lg);
+}
+.hero-portrait::after{
+  content:"";
+  position:absolute;
+  inset:auto 0 0 0;
+  height:35%;
+  background:linear-gradient(180deg,rgba(30,58,95,0) 0%,rgba(30,58,95,.85) 100%);
+}
+.hero-portrait-tag{
+  position:absolute;
+  bottom:18px;left:20px;right:20px;
+  z-index:1;
+  color:var(--white);
+}
+.hero-portrait-tag .who{font-size:14px;font-weight:800;letter-spacing:.5px}
+.hero-portrait-tag .role{font-size:11px;font-weight:600;opacity:.85;margin-top:2px}
+.hero-eyebrow{
+  display:inline-block;
+  background:var(--orange-light);color:var(--orange-dark);
+  padding:8px 18px;border-radius:99px;
+  font-size:12px;font-weight:700;letter-spacing:1.2px;
+  text-transform:uppercase;
+  margin-bottom:24px;
+}
+.hero-title{
+  font-size:clamp(34px,5vw,58px);
+  font-weight:900;line-height:1.05;
+  margin-bottom:18px;
+  color:var(--navy);
+}
+.hero-title .accent{color:var(--orange)}
+.hero-script{
+  font-family:'Great Vibes',cursive;
+  color:var(--orange);
+  font-size:clamp(26px,3.5vw,42px);
+  font-weight:400;
+  display:block;
+  margin-top:6px;
+  line-height:1;
+}
+.hero-sub{
+  font-size:17px;color:var(--gray-700);
+  margin:0 0 36px;
+  line-height:1.55;
+  max-width:540px;
+}
+@media(max-width:880px){.hero-sub{margin-left:auto;margin-right:auto}}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:18px 36px;
+  border-radius:99px;
+  font-weight:700;font-size:16px;letter-spacing:.4px;
+  transition:all .25s var(--transition);
+  white-space:nowrap;
+}
+.btn-primary{
+  background:var(--orange);color:var(--white);
+  box-shadow:0 10px 30px rgba(242,106,46,.35);
+}
+.btn-primary:hover{background:var(--orange-dark);transform:translateY(-2px);box-shadow:0 14px 36px rgba(242,106,46,.45)}
+.btn-primary:active{transform:translateY(0)}
+.btn-ghost{
+  background:transparent;color:var(--navy);
+  border:2px solid var(--gray-200);
+}
+.btn-ghost:hover{border-color:var(--navy);color:var(--navy)}
+.btn-link{
+  color:var(--gray-700);font-size:14px;font-weight:600;
+  padding:8px 0;
+}
+.btn-link:hover{color:var(--orange)}
+
+.hero-trust{
+  display:flex;gap:28px;flex-wrap:wrap;
+  margin-top:36px;
+  padding-top:28px;
+  border-top:1px solid var(--gray-100);
+}
+@media(max-width:880px){.hero-trust{justify-content:center;gap:24px}}
+.trust-item{
+  display:flex;flex-direction:column;gap:2px;
+  color:var(--gray-700);
+  text-align:left;
+}
+@media(max-width:880px){.trust-item{align-items:center;text-align:center}}
+.trust-num{font-size:22px;font-weight:900;color:var(--navy)}
+.trust-lbl{font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--gray-400)}
+
+/* ============ TYPE SELECTOR ============ */
+.section-head{
+  text-align:center;
+  margin-bottom:40px;
+}
+.section-title{
+  font-size:clamp(28px,4vw,42px);
+  font-weight:800;line-height:1.15;
+  color:var(--navy);
+  margin-bottom:12px;
+}
+.section-title .accent{color:var(--orange)}
+.section-sub{
+  font-size:16px;color:var(--gray-700);
+  max-width:560px;margin:0 auto;
+}
+.type-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:20px;
+}
+.type-card{
+  background:var(--white);
+  border:1px solid var(--gray-100);
+  border-radius:var(--radius-lg);
+  text-align:left;
+  transition:all .3s var(--transition);
+  position:relative;
+  overflow:hidden;
+  cursor:pointer;
+  display:flex;flex-direction:column;
+  min-height:280px;
+  box-shadow:var(--shadow-sm);
+}
+.type-card:hover{
+  transform:translateY(-6px);
+  box-shadow:var(--shadow-lg);
+  border-color:var(--orange);
+}
+.type-photo{
+  width:100%;
+  height:140px;
+  background-size:cover;
+  background-position:center;
+  background-color:var(--navy-light);
+  position:relative;
+}
+.type-photo::after{
+  content:"";
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(30,58,95,0) 40%,rgba(30,58,95,.45) 100%);
+}
+.type-body{
+  padding:20px 22px 24px;
+  display:flex;flex-direction:column;gap:8px;
+  flex:1;
+}
+.type-name{font-size:18px;font-weight:800;color:var(--navy)}
+.type-desc{font-size:13px;color:var(--gray-700);line-height:1.5}
+.type-badge{
+  position:absolute;top:14px;left:14px;
+  background:var(--white);color:var(--navy);
+  font-size:10px;font-weight:700;
+  padding:5px 10px;border-radius:99px;letter-spacing:.6px;
+  z-index:1;
+  box-shadow:var(--shadow-sm);
+}
+.type-badge.popular{background:var(--orange);color:var(--white)}
+
+/* ============ WIZARD ============ */
+.wizard{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 320px;
+  gap:32px;
+  align-items:start;
+}
+@media(max-width:900px){
+  .wizard{grid-template-columns:1fr}
+}
+.wizard-main{
+  background:var(--white);
+  border-radius:var(--radius-lg);
+  padding:36px 36px 28px;
+  box-shadow:var(--shadow-sm);
+  min-height:480px;
+}
+.step-counter{
+  display:flex;align-items:center;gap:8px;
+  font-size:11px;font-weight:700;letter-spacing:1.2px;
+  color:var(--orange);text-transform:uppercase;
+  margin-bottom:8px;
+}
+.step-counter::before{
+  content:"";width:24px;height:2px;background:var(--orange);
+}
+.step-title{
+  font-size:clamp(22px,3vw,30px);
+  font-weight:800;color:var(--navy);
+  line-height:1.2;
+  margin-bottom:8px;
+}
+.step-help{
+  font-size:14px;color:var(--gray-700);
+  line-height:1.5;
+  margin-bottom:24px;
+}
+.step-help .info-btn{margin-left:6px}
+
+/* options grid */
+.opts{display:grid;gap:12px;margin-bottom:24px}
+.opts-2{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.opts-3{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.opt{
+  border:2px solid var(--gray-100);
+  background:var(--white);
+  border-radius:var(--radius-md);
+  padding:18px 16px;
+  text-align:left;
+  display:flex;align-items:center;gap:14px;
+  transition:all .2s var(--transition);
+  cursor:pointer;
+  width:100%;
+}
+.opt:hover{border-color:var(--orange-light);background:var(--gray-50)}
+.opt.selected{
+  border-color:var(--orange);
+  background:var(--orange-light);
+}
+.opt-thumb{
+  width:44px;height:44px;
+  background:var(--orange-light);
+  border-radius:10px;
+  background-size:cover;background-position:center;
+  flex:0 0 auto;
+}
+.opt-body{flex:1}
+.opt-label{font-weight:700;color:var(--navy);font-size:15px;margin-bottom:2px}
+.opt-meta{font-size:12px;color:var(--gray-700);line-height:1.4}
+.opt-pill{
+  font-size:10px;font-weight:700;
+  background:var(--navy);color:var(--white);
+  padding:3px 8px;border-radius:99px;
+  margin-left:auto;
+}
+
+/* sliders */
+.slider-wrap{margin:24px 0 28px}
+.slider-row{
+  display:flex;justify-content:space-between;align-items:baseline;
+  margin-bottom:14px;
+}
+.slider-value{
+  font-size:34px;font-weight:900;color:var(--orange);
+  font-variant-numeric:tabular-nums;
+}
+.slider-suffix{font-size:13px;font-weight:600;color:var(--gray-400);margin-left:6px}
+.slider{
+  -webkit-appearance:none;width:100%;height:8px;
+  background:var(--gray-100);border-radius:99px;
+  outline:none;
+}
+.slider::-webkit-slider-thumb{
+  -webkit-appearance:none;width:26px;height:26px;
+  background:var(--orange);border-radius:50%;
+  border:4px solid var(--white);
+  box-shadow:0 4px 12px rgba(242,106,46,.4);
+  cursor:pointer;
+}
+.slider::-moz-range-thumb{
+  width:26px;height:26px;background:var(--orange);
+  border-radius:50%;border:4px solid var(--white);
+  box-shadow:0 4px 12px rgba(242,106,46,.4);cursor:pointer;
+}
+.slider-marks{
+  display:flex;justify-content:space-between;
+  font-size:11px;color:var(--gray-400);
+  margin-top:8px;
+}
+
+/* inputs */
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
+.field-label{font-size:12px;font-weight:700;color:var(--navy);letter-spacing:.4px;text-transform:uppercase}
+.field-input{
+  border:2px solid var(--gray-100);
+  background:var(--white);
+  border-radius:var(--radius-md);
+  padding:14px 16px;
+  font-size:15px;font-weight:600;color:var(--navy);
+  transition:border-color .2s;
+  width:100%;
+}
+.field-input:focus{outline:none;border-color:var(--orange)}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:520px){.field-grid{grid-template-columns:1fr}}
+
+/* nav */
+.wizard-nav{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:12px;
+  padding-top:24px;
+  border-top:1px solid var(--gray-100);
+}
+
+/* educational visualization */
+.viz{
+  background:linear-gradient(135deg,var(--navy-light),var(--white));
+  border:1px solid var(--navy-light);
+  border-radius:var(--radius-md);
+  padding:18px;
+  margin:18px 0;
+}
+.viz-title{
+  font-size:11px;font-weight:700;
+  color:var(--navy);letter-spacing:1px;text-transform:uppercase;
+  margin-bottom:10px;
+}
+.viz-row{
+  display:flex;align-items:center;gap:12px;
+  font-size:14px;font-weight:600;color:var(--navy);
+  margin-bottom:6px;
+}
+.viz-bar{
+  flex:1;height:24px;
+  background:var(--gray-100);border-radius:6px;
+  overflow:hidden;display:flex;
+}
+.viz-bar-you{background:var(--orange);height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;color:white;font-size:11px;font-weight:700;transition:width .4s var(--transition)}
+.viz-bar-ins{background:var(--navy);height:100%;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;color:white;font-size:11px;font-weight:700;transition:width .4s var(--transition)}
+.viz-legend{display:flex;gap:18px;font-size:11px;font-weight:600;margin-top:8px;color:var(--gray-700)}
+.viz-dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
+.viz-dot.you{background:var(--orange)}
+.viz-dot.ins{background:var(--navy)}
+
+/* info button */
+.info-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:22px;height:22px;
+  background:var(--navy-light);color:var(--navy);
+  border-radius:50%;font-weight:700;font-size:12px;
+  vertical-align:middle;
+  transition:all .2s;
+  cursor:pointer;
+}
+.info-btn:hover{background:var(--navy);color:var(--white);transform:scale(1.1)}
+
+/* ============ LIVE QUOTE PANEL ============ */
+.quote-panel{
+  background:var(--navy);
+  color:var(--white);
+  border-radius:var(--radius-lg);
+  padding:28px 24px;
+  position:sticky;top:96px;
+  box-shadow:var(--shadow-lg);
+}
+.quote-panel-tag{
+  font-size:10px;font-weight:700;letter-spacing:1.4px;
+  color:var(--orange);text-transform:uppercase;
+  margin-bottom:8px;
+}
+.quote-panel-title{
+  font-size:14px;font-weight:600;color:rgba(255,255,255,.7);
+  margin-bottom:20px;
+}
+.quote-amount{
+  font-size:46px;font-weight:900;line-height:1;
+  margin-bottom:4px;
+  font-variant-numeric:tabular-nums;
+}
+.quote-amount .currency{font-size:22px;font-weight:700;vertical-align:top;color:var(--orange);margin-right:4px}
+.quote-period{font-size:13px;color:rgba(255,255,255,.6);margin-bottom:20px}
+.quote-summary{
+  font-size:13px;
+  border-top:1px solid rgba(255,255,255,.12);
+  padding-top:16px;
+  display:flex;flex-direction:column;gap:8px;
+  max-height:240px;overflow-y:auto;
+}
+.quote-line{display:flex;justify-content:space-between;gap:10px;color:rgba(255,255,255,.85)}
+.quote-line .lbl{color:rgba(255,255,255,.55);font-size:11px;letter-spacing:.4px;text-transform:uppercase;font-weight:600}
+.quote-line .val{font-weight:700;text-align:right}
+.quote-disclaimer{
+  font-size:10px;color:rgba(255,255,255,.45);
+  margin-top:18px;padding-top:14px;
+  border-top:1px solid rgba(255,255,255,.12);
+  line-height:1.5;
+}
+
+/* ============ MODAL ============ */
+.modal-backdrop{
+  position:fixed;inset:0;
+  background:rgba(20,40,65,.55);
+  backdrop-filter:blur(6px);
+  display:none;
+  align-items:center;justify-content:center;
+  z-index:100;
+  padding:20px;
+  animation:fadeIn .25s ease;
+}
+.modal-backdrop.open{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--white);
+  border-radius:var(--radius-lg);
+  max-width:520px;width:100%;
+  padding:32px;
+  position:relative;
+  box-shadow:var(--shadow-lg);
+  max-height:90vh;overflow-y:auto;
+  animation:popIn .35s var(--transition);
+}
+@keyframes popIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.modal-icon{display:none}
+.modal-eyebrow{
+  display:inline-block;
+  font-size:10px;font-weight:700;letter-spacing:1.4px;
+  color:var(--orange);text-transform:uppercase;
+  margin-bottom:6px;
+}
+.modal-title{font-size:22px;font-weight:800;color:var(--navy);margin-bottom:10px}
+.modal-body{font-size:14px;color:var(--gray-700);line-height:1.6;margin-bottom:18px}
+.modal-body strong{color:var(--navy)}
+.modal-body ul{margin:10px 0 10px 18px}
+.modal-body li{margin-bottom:6px}
+.modal-example{
+  background:var(--gray-50);
+  border-left:4px solid var(--orange);
+  padding:14px 16px;
+  border-radius:8px;
+  font-size:13px;color:var(--navy);
+  margin:14px 0;
+}
+.modal-example .lbl{font-weight:800;color:var(--orange);font-size:10px;letter-spacing:1.2px;text-transform:uppercase;display:block;margin-bottom:4px}
+.modal-close{
+  position:absolute;top:16px;right:16px;
+  width:34px;height:34px;border-radius:50%;
+  background:var(--gray-100);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:var(--gray-700);
+}
+.modal-close:hover{background:var(--gray-200)}
+
+/* ============ FINAL ============ */
+.final{
+  text-align:center;
+  padding:24px 0;
+  position:relative;
+}
+.final-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--orange-light);color:var(--orange-dark);
+  padding:10px 20px;border-radius:99px;
+  font-size:12px;font-weight:700;letter-spacing:1.2px;
+  text-transform:uppercase;
+  margin-bottom:18px;
+}
+.final-card{
+  background:var(--white);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-md);
+  padding:36px 32px;
+  max-width:680px;margin:0 auto;
+  text-align:left;
+}
+.final-amount{
+  font-size:60px;font-weight:900;color:var(--orange);
+  line-height:1;text-align:center;margin:8px 0 4px;
+}
+.final-amount .currency{font-size:30px;color:var(--navy);margin-right:4px}
+.final-period{font-size:14px;color:var(--gray-700);text-align:center;margin-bottom:24px}
+.final-summary{
+  border:1px solid var(--gray-100);
+  border-radius:var(--radius-md);
+  padding:18px;
+  margin:0 0 24px;
+}
+.final-summary h4{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--gray-400);margin-bottom:10px}
+.final-summary .quote-line{color:var(--navy)}
+.final-summary .quote-line .lbl{color:var(--gray-400)}
+
+.confetti{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:200}
+
+/* ============ FOOTER ============ */
+.foot{
+  text-align:center;
+  padding:30px 24px;
+  font-size:12px;color:var(--gray-400);
+  border-top:1px solid var(--gray-100);
+  margin-top:auto;
+}
+.foot a{color:var(--orange);text-decoration:none}
+.foot strong{color:var(--navy)}
+
+/* ============ UTIL ============ */
+.spacer-sm{height:8px}
+.spacer-md{height:18px}
+.text-center{text-align:center}
+.hidden{display:none!important}
+
+/* ============ MOBILE TWEAKS ============ */
+@media(max-width:640px){
+  .topbar{flex-wrap:wrap;gap:10px;padding:10px 16px}
+  .brand{font-size:18px}
+  .brand-mark{width:28px;height:28px}
+  .progress-wrap{flex-basis:100%;order:3}
+  .stages{padding:24px 16px 40px}
+  .wizard-main{padding:24px 20px}
+  .quote-panel{position:static;margin-bottom:18px}
+  .hero-trust{gap:24px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div class="brand-wrap">
+        <span>ANCHECO</span>
+        <span class="brand-tag">PAZ · TRANQUILIDAD · CONFIANZA</span>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel">Empieza tu cotización</div>
+    </div>
+    <a class="topbar-cta" href="https://wa.me/529981633443" target="_blank">
+      WhatsApp directo
+    </a>
+  </header>
+
+  <!-- STAGES -->
+  <main class="stages">
+
+    <!-- =========== STAGE: HERO =========== -->
+    <section class="stage active" id="stage-hero">
+      <div class="hero">
+        <div class="hero-text">
+          <span class="hero-eyebrow">Andy Cherro · Asesora GNP · Cancún</span>
+          <h1 class="hero-title">
+            Tu seguro perfecto,<br>
+            <span class="accent">sin la confusión.</span>
+            <span class="hero-script">elegido contigo</span>
+          </h1>
+          <p class="hero-sub">
+            Cada decisión que tomas — deducible, red hospitalaria, suma asegurada — tiene una consecuencia concreta.
+            Aquí las ves antes de firmar, no después.
+          </p>
+          <button class="btn btn-primary" data-go="stage-type">
+            Empezar cotización
+          </button>
+          <div class="hero-trust">
+            <div class="trust-item"><span class="trust-num">GNP</span><span class="trust-lbl">Aseguradora aliada</span></div>
+            <div class="trust-item"><span class="trust-num">5 min</span><span class="trust-lbl">Cotización completa</span></div>
+            <div class="trust-item"><span class="trust-num">Cancún</span><span class="trust-lbl">Q. Roo · presencial o remoto</span></div>
+            <div class="trust-item"><span class="trust-num">Sin spam</span><span class="trust-lbl">Solo Andy te contacta</span></div>
+          </div>
+        </div>
+        <div class="hero-portrait" style="background-image:url('assets/andy.jpg'),url('https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=600&q=80')">
+          <div class="hero-portrait-tag">
+            <div class="who">Andy Cherro</div>
+            <div class="role">Asesora GNP · ANCHECO</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========== STAGE: TYPE SELECTOR =========== -->
+    <section class="stage" id="stage-type">
+      <div class="section-head">
+        <h2 class="section-title">¿Qué quieres <span class="accent">proteger</span>?</h2>
+        <p class="section-sub">Elige el tipo de seguro. Te explico todo lo que necesitas saber mientras avanzamos.</p>
+      </div>
+      <div class="type-grid">
+        <button class="type-card" data-type="gmm">
+          <span class="type-badge popular">Más solicitado</span>
+          <div class="type-photo" style="background-image:url('https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=600&q=80')"></div>
+          <div class="type-body">
+            <div class="type-name">Gastos Médicos Mayores</div>
+            <div class="type-desc">Hospitalización, cirugías, enfermedades graves. Cubre lo que IMSS no.</div>
+          </div>
+        </button>
+        <button class="type-card" data-type="auto">
+          <div class="type-photo" style="background-image:url('https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=600&q=80')"></div>
+          <div class="type-body">
+            <div class="type-name">Auto</div>
+            <div class="type-desc">Responsabilidad civil, robo total, daños materiales. Obligatorio en muchos estados.</div>
+          </div>
+        </button>
+        <button class="type-card" data-type="vida">
+          <div class="type-photo" style="background-image:url('https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=600&q=80')"></div>
+          <div class="type-body">
+            <div class="type-name">Vida</div>
+            <div class="type-desc">Protección financiera para tu familia. Cubre hipoteca, educación, gastos.</div>
+          </div>
+        </button>
+        <button class="type-card" data-type="mascota">
+          <div class="type-photo" style="background-image:url('https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80')"></div>
+          <div class="type-body">
+            <div class="type-name">Mascota</div>
+            <div class="type-desc">GNP Mi Mascota. Perros y gatos de 3 meses a 9 años. Suma y deducible modulares.</div>
+          </div>
+        </button>
+        <button class="type-card" data-type="ahorro">
+          <div class="type-photo" style="background-image:url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=600&q=80')"></div>
+          <div class="type-body">
+            <div class="type-name">Ahorro · Inversión · Retiro</div>
+            <div class="type-desc">Plan Personal de Retiro con beneficios fiscales. Aportación deducible de ISR.</div>
+          </div>
+        </button>
+        <button class="type-card" data-type="patrimonial">
+          <div class="type-photo" style="background-image:url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=600&q=80')"></div>
+          <div class="type-body">
+            <div class="type-name">Casa / Patrimonial</div>
+            <div class="type-desc">Hogar y contenidos. Incendio, robo, fenómenos naturales, RC familiar.</div>
+          </div>
+        </button>
+      </div>
+      <div class="spacer-md"></div>
+      <div class="text-center">
+        <button class="btn btn-link" data-go="stage-hero">← Regresar</button>
+      </div>
+    </section>
+
+    <!-- =========== STAGE: GMM WIZARD =========== -->
+    <section class="stage" id="stage-gmm">
+      <div class="wizard">
+        <div class="wizard-main">
+          <div id="gmmContent"></div>
+          <div class="wizard-nav">
+            <button class="btn btn-ghost" id="gmmBack">← Atrás</button>
+            <button class="btn btn-primary" id="gmmNext">Siguiente →</button>
+          </div>
+        </div>
+        <aside class="quote-panel" id="gmmQuote">
+          <div class="quote-panel-tag">Tu cotización en vivo</div>
+          <div class="quote-panel-title">Plan Gastos Médicos Mayores</div>
+          <div class="quote-amount"><span class="currency">$</span><span id="gmmAmount">—</span></div>
+          <div class="quote-period">aprox. mensual · simulación</div>
+          <div class="quote-summary" id="gmmSummary"></div>
+          <div class="quote-disclaimer">
+            Pre-cotización informativa. La prima exacta depende de cuestionario médico y revisión personalizada.
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- =========== STAGE: AUTO WIZARD =========== -->
+    <section class="stage" id="stage-auto">
+      <div class="wizard">
+        <div class="wizard-main">
+          <div id="autoContent"></div>
+          <div class="wizard-nav">
+            <button class="btn btn-ghost" id="autoBack">← Atrás</button>
+            <button class="btn btn-primary" id="autoNext">Siguiente →</button>
+          </div>
+        </div>
+        <aside class="quote-panel">
+          <div class="quote-panel-tag">Tu cotización en vivo</div>
+          <div class="quote-panel-title">Plan Auto</div>
+          <div class="quote-amount"><span class="currency">$</span><span id="autoAmount">—</span></div>
+          <div class="quote-period">aprox. mensual · simulación</div>
+          <div class="quote-summary" id="autoSummary"></div>
+          <div class="quote-disclaimer">
+            Pre-cotización informativa. La prima exacta depende de la marca/modelo/año y revisión personalizada.
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- =========== STAGE: GENERIC WIZARD (vida/mascota/ahorro/patrimonial) =========== -->
+    <section class="stage" id="stage-generic">
+      <div class="wizard">
+        <div class="wizard-main">
+          <div id="genContent"></div>
+          <div class="wizard-nav">
+            <button class="btn btn-ghost" id="genBack">← Atrás</button>
+            <button class="btn btn-primary" id="genNext">Siguiente →</button>
+          </div>
+        </div>
+        <aside class="quote-panel">
+          <div class="quote-panel-tag">Tu cotización en vivo</div>
+          <div class="quote-panel-title" id="genQuoteTitle">Plan</div>
+          <div class="quote-amount"><span class="currency">$</span><span id="genAmount">—</span></div>
+          <div class="quote-period">aprox. mensual · simulación</div>
+          <div class="quote-summary" id="genSummary"></div>
+          <div class="quote-disclaimer">
+            Pre-cotización informativa. La prima final se emite tras suscripción con la aseguradora.
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- =========== STAGE: CONTACT =========== -->
+    <section class="stage" id="stage-contact">
+      <div class="section-head">
+        <h2 class="section-title">Último paso · <span class="accent">tus datos</span></h2>
+        <p class="section-sub">Andy Cherro te contacta personalmente con la cotización real, comparativos y siguiente paso. Sin spam, sin llamadas robot.</p>
+      </div>
+      <div class="wizard-main" style="max-width:640px;margin:0 auto">
+        <div class="field-grid">
+          <div class="field">
+            <label class="field-label">Nombre completo</label>
+            <input class="field-input" id="cName" type="text" placeholder="Ej. María González">
+          </div>
+          <div class="field">
+            <label class="field-label">WhatsApp</label>
+            <input class="field-input" id="cPhone" type="tel" placeholder="998 000 0000">
+          </div>
+        </div>
+        <div class="field-grid">
+          <div class="field">
+            <label class="field-label">Email</label>
+            <input class="field-input" id="cEmail" type="email" placeholder="tu@email.com">
+          </div>
+          <div class="field">
+            <label class="field-label">Ciudad</label>
+            <input class="field-input" id="cCity" type="text" placeholder="Cancún, QR">
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">¿Cuándo te gustaría empezar?</label>
+          <select class="field-input" id="cTiming">
+            <option value="ya">Lo antes posible</option>
+            <option value="mes">En 1 mes</option>
+            <option value="3meses">En 3 meses</option>
+            <option value="explorando">Solo estoy explorando</option>
+          </select>
+        </div>
+        <div class="wizard-nav">
+          <button class="btn btn-ghost" id="cBack">← Atrás</button>
+          <button class="btn btn-primary" id="cSubmit">Ver mi pre-cotización →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========== STAGE: FINAL =========== -->
+    <section class="stage" id="stage-final">
+      <div class="final">
+        <span class="final-badge">Pre-cotización lista</span>
+        <h2 class="section-title">Listo, <span id="fName" class="accent">amig@</span></h2>
+        <p class="section-sub" style="margin-bottom:28px">Andy Cherro revisa tu configuración y te devuelve una cotización real con tarifas vigentes de GNP en menos de 24 horas.</p>
+
+        <div class="final-card">
+          <div class="quote-panel-tag" style="color:var(--orange)">Pre-cotización · simulación</div>
+          <div class="quote-panel-title" style="color:var(--gray-700)" id="fProductName">Plan Gastos Médicos Mayores</div>
+          <div class="final-amount"><span class="currency">$</span><span id="fAmount">—</span></div>
+          <div class="final-period">aprox. mensual MXN · simulación basada en tus elecciones</div>
+
+          <div class="final-summary">
+            <h4>Tu configuración</h4>
+            <div id="fSummary"></div>
+          </div>
+
+          <div class="text-center">
+            <button class="btn btn-primary" id="fWhats">Mandar mi resumen por WhatsApp</button>
+            <div class="spacer-sm"></div>
+            <button class="btn btn-link" data-go="stage-hero">← Empezar otra cotización</button>
+          </div>
+        </div>
+
+        <div class="spacer-md"></div>
+        <p style="font-size:12px;color:var(--gray-400);max-width:540px;margin:18px auto 0;line-height:1.6">
+          Esta es una <strong>pre-cotización informativa</strong>. La prima exacta depende de cuestionario médico/revisión técnica
+          y la calcula la aseguradora. Andy te explica todo personalmente, sin compromiso.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="foot">
+    <strong>ANCHECO</strong> · Andy Cherro · Asesora profesional de seguros · Aliada GNP<br>
+    Tel <a href="https://wa.me/529981633443">998 163 3443</a> · Email <a href="mailto:ancheco.gnp@gmail.com">ancheco.gnp@gmail.com</a> · Cancún, Q. Roo<br>
+    <span style="opacity:.6">Pre-cotización informativa basada en parámetros de mercado 2026. La prima exacta la emite la aseguradora tras suscripción y cuestionario médico.</span>
+  </footer>
+</div>
+
+<!-- MODAL -->
+<div class="modal-backdrop" id="modal">
+  <div class="modal" id="modalBox">
+    <button class="modal-close" id="modalClose">×</button>
+    <span class="modal-eyebrow">Detalle técnico</span>
+    <h3 class="modal-title" id="modalTitle"></h3>
+    <div class="modal-body" id="modalBody"></div>
+    <button class="btn btn-primary" id="modalOk">Entendido →</button>
+  </div>
+</div>
+
+<script>
+/* ============ APP STATE ============ */
+const state = {
+  type:null,
+  gmm:{step:0,who:'individual',age:35,sex:'F',smoker:false,deductible:25000,coinsurance:10,hospitalTier:'platino',sumInsured:10,addons:[]},
+  auto:{step:0,brand:'',model:'',year:2020,use:'particular',coverage:'amplia',deductibleTheft:5,deductibleDamage:5,addons:[]},
+  vida:{step:0,age:35,smoker:false,sumInsured:1,term:20,beneficiaries:1},
+  mascota:{step:0,species:'perro',petAge:3,sumInsured:30000,deductible:1500,addons:[]},
+  ahorro:{step:0,age:35,monthly:2000,horizon:20,risk:'medio'},
+  patrimonial:{step:0,homeValue:2000000,contentsValue:300000,addons:[]},
+  contact:{name:'',phone:'',email:'',city:'',timing:'ya'},
+  finalAmount:0,
+  finalSummaryLines:[]
+};
+
+/* ============ STAGE ROUTER ============ */
+function go(stageId){
+  document.querySelectorAll('.stage').forEach(s=>s.classList.remove('active'));
+  const target = document.getElementById(stageId);
+  if(target){target.classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}
+  updateProgress(stageId);
+}
+function updateProgress(stageId){
+  const map={
+    'stage-hero':{p:0,l:'Empieza tu cotización'},
+    'stage-type':{p:10,l:'Paso 1 de 4 · Elige tu seguro'},
+    'stage-gmm':{p:50,l:'Paso 2 de 4 · Configurando tu plan'},
+    'stage-auto':{p:50,l:'Paso 2 de 4 · Configurando tu plan'},
+    'stage-generic':{p:50,l:'Paso 2 de 4 · Configurando tu plan'},
+    'stage-contact':{p:80,l:'Paso 3 de 4 · Tus datos'},
+    'stage-final':{p:100,l:'Listo · Pre-cotización generada'}
+  };
+  const m = map[stageId]||{p:0,l:''};
+  document.getElementById('progressFill').style.width = m.p+'%';
+  document.getElementById('progressLabel').textContent = m.l;
+}
+
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.go)));
+
+/* ============ TYPE PICKER ============ */
+document.querySelectorAll('.type-card').forEach(c=>{
+  c.addEventListener('click',()=>{
+    const t = c.dataset.type;
+    state.type = t;
+    if(t==='gmm'){state.gmm.step=0;renderGmm();go('stage-gmm');renderGmmQuote()}
+    else if(t==='auto'){state.auto.step=0;renderAuto();go('stage-auto');renderAutoQuote()}
+    else {state[t].step=0;renderGeneric();go('stage-generic');renderGenericQuote()}
+  });
+});
+
+/* ============ MODAL ============ */
+const modal = document.getElementById('modal');
+const modalBox = document.getElementById('modalBox');
+const modalIcon = document.getElementById('modalIcon');
+const modalTitle = document.getElementById('modalTitle');
+const modalBody = document.getElementById('modalBody');
+function showInfo(icon,title,body){
+  modalIcon.textContent = icon;
+  modalTitle.textContent = title;
+  modalBody.innerHTML = body;
+  modal.classList.add('open');
+}
+document.getElementById('modalClose').addEventListener('click',()=>modal.classList.remove('open'));
+document.getElementById('modalOk').addEventListener('click',()=>modal.classList.remove('open'));
+modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open')});
+
+const INFO = {
+  deductible:{
+    icon:'',
+    title:'El deducible',
+    body:`<p>Es lo que tú pagas antes de que la aseguradora empiece a cubrir.</p>
+    <div class="modal-example"><span class="lbl">Hospitalización de $80,000 con cada nivel</span>
+    Deducible $5,000 → tú pones $5k, aseguradora $75k. Prima: alta.<br>
+    Deducible $25,000 → tú pones $25k, aseguradora $55k. Prima: media.<br>
+    Deducible $50,000 → tú pones $50k, aseguradora $30k. Prima: baja.
+    </div>
+    <p>Es el factor que más mueve la prima después de la edad. Si no esperas internarte con frecuencia, deducibles altos son más eficientes a largo plazo. Si tienes condiciones que requieren hospitalización recurrente, deducibles bajos pagan solos en pocos eventos.</p>`
+  },
+  coinsurance:{
+    icon:'',
+    title:'El coaseguro',
+    body:`<p>Después del deducible, es el porcentaje que tú absorbes del resto. Aplica sobre lo que sobra después de pagar el deducible.</p>
+    <div class="modal-example"><span class="lbl">Hospitalización $200,000 · Deducible $25,000 · Coaseguro 10%</span>
+    Pagas el deducible: $25,000<br>
+    Quedan $175,000. Tu 10% = $17,500<br>
+    Aseguradora paga: $157,500<br>
+    <strong>Total que sale de tu bolsillo: $42,500</strong>
+    </div>
+    <p>El estándar de mercado es 10% con tope anual (típicamente $50,000-$80,000 según póliza). 0% existe pero la prima sube significativamente.</p>`
+  },
+  hospitalTier:{
+    icon:'',
+    title:'Niveles hospitalarios GNP Estrella',
+    body:`<p>GNP Estrella maneja cinco niveles. La diferencia entre ellos puede mover la prima 30-60%.</p>
+    <ul>
+      <li><strong>Premium</strong> · todos los hospitales del país, incluyendo ABC, Médica Sur, Ángeles, Star Médica.</li>
+      <li><strong>Platino</strong> · red alta. Mayoría de privados de primer nivel.</li>
+      <li><strong>Índigo</strong> · red media-alta. Privados sólidos, excluye los más caros.</li>
+      <li><strong>Ámbar</strong> · red media. Hospitales privados regionales y de gama media.</li>
+      <li><strong>Cuarzo</strong> · red básica. Privados de entrada.</li>
+    </ul>
+    <p>El nivel se elige en la contratación y define toda la red disponible. Cambiarlo después implica nueva suscripción.</p>`
+  },
+  sumInsured:{
+    icon:'',
+    title:'La suma asegurada',
+    body:`<p>El máximo anual que la aseguradora pagará en gastos médicos.</p>
+    <div class="modal-example"><span class="lbl">Referencias reales 2026</span>
+    Una semana en terapia intensiva por COVID grave: $2-3M.<br>
+    Tratamiento de cáncer (1er año): $1.5-4M.<br>
+    Trasplante: $2-5M.
+    </div>
+    <ul>
+      <li><strong>$5M</strong> · cubre hospitalizaciones rutinarias. Margen corto en eventos catastróficos.</li>
+      <li><strong>$10M</strong> · estándar de mercado para perfiles con dependientes.</li>
+      <li><strong>$25-50M</strong> · pensado para enfermedades de tratamiento prolongado.</li>
+    </ul>
+    <p>Las primas de Estrella escalan con la suma. Aumentar de $10M a $25M no duplica la prima.</p>`
+  },
+  preexisting:{
+    icon:'',
+    title:'Condiciones preexistentes',
+    body:`<p>Cualquier diagnóstico, tratamiento o síntoma previo a la contratación. La aseguradora puede excluirlo de la cobertura, aplicar periodo de espera, o negar la póliza según el caso.</p>
+    <p>No declararlo es causa de rescisión. Si se descubre durante un siniestro, la aseguradora puede negar el pago y cancelar la póliza completa.</p>
+    <p>Hay productos que cubren preexistentes después de 12-24 meses de espera. Andy revisa el caso específico antes de elegir aseguradora.</p>`
+  },
+  smoker:{
+    icon:'',
+    title:'Tabaquismo en la prima',
+    body:`<p>En vida, los fumadores pagan entre 30% y 60% más que no fumadores con el mismo perfil. En gastos médicos mayores el impacto es menor pero también aplica.</p>
+    <p>Para recuperar tarifa de no fumador, la mayoría de aseguradoras requiere acreditar 12 meses sin fumar.</p>
+    <p>Declarar falsamente y que se compruebe en un siniestro (autopsia, expediente médico) anula la póliza. Mejor declararlo correcto.</p>`
+  },
+  coverageType:{
+    icon:'',
+    title:'Tipos de cobertura auto',
+    body:`<ul>
+      <li><strong>Responsabilidad Civil (RC)</strong> · cubre daños a terceros — personas y vehículos ajenos. Tu auto no está cubierto en ningún escenario. Es el mínimo legal en muchos estados.</li>
+      <li><strong>Limitada</strong> · RC + robo total + asistencia vial. Si chocas tu propio auto, no entra.</li>
+      <li><strong>Amplia</strong> · todo lo anterior + daños materiales (choques, vandalismo, fenómenos naturales). Es la cobertura recomendada para autos con valor superior a $150,000.</li>
+    </ul>
+    <p>La diferencia de prima entre Amplia y RC puede ser 60%. Cuando hay siniestro, la diferencia entre tener Amplia o no es el costo total del auto.</p>`
+  },
+  deductibleAuto:{
+    icon:'',
+    title:'Deducible en auto',
+    body:`<p>A diferencia de gastos médicos, en auto el deducible se expresa como porcentaje del valor del vehículo, no como monto fijo.</p>
+    <div class="modal-example"><span class="lbl">Auto valor $300,000 · Deducible robo 10%</span>
+    En caso de robo total: tú pones $30,000, aseguradora paga $270,000.
+    </div>
+    <p>Rangos de mercado: daños materiales 3-15%, robo total 5-15%. El estándar es 5% materiales y 10% robo. Bajarlos sube la prima; subirlos la baja.</p>`
+  },
+  petPlan:{
+    icon:'',
+    title:'GNP Mi Mascota — cómo se arma',
+    body:`<p>GNP Mi Mascota es modular. La prima sale de combinar suma asegurada + deducible + coberturas opcionales. No hay paquetes fijos.</p>
+    <p><strong>Coberturas base incluidas:</strong></p>
+    <ul>
+      <li>Gastos médicos veterinarios por accidente o enfermedad</li>
+      <li>Hospitalización, cirugía, análisis de laboratorio</li>
+      <li>Responsabilidad civil de la mascota a terceros</li>
+      <li>Orientación veterinaria telefónica 24/7</li>
+      <li>Cremación en caso de fallecimiento</li>
+    </ul>
+    <p><strong>Periodos de espera:</strong> 180 días para enfermedades, 10 días para accidentes. Es decir: si contratas hoy, los accidentes están cubiertos en 10 días, pero las enfermedades hasta dentro de 6 meses.</p>
+    <p><strong>Elegibilidad:</strong> perros y gatos entre 3 meses y 9 años de edad. Razas consideradas peligrosas (Pitbull, Rottweiler, etc.) tienen condiciones específicas.</p>`
+  }
+};
+
+function info(key){const i = INFO[key];if(i)showInfo(i.icon,i.title,i.body)}
+
+/* ============ FORMAT ============ */
+function fmt(n){return n.toLocaleString('es-MX',{maximumFractionDigits:0})}
+function fmtMx(n){return '$'+fmt(n)}
+
+/* ============================================== */
+/* ============ GMM WIZARD ====================== */
+/* ============================================== */
+const gmmSteps = [
+  {render:gmmStepWho,validate:()=>true},
+  {render:gmmStepAge,validate:()=>true},
+  {render:gmmStepHealth,validate:()=>true},
+  {render:gmmStepDeductible,validate:()=>true},
+  {render:gmmStepCoinsurance,validate:()=>true},
+  {render:gmmStepHospital,validate:()=>true},
+  {render:gmmStepSum,validate:()=>true},
+  {render:gmmStepAddons,validate:()=>true},
+];
+
+function renderGmm(){
+  const step = gmmSteps[state.gmm.step];
+  document.getElementById('gmmContent').innerHTML = step.render();
+  bindGmm();
+  document.getElementById('gmmBack').textContent = state.gmm.step===0 ? '← Cambiar tipo' : '← Atrás';
+  document.getElementById('gmmNext').textContent = state.gmm.step===gmmSteps.length-1 ? 'Continuar →' : 'Siguiente →';
+}
+function gmmStepWho(){
+  return `<div class="step-counter">Paso 1 de ${gmmSteps.length}</div>
+  <h3 class="step-title">¿Quién va a estar cubierto?</h3>
+  <p class="step-help">Esto cambia mucho la prima. Un plan familiar es proporcionalmente más barato que individuales separados.</p>
+  <div class="opts opts-3">
+    ${[['individual','Individual','Solo yo'],['pareja','Pareja','Yo + mi pareja'],['familia','Familia','Yo + pareja + hijos']].map(([k,l,m])=>`
+    <button class="opt ${state.gmm.who===k?'selected':''}" data-who="${k}">
+      <div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div>
+    </button>`).join('')}
+  </div>`;
+}
+function gmmStepAge(){
+  return `<div class="step-counter">Paso 2 de ${gmmSteps.length}</div>
+  <h3 class="step-title">¿Tu edad?</h3>
+  <p class="step-help">Es el factor #1 que define la prima. Cada año que pasa sube ~3%.</p>
+  <div class="slider-wrap">
+    <div class="slider-row">
+      <div><span class="slider-value" id="ageVal">${state.gmm.age}</span><span class="slider-suffix">años</span></div>
+    </div>
+    <input type="range" min="18" max="75" value="${state.gmm.age}" class="slider" id="ageSlider">
+    <div class="slider-marks"><span>18</span><span>30</span><span>45</span><span>60</span><span>75</span></div>
+  </div>
+  <div class="step-help" style="margin-top:24px"><strong>Sexo</strong> (afecta prima ~5%)</div>
+  <div class="opts opts-2">
+    <button class="opt ${state.gmm.sex==='F'?'selected':''}" data-sex="F">
+      <div class="opt-body"><div class="opt-label">Femenino</div></div>
+    </button>
+    <button class="opt ${state.gmm.sex==='M'?'selected':''}" data-sex="M">
+      <div class="opt-body"><div class="opt-label">Masculino</div></div>
+    </button>
+  </div>`;
+}
+function gmmStepHealth(){
+  return `<div class="step-counter">Paso 3 de ${gmmSteps.length}</div>
+  <h3 class="step-title">Hábitos y salud
+    <button class="info-btn" onclick="info('preexisting')">?</button>
+  </h3>
+  <p class="step-help">Necesario declarar con honestidad. <button class="info-btn" onclick="info('smoker')">?</button></p>
+  <div class="step-help" style="margin-top:18px"><strong>¿Fumas?</strong></div>
+  <div class="opts opts-2">
+    <button class="opt ${!state.gmm.smoker?'selected':''}" data-smoker="false"><div class="opt-body"><div class="opt-label">No fumo</div><div class="opt-meta">Prima base</div></div></button>
+    <button class="opt ${state.gmm.smoker?'selected':''}" data-smoker="true"><div class="opt-body"><div class="opt-label">Sí fumo</div><div class="opt-meta">+25% en prima · honestidad obligatoria</div></div></button>
+  </div>`;
+}
+function gmmStepDeductible(){
+  const val = state.gmm.deductible;
+  const ex = 80000;
+  const youPay = Math.min(val,ex);
+  const insPay = Math.max(0,ex-val);
+  return `<div class="step-counter">Paso 4 de ${gmmSteps.length}</div>
+  <h3 class="step-title">Elige tu deducible
+    <button class="info-btn" onclick="info('deductible')">?</button>
+  </h3>
+  <p class="step-help">Es lo que <strong>tú pagas antes</strong> de que el seguro entre. Más alto = prima más barata. Mira cómo cambia la cuenta abajo.</p>
+  <div class="opts opts-3">
+    ${[5000,10000,25000,50000].map(d=>`
+      <button class="opt ${state.gmm.deductible===d?'selected':''}" data-deductible="${d}">
+        <div class="opt-body"><div class="opt-label">${fmtMx(d)}</div><div class="opt-meta">${d===5000?'prima alta':d===10000?'común':d===25000?'estándar':'prima baja'}</div></div>
+      </button>`).join('')}
+  </div>
+  <div class="viz">
+    <div class="viz-title">Si tu hospitalización cuesta ${fmtMx(ex)}</div>
+    <div class="viz-row">
+      <span style="width:60px"><span class="viz-dot you"></span>Tú</span>
+      <div class="viz-bar"><div class="viz-bar-you" style="width:${(youPay/ex)*100}%">${fmtMx(youPay)}</div></div>
+    </div>
+    <div class="viz-row">
+      <span style="width:60px"><span class="viz-dot ins"></span>Seguro</span>
+      <div class="viz-bar"><div class="viz-bar-ins" style="width:${(insPay/ex)*100}%">${fmtMx(insPay)}</div></div>
+    </div>
+    <div class="viz-legend">
+      <span><span class="viz-dot you"></span>Lo que pagas tú</span>
+      <span><span class="viz-dot ins"></span>Lo que paga el seguro</span>
+    </div>
+  </div>`;
+}
+function gmmStepCoinsurance(){
+  return `<div class="step-counter">Paso 5 de ${gmmSteps.length}</div>
+  <h3 class="step-title">Coaseguro
+    <button class="info-btn" onclick="info('coinsurance')">?</button>
+  </h3>
+  <p class="step-help">Después del deducible, ¿qué % de los gastos absorbes tú?</p>
+  <div class="opts opts-3">
+    ${[
+      [0,'0%','Premium · prima alta'],
+      [10,'10%','Estándar recomendado'],
+      [20,'20%','Prima reducida'],
+      [30,'30%','Prima mínima · pagas más en siniestro']
+    ].map(([v,l,m])=>`
+      <button class="opt ${state.gmm.coinsurance===v?'selected':''}" data-coinsurance="${v}">
+        <div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div>
+      </button>`).join('')}
+  </div>
+  <div class="viz">
+    <div class="viz-title">Hospitalización $200,000 · Deducible $${fmt(state.gmm.deductible)}</div>
+    ${(()=>{
+      const dd = state.gmm.deductible;
+      const remaining = 200000 - dd;
+      const youCo = remaining*(state.gmm.coinsurance/100);
+      const youTotal = dd + youCo;
+      const insTotal = 200000 - youTotal;
+      return `<div class="viz-row"><span style="width:60px"><span class="viz-dot you"></span>Tú</span><div class="viz-bar"><div class="viz-bar-you" style="width:${(youTotal/200000)*100}%">${fmtMx(youTotal)}</div></div></div>
+      <div class="viz-row"><span style="width:60px"><span class="viz-dot ins"></span>Seguro</span><div class="viz-bar"><div class="viz-bar-ins" style="width:${(insTotal/200000)*100}%">${fmtMx(insTotal)}</div></div></div>`;
+    })()}
+  </div>`;
+}
+function gmmStepHospital(){
+  return `<div class="step-counter">Paso 6 de ${gmmSteps.length}</div>
+  <h3 class="step-title">Nivel hospitalario
+    <button class="info-btn" onclick="info('hospitalTier')">?</button>
+  </h3>
+  <p class="step-help">GNP Estrella maneja cinco niveles. Define exactamente a qué hospitales puedes llegar y mueve la prima 30-60% entre extremos.</p>
+  <div class="opts">
+    <button class="opt ${state.gmm.hospitalTier==='premium'?'selected':''}" data-tier="premium">
+      <div class="opt-body">
+        <div class="opt-label">Premium</div>
+        <div class="opt-meta">Todos los hospitales — ABC, Médica Sur, Ángeles, Star Médica, Español.</div>
+      </div>
+      <span class="opt-pill" style="background:var(--orange)">prima alta</span>
+    </button>
+    <button class="opt ${state.gmm.hospitalTier==='platino'?'selected':''}" data-tier="platino">
+      <div class="opt-body">
+        <div class="opt-label">Platino</div>
+        <div class="opt-meta">Red alta. Mayoría de privados de primer nivel del país.</div>
+      </div>
+    </button>
+    <button class="opt ${state.gmm.hospitalTier==='indigo'?'selected':''}" data-tier="indigo">
+      <div class="opt-body">
+        <div class="opt-label">Índigo</div>
+        <div class="opt-meta">Red media-alta. Privados sólidos, excluye los más caros.</div>
+      </div>
+      <span class="opt-pill">balance</span>
+    </button>
+    <button class="opt ${state.gmm.hospitalTier==='ambar'?'selected':''}" data-tier="ambar">
+      <div class="opt-body">
+        <div class="opt-label">Ámbar</div>
+        <div class="opt-meta">Red media. Privados regionales y de gama media.</div>
+      </div>
+    </button>
+    <button class="opt ${state.gmm.hospitalTier==='cuarzo'?'selected':''}" data-tier="cuarzo">
+      <div class="opt-body">
+        <div class="opt-label">Cuarzo</div>
+        <div class="opt-meta">Red básica. Privados de entrada.</div>
+      </div>
+      <span class="opt-pill" style="background:var(--success)">prima baja</span>
+    </button>
+  </div>`;
+}
+function gmmStepSum(){
+  return `<div class="step-counter">Paso 7 de ${gmmSteps.length}</div>
+  <h3 class="step-title">Suma asegurada
+    <button class="info-btn" onclick="info('sumInsured')">?</button>
+  </h3>
+  <p class="step-help">El máximo anual. Una hospitalización grave puede pasar de $1M sin problema.</p>
+  <div class="opts opts-3">
+    ${[[5,'$5M','Básica'],[10,'$10M','Estándar'],[25,'$25M','Robusta'],[50,'$50M','Premium']].map(([v,l,m])=>`
+      <button class="opt ${state.gmm.sumInsured===v?'selected':''}" data-sum="${v}">
+        <div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div>
+      </button>`).join('')}
+  </div>`;
+}
+function gmmStepAddons(){
+  const ad = state.gmm.addons;
+  const items = [
+    [\maternidad','','Maternidad','Embarazo, parto y complicaciones. 10 meses de espera.',380],
+    [\dental','','Dental','Limpiezas, ortodoncia, urgencias dentales',220],
+    [\vision','','Visión','Lentes, exámenes, cirugía láser',160],
+    [\graves','','Enfermedades graves','Cáncer, infarto, ACV — pago suma fija',450]
+  ];
+  return `<div class="step-counter">Paso 8 de ${gmmSteps.length}</div>
+  <h3 class="step-title">Coberturas opcionales</h3>
+  <p class="step-help">Suma a tu prima base. Puedes agregar las que quieras o ninguna.</p>
+  <div class="opts">
+    ${items.map(([k,e,l,m,p])=>`
+      <button class="opt ${ad.includes(k)?'selected':''}" data-addon="${k}">
+        
+        <div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div>
+        <span class="opt-pill">+$${p}/mes</span>
+      </button>`).join('')}
+  </div>`;
+}
+function bindGmm(){
+  document.querySelectorAll('[data-who]').forEach(b=>b.addEventListener('click',()=>{state.gmm.who=b.dataset.who;renderGmm();renderGmmQuote()}));
+  document.querySelectorAll('[data-sex]').forEach(b=>b.addEventListener('click',()=>{state.gmm.sex=b.dataset.sex;renderGmm();renderGmmQuote()}));
+  document.querySelectorAll('[data-smoker]').forEach(b=>b.addEventListener('click',()=>{state.gmm.smoker=b.dataset.smoker==='true';renderGmm();renderGmmQuote()}));
+  document.querySelectorAll('[data-deductible]').forEach(b=>b.addEventListener('click',()=>{state.gmm.deductible=parseInt(b.dataset.deductible);renderGmm();renderGmmQuote()}));
+  document.querySelectorAll('[data-coinsurance]').forEach(b=>b.addEventListener('click',()=>{state.gmm.coinsurance=parseInt(b.dataset.coinsurance);renderGmm();renderGmmQuote()}));
+  document.querySelectorAll('[data-tier]').forEach(b=>b.addEventListener('click',()=>{state.gmm.hospitalTier=b.dataset.tier;renderGmm();renderGmmQuote()}));
+  document.querySelectorAll('[data-sum]').forEach(b=>b.addEventListener('click',()=>{state.gmm.sumInsured=parseInt(b.dataset.sum);renderGmm();renderGmmQuote()}));
+  document.querySelectorAll('[data-addon]').forEach(b=>b.addEventListener('click',()=>{
+    const k=b.dataset.addon;const i=state.gmm.addons.indexOf(k);
+    if(i>=0)state.gmm.addons.splice(i,1);else state.gmm.addons.push(k);
+    renderGmm();renderGmmQuote();
+  }));
+  const slider = document.getElementById('ageSlider');
+  if(slider){
+    slider.addEventListener('input',()=>{state.gmm.age=parseInt(slider.value);document.getElementById('ageVal').textContent=slider.value;renderGmmQuote()});
+  }
+}
+function gmmCalcPrice(){
+  let base = 2200;
+  base *= 1 + Math.max(0,(state.gmm.age-30))*0.035;
+  if(state.gmm.smoker) base *= 1.25;
+  if(state.gmm.sex==='F' && state.gmm.age<50) base *= 1.05;
+  const tierMult = {cuarzo:0.65,ambar:0.82,indigo:1.0,platino:1.25,premium:1.6}[state.gmm.hospitalTier];
+  base *= tierMult;
+  const dedMult = {5000:1.4,10000:1.2,25000:1.0,50000:0.85}[state.gmm.deductible];
+  base *= dedMult;
+  const coMult = {0:1.3,10:1.0,20:0.85,30:0.75}[state.gmm.coinsurance];
+  base *= coMult;
+  const sumMult = {5:0.85,10:1.0,25:1.2,50:1.45}[state.gmm.sumInsured];
+  base *= sumMult;
+  if(state.gmm.who==='pareja') base *= 1.85;
+  if(state.gmm.who==='familia') base *= 2.6;
+  const addonsCost = state.gmm.addons.reduce((s,k)=>s+({maternidad:380,dental:220,vision:160,graves:450}[k]||0),0);
+  return Math.round(base + addonsCost);
+}
+function gmmSummaryLines(){
+  const tierLbl = {cuarzo:'Cuarzo',ambar:'Ámbar',indigo:'Índigo',platino:'Platino',premium:'Premium'}[state.gmm.hospitalTier];
+  const whoLbl = {individual:'Individual',pareja:'Pareja',familia:'Familia'}[state.gmm.who];
+  const lines = [
+    ['Cobertura',whoLbl],
+    ['Edad',state.gmm.age+' años · '+(state.gmm.sex==='F'?'Femenino':'Masculino')],
+    ['Fumador',state.gmm.smoker?'Sí':'No'],
+    ['Deducible',fmtMx(state.gmm.deductible)],
+    ['Coaseguro',state.gmm.coinsurance+'%'],
+    ['Hospitales',tierLbl],
+    ['Suma asegurada','$'+state.gmm.sumInsured+'M'],
+  ];
+  if(state.gmm.addons.length){
+    lines.push(['Extras',state.gmm.addons.map(a=>({maternidad:'Maternidad',dental:'Dental',vision:'Visión',graves:'Graves'}[a])).join(', ')]);
+  }
+  return lines;
+}
+function renderGmmQuote(){
+  const p = gmmCalcPrice();
+  document.getElementById('gmmAmount').textContent = fmt(p);
+  const lines = gmmSummaryLines();
+  document.getElementById('gmmSummary').innerHTML = lines.map(([l,v])=>`<div class="quote-line"><span class="lbl">${l}</span><span class="val">${v}</span></div>`).join('');
+}
+document.getElementById('gmmBack').addEventListener('click',()=>{
+  if(state.gmm.step===0)go('stage-type');else{state.gmm.step--;renderGmm()}
+});
+document.getElementById('gmmNext').addEventListener('click',()=>{
+  if(state.gmm.step<gmmSteps.length-1){state.gmm.step++;renderGmm()}
+  else {state.finalAmount=gmmCalcPrice();state.finalSummaryLines=gmmSummaryLines();go('stage-contact')}
+});
+
+/* ============================================== */
+/* ============ AUTO WIZARD ===================== */
+/* ============================================== */
+const autoSteps = [
+  {render:autoStepBasic},
+  {render:autoStepUse},
+  {render:autoStepCoverage},
+  {render:autoStepDeductible},
+  {render:autoStepAddons}
+];
+function renderAuto(){
+  document.getElementById('autoContent').innerHTML = autoSteps[state.auto.step].render();
+  bindAuto();
+  document.getElementById('autoBack').textContent = state.auto.step===0 ? '← Cambiar tipo' : '← Atrás';
+  document.getElementById('autoNext').textContent = state.auto.step===autoSteps.length-1 ? 'Continuar →' : 'Siguiente →';
+}
+function autoStepBasic(){
+  return `<div class="step-counter">Paso 1 de ${autoSteps.length}</div>
+  <h3 class="step-title">Tu auto</h3>
+  <p class="step-help">Marca, modelo y año. Esto define la base del precio.</p>
+  <div class="field-grid">
+    <div class="field"><label class="field-label">Marca</label><input class="field-input" id="autoBrand" placeholder="Nissan, Toyota, etc." value="${state.auto.brand}"></div>
+    <div class="field"><label class="field-label">Modelo</label><input class="field-input" id="autoModel" placeholder="Sentra, Corolla..." value="${state.auto.model}"></div>
+  </div>
+  <div class="slider-wrap">
+    <div class="slider-row">
+      <div><span class="slider-value" id="yearVal">${state.auto.year}</span><span class="slider-suffix">año</span></div>
+    </div>
+    <input type="range" min="2005" max="2026" value="${state.auto.year}" class="slider" id="yearSlider">
+    <div class="slider-marks"><span>2005</span><span>2015</span><span>2020</span><span>2026</span></div>
+  </div>`;
+}
+function autoStepUse(){
+  return `<div class="step-counter">Paso 2 de ${autoSteps.length}</div>
+  <h3 class="step-title">¿Para qué lo usas?</h3>
+  <p class="step-help">Uso comercial sube prima ~30%. Las aseguradoras lo verifican: si reportas particular y lo usas para Uber/reparto, no te pagan en siniestro.</p>
+  <div class="opts opts-2">
+    <button class="opt ${state.auto.use==='particular'?'selected':''}" data-use="particular">
+      <div class="opt-body"><div class="opt-label">Particular</div><div class="opt-meta">Uso personal/familiar</div></div>
+    </button>
+    <button class="opt ${state.auto.use==='comercial'?'selected':''}" data-use="comercial">
+      <div class="opt-body"><div class="opt-label">Comercial</div><div class="opt-meta">Uber/DiDi, reparto, taxi, transporte</div></div>
+    </button>
+  </div>`;
+}
+function autoStepCoverage(){
+  return `<div class="step-counter">Paso 3 de ${autoSteps.length}</div>
+  <h3 class="step-title">Tipo de cobertura
+    <button class="info-btn" onclick="info('coverageType')">?</button>
+  </h3>
+  <p class="step-help">Lo más importante en seguro de auto. Cada nivel cubre cosas muy diferentes.</p>
+  <div class="opts">
+    <button class="opt ${state.auto.coverage==='rc'?'selected':''}" data-coverage="rc">
+      
+      <div class="opt-body"><div class="opt-label">Solo RC (Responsabilidad Civil)</div><div class="opt-meta"><strong>Tu auto NO está cubierto.</strong> Solo pagas por daños a otros.</div></div>
+      <span class="opt-pill" style="background:var(--success)">−60%</span>
+    </button>
+    <button class="opt ${state.auto.coverage==='limitada'?'selected':''}" data-coverage="limitada">
+      
+      <div class="opt-body"><div class="opt-label">Limitada</div><div class="opt-meta">RC + robo total + asistencia. Choques NO cubiertos.</div></div>
+      <span class="opt-pill" style="background:var(--gray-400)">−30%</span>
+    </button>
+    <button class="opt ${state.auto.coverage==='amplia'?'selected':''}" data-coverage="amplia">
+      
+      <div class="opt-body"><div class="opt-label">Amplia (recomendada)</div><div class="opt-meta">Todo: RC + robo + daños + fenómenos naturales. La que tiene sentido si tu auto vale +$150k.</div></div>
+      <span class="opt-pill" style="background:var(--orange)">base</span>
+    </button>
+  </div>`;
+}
+function autoStepDeductible(){
+  if(state.auto.coverage==='rc'){
+    return `<div class="step-counter">Paso 4 de ${autoSteps.length}</div>
+    <h3 class="step-title">RC no tiene deducible</h3>
+    <p class="step-help">Como Responsabilidad Civil solo cubre a terceros, no aplica deducible. Saltamos al siguiente.</p>`;
+  }
+  return `<div class="step-counter">Paso 4 de ${autoSteps.length}</div>
+  <h3 class="step-title">Deducible
+    <button class="info-btn" onclick="info('deductibleAuto')">?</button>
+  </h3>
+  <p class="step-help">En auto el deducible es % del valor del coche, no monto fijo.</p>
+  <div class="step-help" style="margin-top:14px"><strong>Robo total</strong></div>
+  <div class="opts opts-3">
+    ${[5,10,15].map(v=>`
+      <button class="opt ${state.auto.deductibleTheft===v?'selected':''}" data-dt="${v}">
+        <div class="opt-body"><div class="opt-label">${v}%</div><div class="opt-meta">${v===5?'prima alta':v===10?'estándar':'prima baja'}</div></div>
+      </button>`).join('')}
+  </div>
+  <div class="step-help" style="margin-top:14px"><strong>Daños materiales</strong></div>
+  <div class="opts opts-3">
+    ${[3,5,10].map(v=>`
+      <button class="opt ${state.auto.deductibleDamage===v?'selected':''}" data-dd="${v}">
+        <div class="opt-body"><div class="opt-label">${v}%</div></div>
+      </button>`).join('')}
+  </div>`;
+}
+function autoStepAddons(){
+  const ad = state.auto.addons;
+  const items = [
+    [\vial','','Asistencia vial','Grúa, batería, llantas',80],
+    [\sustituto','','Auto sustituto','Auto rentado mientras reparan el tuyo',150],
+    [\legal','','Asistencia legal','Abogado en accidentes, defensa',60],
+    [\cero','','Deducible 0 en accidente','Si chocas, no pagas nada de deducible',180]
+  ];
+  return `<div class="step-counter">Paso 5 de ${autoSteps.length}</div>
+  <h3 class="step-title">Extras (opcional)</h3>
+  <p class="step-help">Servicios que valen la pena evaluar.</p>
+  <div class="opts">
+    ${items.map(([k,e,l,m,p])=>`
+      <button class="opt ${ad.includes(k)?'selected':''}" data-aaddon="${k}">
+        
+        <div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div>
+        <span class="opt-pill">+$${p}/mes</span>
+      </button>`).join('')}
+  </div>`;
+}
+function bindAuto(){
+  const b = document.getElementById('autoBrand');if(b)b.addEventListener('input',()=>{state.auto.brand=b.value;renderAutoQuote()});
+  const m = document.getElementById('autoModel');if(m)m.addEventListener('input',()=>{state.auto.model=m.value;renderAutoQuote()});
+  const y = document.getElementById('yearSlider');if(y)y.addEventListener('input',()=>{state.auto.year=parseInt(y.value);document.getElementById('yearVal').textContent=y.value;renderAutoQuote()});
+  document.querySelectorAll('[data-use]').forEach(b=>b.addEventListener('click',()=>{state.auto.use=b.dataset.use;renderAuto();renderAutoQuote()}));
+  document.querySelectorAll('[data-coverage]').forEach(b=>b.addEventListener('click',()=>{state.auto.coverage=b.dataset.coverage;renderAuto();renderAutoQuote()}));
+  document.querySelectorAll('[data-dt]').forEach(b=>b.addEventListener('click',()=>{state.auto.deductibleTheft=parseInt(b.dataset.dt);renderAuto();renderAutoQuote()}));
+  document.querySelectorAll('[data-dd]').forEach(b=>b.addEventListener('click',()=>{state.auto.deductibleDamage=parseInt(b.dataset.dd);renderAuto();renderAutoQuote()}));
+  document.querySelectorAll('[data-aaddon]').forEach(b=>b.addEventListener('click',()=>{
+    const k=b.dataset.aaddon;const i=state.auto.addons.indexOf(k);
+    if(i>=0)state.auto.addons.splice(i,1);else state.auto.addons.push(k);
+    renderAuto();renderAutoQuote();
+  }));
+}
+function autoCalcPrice(){
+  let base = 800;
+  // age of car
+  const age = 2026 - state.auto.year;
+  base *= 1 + Math.max(0,age-3)*0.04;
+  if(state.auto.use==='comercial') base *= 1.3;
+  const covMult = {rc:0.4,limitada:0.7,amplia:1.0}[state.auto.coverage];
+  base *= covMult;
+  if(state.auto.coverage!=='rc'){
+    const dtMult = {5:1.15,10:1.0,15:0.9}[state.auto.deductibleTheft];
+    base *= dtMult;
+    const ddMult = {3:1.15,5:1.0,10:0.88}[state.auto.deductibleDamage];
+    base *= ddMult;
+  }
+  const addonsCost = state.auto.addons.reduce((s,k)=>s+({vial:80,sustituto:150,legal:60,cero:180}[k]||0),0);
+  return Math.round(base + addonsCost);
+}
+function autoSummaryLines(){
+  const covLbl = {rc:'Solo RC',limitada:'Limitada',amplia:'Amplia'}[state.auto.coverage];
+  const lines = [
+    ['Vehículo',(state.auto.brand||'-')+' '+(state.auto.model||'')+' '+state.auto.year],
+    ['Uso',state.auto.use==='particular'?'Particular':'Comercial'],
+    ['Cobertura',covLbl]
+  ];
+  if(state.auto.coverage!=='rc'){
+    lines.push(['Deducible robo',state.auto.deductibleTheft+'%']);
+    lines.push(['Deducible daños',state.auto.deductibleDamage+'%']);
+  }
+  if(state.auto.addons.length){
+    lines.push(['Extras',state.auto.addons.map(a=>({vial:'Asistencia vial',sustituto:'Auto sustituto',legal:'Legal',cero:'Deducible 0'}[a])).join(', ')]);
+  }
+  return lines;
+}
+function renderAutoQuote(){
+  document.getElementById('autoAmount').textContent = fmt(autoCalcPrice());
+  const lines = autoSummaryLines();
+  document.getElementById('autoSummary').innerHTML = lines.map(([l,v])=>`<div class="quote-line"><span class="lbl">${l}</span><span class="val">${v}</span></div>`).join('');
+}
+document.getElementById('autoBack').addEventListener('click',()=>{if(state.auto.step===0)go('stage-type');else{state.auto.step--;renderAuto()}});
+document.getElementById('autoNext').addEventListener('click',()=>{
+  if(state.auto.step<autoSteps.length-1){state.auto.step++;renderAuto()}
+  else {state.finalAmount=autoCalcPrice();state.finalSummaryLines=autoSummaryLines();go('stage-contact')}
+});
+
+/* ============================================== */
+/* ============ GENERIC WIZARD (vida/mascota/ahorro/patrimonial) === */
+/* ============================================== */
+const GENERIC_FLOWS = {
+  vida:{
+    title:'Plan Vida',
+    steps:['age','sumInsured','term'],
+    render:{
+      age:()=>`<div class="step-counter">Paso 1 de 3</div>
+        <h3 class="step-title">Tu edad y hábitos</h3>
+        <p class="step-help">Vida cotiza por edad y si fumas. Honestidad obligatoria. <button class="info-btn" onclick="info('smoker')">?</button></p>
+        <div class="slider-wrap">
+          <div class="slider-row"><div><span class="slider-value" id="vAgeVal">${state.vida.age}</span><span class="slider-suffix">años</span></div></div>
+          <input type="range" min="18" max="70" value="${state.vida.age}" class="slider" id="vAgeSlider">
+        </div>
+        <div class="opts opts-2">
+          <button class="opt ${!state.vida.smoker?'selected':''}" data-vsmoker="false"><div class="opt-body"><div class="opt-label">No fumo</div></div></button>
+          <button class="opt ${state.vida.smoker?'selected':''}" data-vsmoker="true"><div class="opt-body"><div class="opt-label">Sí fumo</div><div class="opt-meta">+40% en prima vs no fumador</div></div></button>
+        </div>`,
+      sumInsured:()=>`<div class="step-counter">Paso 2 de 3</div>
+        <h3 class="step-title">¿Cuánto recibe tu familia si tú faltas?</h3>
+        <p class="step-help">Regla común: 5-10x tu ingreso anual. Suficiente para cubrir hipoteca, educación de hijos, gastos por años.</p>
+        <div class="opts opts-3">
+          ${[1,2,5,10].map(v=>`<button class="opt ${state.vida.sumInsured===v?'selected':''}" data-vsum="${v}"><div class="opt-body"><div class="opt-label">$${v}M</div><div class="opt-meta">${v===1?'mínimo':v===2?'común':v===5?'recomendado':'protección alta'}</div></div></button>`).join('')}
+        </div>`,
+      term:()=>`<div class="step-counter">Paso 3 de 3</div>
+        <h3 class="step-title">Plazo del seguro</h3>
+        <p class="step-help">Vida temporal: cubre x años, prima fija. Vida permanente: dura toda la vida (más cara, pero acumula valor).</p>
+        <div class="opts opts-3">
+          ${[10,20,30,99].map(v=>`<button class="opt ${state.vida.term===v?'selected':''}" data-vterm="${v}"><div class="opt-body"><div class="opt-label">${v===99?'Permanente':v+' años'}</div><div class="opt-meta">${v===99?'toda la vida':'temporal'}</div></div></button>`).join('')}
+        </div>`
+    },
+    bind:()=>{
+      const a=document.getElementById('vAgeSlider');if(a)a.addEventListener('input',()=>{state.vida.age=parseInt(a.value);document.getElementById('vAgeVal').textContent=a.value;renderGenericQuote()});
+      document.querySelectorAll('[data-vsmoker]').forEach(b=>b.addEventListener('click',()=>{state.vida.smoker=b.dataset.vsmoker==='true';renderGeneric();renderGenericQuote()}));
+      document.querySelectorAll('[data-vsum]').forEach(b=>b.addEventListener('click',()=>{state.vida.sumInsured=parseInt(b.dataset.vsum);renderGeneric();renderGenericQuote()}));
+      document.querySelectorAll('[data-vterm]').forEach(b=>b.addEventListener('click',()=>{state.vida.term=parseInt(b.dataset.vterm);renderGeneric();renderGenericQuote()}));
+    },
+    price:()=>{
+      let base = 250;
+      base *= 1 + Math.max(0,(state.vida.age-30))*0.06;
+      if(state.vida.smoker) base *= 1.4;
+      base *= state.vida.sumInsured;
+      if(state.vida.term===99) base *= 2.4;
+      else if(state.vida.term===30) base *= 1.45;
+      else if(state.vida.term===20) base *= 1.18;
+      return Math.round(base);
+    },
+    summary:()=>[
+      ['Edad',state.vida.age+' años'],
+      ['Fumador',state.vida.smoker?'Sí':'No'],
+      ['Suma asegurada','$'+state.vida.sumInsured+'M'],
+      ['Plazo',state.vida.term===99?'Permanente':state.vida.term+' años']
+    ]
+  },
+  mascota:{
+    title:'GNP Mi Mascota',
+    steps:['species','sumInsured','deductible','addons'],
+    render:{
+      species:()=>`<div class="step-counter">Paso 1 de 4</div>
+        <h3 class="step-title">Tu mascota
+          <button class="info-btn" onclick="info('petPlan')">?</button>
+        </h3>
+        <p class="step-help">GNP Mi Mascota cubre perros y gatos entre 3 meses y 9 años. La edad de ingreso afecta la prima.</p>
+        <div class="opts opts-2">
+          <button class="opt ${state.mascota.species==='perro'?'selected':''}" data-pspecies="perro"><div class="opt-body"><div class="opt-label">Perro</div></div></button>
+          <button class="opt ${state.mascota.species==='gato'?'selected':''}" data-pspecies="gato"><div class="opt-body"><div class="opt-label">Gato</div></div></button>
+        </div>
+        <div class="slider-wrap">
+          <div class="slider-row"><div><span class="slider-value" id="petAgeVal">${state.mascota.petAge}</span><span class="slider-suffix">años</span></div></div>
+          <input type="range" min="0" max="9" value="${state.mascota.petAge}" class="slider" id="petAgeSlider">
+          <div class="slider-marks"><span>3 meses</span><span>5</span><span>9 años</span></div>
+        </div>`,
+      sumInsured:()=>`<div class="step-counter">Paso 2 de 4</div>
+        <h3 class="step-title">Suma asegurada anual</h3>
+        <p class="step-help">El máximo que GNP cubrirá en gastos médicos veterinarios al año. Una cirugía mayor en perro grande puede pasar fácil de $30,000.</p>
+        <div class="slider-wrap">
+          <div class="slider-row"><div><span class="slider-value" id="petSumVal">$${fmt(state.mascota.sumInsured)}</span></div></div>
+          <input type="range" min="15000" max="80000" step="5000" value="${state.mascota.sumInsured}" class="slider" id="petSumSlider">
+          <div class="slider-marks"><span>$15k</span><span>$30k</span><span>$50k</span><span>$80k</span></div>
+        </div>`,
+      deductible:()=>`<div class="step-counter">Paso 3 de 4</div>
+        <h3 class="step-title">Deducible por evento</h3>
+        <p class="step-help">Lo que pagas tú antes de que GNP cubra. Aplica por cada evento, no anual.</p>
+        <div class="opts opts-3">
+          ${[500,1500,3000].map(v=>`<button class="opt ${state.mascota.deductible===v?'selected':''}" data-pded="${v}"><div class="opt-body"><div class="opt-label">$${fmt(v)}</div><div class="opt-meta">${v===500?'prima alta':v===1500?'estándar':'prima baja'}</div></div></button>`).join('')}
+        </div>`,
+      addons:()=>{
+        const ad = state.mascota.addons;
+        const items = [[\fallece','','Fallecimiento','Indemnización por fallecimiento por enfermedad o accidente',60],[\robo','','Robo con violencia','Indemnización tras acta del MP',40],[\rc','','RC mascota ampliada','Daños a terceros — la mordida importa',45]];
+        return `<div class="step-counter">Paso 4 de 4</div>
+        <h3 class="step-title">Coberturas opcionales</h3>
+        <p class="step-help">Periodos de espera de GNP: <strong>10 días para accidentes, 180 días para enfermedades</strong>. Aplica desde la firma.</p>
+        <div class="opts">
+          ${items.map(([k,e,l,m,p])=>`<button class="opt ${ad.includes(k)?'selected':''}" data-padon="${k}"><div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div><span class="opt-pill">+$${p}/mes</span></button>`).join('')}
+        </div>`;
+      }
+    },
+    bind:()=>{
+      document.querySelectorAll('[data-pspecies]').forEach(b=>b.addEventListener('click',()=>{state.mascota.species=b.dataset.pspecies;renderGeneric();renderGenericQuote()}));
+      const a=document.getElementById('petAgeSlider');if(a)a.addEventListener('input',()=>{state.mascota.petAge=parseInt(a.value);document.getElementById('petAgeVal').textContent=a.value;renderGenericQuote()});
+      const s=document.getElementById('petSumSlider');if(s)s.addEventListener('input',()=>{state.mascota.sumInsured=parseInt(s.value);document.getElementById('petSumVal').textContent='$'+fmt(parseInt(s.value));renderGenericQuote()});
+      document.querySelectorAll('[data-pded]').forEach(b=>b.addEventListener('click',()=>{state.mascota.deductible=parseInt(b.dataset.pded);renderGeneric();renderGenericQuote()}));
+      document.querySelectorAll('[data-padon]').forEach(b=>b.addEventListener('click',()=>{
+        const k=b.dataset.padon;const i=state.mascota.addons.indexOf(k);
+        if(i>=0)state.mascota.addons.splice(i,1);else state.mascota.addons.push(k);
+        renderGeneric();renderGenericQuote();
+      }));
+    },
+    price:()=>{
+      let base = 180;
+      base *= state.mascota.sumInsured/30000;
+      base *= 1 + Math.max(0,state.mascota.petAge-3)*0.06;
+      const dedMult = {500:1.3,1500:1.0,3000:0.85}[state.mascota.deductible];
+      base *= dedMult;
+      if(state.mascota.species==='perro') base *= 1.1;
+      const ad = state.mascota.addons.reduce((s,k)=>s+({fallece:60,robo:40,rc:45}[k]||0),0);
+      return Math.round(base + ad);
+    },
+    summary:()=>{
+      const lines = [
+        ['Mascota',(state.mascota.species==='perro'?'Perro':'Gato')+' · '+state.mascota.petAge+' años'],
+        ['Suma asegurada','$'+fmt(state.mascota.sumInsured)+'/año'],
+        ['Deducible','$'+fmt(state.mascota.deductible)+'/evento']
+      ];
+      if(state.mascota.addons.length){
+        lines.push(['Extras',state.mascota.addons.map(k=>({fallece:'Fallecimiento',robo:'Robo violento',rc:'RC ampliada'}[k])).join(', ')]);
+      }
+      return lines;
+    }
+  },
+  ahorro:{
+    title:'Plan Ahorro / Retiro',
+    steps:['age','horizon','monthly','risk'],
+    render:{
+      age:()=>`<div class="step-counter">Paso 1 de 4</div>
+        <h3 class="step-title">¿Cuántos años tienes?</h3>
+        <p class="step-help">Mientras más joven, más se compone tu ahorro. Sí, importa.</p>
+        <div class="slider-wrap">
+          <div class="slider-row"><div><span class="slider-value" id="ahAgeVal">${state.ahorro.age}</span><span class="slider-suffix">años</span></div></div>
+          <input type="range" min="20" max="60" value="${state.ahorro.age}" class="slider" id="ahAgeSlider">
+        </div>`,
+      horizon:()=>`<div class="step-counter">Paso 2 de 4</div>
+        <h3 class="step-title">¿En cuántos años quieres tu dinero?</h3>
+        <p class="step-help">Plazos largos permiten más rendimiento. Plazos cortos protegen capital.</p>
+        <div class="opts opts-3">
+          ${[5,10,20,30].map(v=>`<button class="opt ${state.ahorro.horizon===v?'selected':''}" data-ahorizon="${v}"><div class="opt-body"><div class="opt-label">${v} años</div></div></button>`).join('')}
+        </div>`,
+      monthly:()=>`<div class="step-counter">Paso 3 de 4</div>
+        <h3 class="step-title">¿Cuánto puedes ahorrar al mes?</h3>
+        <p class="step-help">Cualquier monto cuenta. Lo importante es la consistencia.</p>
+        <div class="slider-wrap">
+          <div class="slider-row"><div><span class="slider-value" id="ahMVal">${fmt(state.ahorro.monthly)}</span><span class="slider-suffix">MXN/mes</span></div></div>
+          <input type="range" min="500" max="20000" step="500" value="${state.ahorro.monthly}" class="slider" id="ahMSlider">
+          <div class="slider-marks"><span>$500</span><span>$5k</span><span>$10k</span><span>$20k</span></div>
+        </div>`,
+      risk:()=>`<div class="step-counter">Paso 4 de 4</div>
+        <h3 class="step-title">Tu perfil de riesgo</h3>
+        <p class="step-help">Define la cartera del PPR. Más exposición a renta variable internacional eleva el rendimiento esperado y la volatilidad.</p>
+        <div class="opts opts-3">
+          <button class="opt ${state.ahorro.risk==='bajo'?'selected':''}" data-arisk="bajo"><div class="opt-body"><div class="opt-label">Conservador</div><div class="opt-meta">~4%/año real esperado</div></div></button>
+          <button class="opt ${state.ahorro.risk==='medio'?'selected':''}" data-arisk="medio"><div class="opt-body"><div class="opt-label">Balanceado</div><div class="opt-meta">~7%/año real esperado</div></div></button>
+          <button class="opt ${state.ahorro.risk==='alto'?'selected':''}" data-arisk="alto"><div class="opt-body"><div class="opt-label">Crecimiento</div><div class="opt-meta">~9%/año real esperado</div></div></button>
+        </div>`
+    },
+    bind:()=>{
+      const a=document.getElementById('ahAgeSlider');if(a)a.addEventListener('input',()=>{state.ahorro.age=parseInt(a.value);document.getElementById('ahAgeVal').textContent=a.value;renderGenericQuote()});
+      document.querySelectorAll('[data-ahorizon]').forEach(b=>b.addEventListener('click',()=>{state.ahorro.horizon=parseInt(b.dataset.ahorizon);renderGeneric();renderGenericQuote()}));
+      const m=document.getElementById('ahMSlider');if(m)m.addEventListener('input',()=>{state.ahorro.monthly=parseInt(m.value);document.getElementById('ahMVal').textContent=fmt(parseInt(m.value));renderGenericQuote()});
+      document.querySelectorAll('[data-arisk]').forEach(b=>b.addEventListener('click',()=>{state.ahorro.risk=b.dataset.arisk;renderGeneric();renderGenericQuote()}));
+    },
+    price:()=>state.ahorro.monthly,
+    summary:()=>{
+      const r = {bajo:0.04,medio:0.07,alto:0.09}[state.ahorro.risk];
+      const months = state.ahorro.horizon*12;
+      const m = state.ahorro.monthly;
+      const monthlyR = r/12;
+      const fv = m * ((Math.pow(1+monthlyR,months)-1)/monthlyR) * (1+monthlyR);
+      return [
+        ['Edad',state.ahorro.age+' años'],
+        ['Plazo',state.ahorro.horizon+' años'],
+        ['Aportación','$'+fmt(state.ahorro.monthly)+'/mes'],
+        ['Perfil',{bajo:'Conservador',medio:'Balanceado',alto:'Crecimiento'}[state.ahorro.risk]],
+        ['Total al final (proyectado)','$'+fmt(Math.round(fv))]
+      ];
+    }
+  },
+  patrimonial:{
+    title:'Plan Casa / Patrimonial',
+    steps:['homeValue','contentsValue','addons'],
+    render:{
+      homeValue:()=>`<div class="step-counter">Paso 1 de 3</div>
+        <h3 class="step-title">Valor de tu casa</h3>
+        <p class="step-help">Valor de reconstrucción, no comercial. Cuánto costaría reconstruirla si se quema/colapsa.</p>
+        <div class="slider-wrap">
+          <div class="slider-row"><div><span class="slider-value" id="hvVal">$${fmt(state.patrimonial.homeValue)}</span></div></div>
+          <input type="range" min="500000" max="10000000" step="100000" value="${state.patrimonial.homeValue}" class="slider" id="hvSlider">
+          <div class="slider-marks"><span>$500k</span><span>$2M</span><span>$5M</span><span>$10M</span></div>
+        </div>`,
+      contentsValue:()=>`<div class="step-counter">Paso 2 de 3</div>
+        <h3 class="step-title">Valor de los contenidos</h3>
+        <p class="step-help">Muebles, electrónicos, ropa, joyas. Lo que hay <em>dentro</em> de tu casa.</p>
+        <div class="slider-wrap">
+          <div class="slider-row"><div><span class="slider-value" id="cvVal">$${fmt(state.patrimonial.contentsValue)}</span></div></div>
+          <input type="range" min="50000" max="2000000" step="50000" value="${state.patrimonial.contentsValue}" class="slider" id="cvSlider">
+          <div class="slider-marks"><span>$50k</span><span>$500k</span><span>$1M</span><span>$2M</span></div>
+        </div>`,
+      addons:()=>{
+        const ad = state.patrimonial.addons;
+        const items = [[\rcfam','','RC familiar','Cubre daños que tú/familia causen a terceros',60],[\cristales','','Cristales y rotura','Ventanas, ventanales, espejos',40],[\equipos','','Equipos electrónicos extra','Cobertura adicional para laptops, cámaras',80],[\robosin','','Robo sin violencia','Si te roban sin forzar entrada',100]];
+        return `<div class="step-counter">Paso 3 de 3</div>
+        <h3 class="step-title">Coberturas extra</h3>
+        <p class="step-help">Protecciones adicionales recomendadas.</p>
+        <div class="opts">
+          ${items.map(([k,e,l,m,p])=>`<button class="opt ${ad.includes(k)?'selected':''}" data-padon="${k}" data-pcost="${p}"><div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div><span class="opt-pill">+$${p}/mes</span></button>`).join('')}
+        </div>`;
+      }
+    },
+    bind:()=>{
+      const h=document.getElementById('hvSlider');if(h)h.addEventListener('input',()=>{state.patrimonial.homeValue=parseInt(h.value);document.getElementById('hvVal').textContent='$'+fmt(parseInt(h.value));renderGenericQuote()});
+      const c=document.getElementById('cvSlider');if(c)c.addEventListener('input',()=>{state.patrimonial.contentsValue=parseInt(c.value);document.getElementById('cvVal').textContent='$'+fmt(parseInt(c.value));renderGenericQuote()});
+      document.querySelectorAll('[data-padon]').forEach(b=>b.addEventListener('click',()=>{
+        const k=b.dataset.padon;const i=state.patrimonial.addons.indexOf(k);
+        if(i>=0)state.patrimonial.addons.splice(i,1);else state.patrimonial.addons.push(k);
+        renderGeneric();renderGenericQuote();
+      }));
+    },
+    price:()=>{
+      let base = (state.patrimonial.homeValue * 0.0008/12) + (state.patrimonial.contentsValue * 0.002/12);
+      const costs = {rcfam:60,cristales:40,equipos:80,robosin:100};
+      const ad = state.patrimonial.addons.reduce((s,k)=>s+(costs[k]||0),0);
+      return Math.round(base + ad);
+    },
+    summary:()=>{
+      const lines = [
+        ['Valor casa','$'+fmt(state.patrimonial.homeValue)],
+        ['Contenidos','$'+fmt(state.patrimonial.contentsValue)]
+      ];
+      if(state.patrimonial.addons.length){
+        lines.push(['Extras',state.patrimonial.addons.map(k=>({rcfam:'RC familiar',cristales:'Cristales',equipos:'Electrónicos',robosin:'Robo sin violencia'}[k])).join(', ')]);
+      }
+      return lines;
+    }
+  }
+};
+function renderGeneric(){
+  const flow = GENERIC_FLOWS[state.type];
+  const stepKey = flow.steps[state[state.type].step];
+  document.getElementById('genContent').innerHTML = flow.render[stepKey]();
+  document.getElementById('genQuoteTitle').textContent = flow.title;
+  flow.bind();
+  document.getElementById('genBack').textContent = state[state.type].step===0 ? '← Cambiar tipo' : '← Atrás';
+  document.getElementById('genNext').textContent = state[state.type].step===flow.steps.length-1 ? 'Continuar →' : 'Siguiente →';
+}
+function renderGenericQuote(){
+  const flow = GENERIC_FLOWS[state.type];
+  const p = flow.price();
+  document.getElementById('genAmount').textContent = fmt(p);
+  document.getElementById('genSummary').innerHTML = flow.summary().map(([l,v])=>`<div class="quote-line"><span class="lbl">${l}</span><span class="val">${v}</span></div>`).join('');
+}
+document.getElementById('genBack').addEventListener('click',()=>{
+  const cur = state[state.type];
+  if(cur.step===0)go('stage-type');else{cur.step--;renderGeneric()}
+});
+document.getElementById('genNext').addEventListener('click',()=>{
+  const flow = GENERIC_FLOWS[state.type];
+  const cur = state[state.type];
+  if(cur.step<flow.steps.length-1){cur.step++;renderGeneric()}
+  else {state.finalAmount=flow.price();state.finalSummaryLines=flow.summary();go('stage-contact')}
+});
+
+/* ============ CONTACT ============ */
+document.getElementById('cBack').addEventListener('click',()=>{
+  if(state.type==='gmm') go('stage-gmm');
+  else if(state.type==='auto') go('stage-auto');
+  else go('stage-generic');
+});
+document.getElementById('cSubmit').addEventListener('click',()=>{
+  state.contact.name = document.getElementById('cName').value.trim();
+  state.contact.phone = document.getElementById('cPhone').value.trim();
+  state.contact.email = document.getElementById('cEmail').value.trim();
+  state.contact.city = document.getElementById('cCity').value.trim();
+  state.contact.timing = document.getElementById('cTiming').value;
+  if(!state.contact.name || !state.contact.phone){
+    showInfo('','Faltan datos','Por favor ingresa al menos tu nombre y WhatsApp para que Andy pueda contactarte.');
+    return;
+  }
+  renderFinal();
+  go('stage-final');
+  fireConfetti();
+});
+
+/* ============ FINAL ============ */
+function renderFinal(){
+  const productNames = {gmm:'Plan Gastos Médicos Mayores',auto:'Plan Auto',vida:'Plan Vida',mascota:'Plan Mascota',ahorro:'Plan Ahorro / Retiro',patrimonial:'Plan Casa / Patrimonial'};
+  document.getElementById('fName').textContent = state.contact.name.split(' ')[0] || 'amig@';
+  document.getElementById('fProductName').textContent = productNames[state.type];
+  document.getElementById('fAmount').textContent = fmt(state.finalAmount);
+  document.getElementById('fSummary').innerHTML = state.finalSummaryLines.map(([l,v])=>`<div class="quote-line"><span class="lbl">${l}</span><span class="val">${v}</span></div>`).join('');
+}
+document.getElementById('fWhats').addEventListener('click',()=>{
+  const product = {gmm:'Gastos Médicos Mayores',auto:'Auto',vida:'Vida',mascota:'Mascota',ahorro:'Ahorro/Retiro',patrimonial:'Casa/Patrimonial'}[state.type];
+  let msg = `Hola Andy! Soy ${state.contact.name}.\n\nCompleté la pre-cotización en tu landing:\n\n`;
+  msg += `*Producto:* ${product}\n`;
+  msg += `*Pre-cotización:* $${fmt(state.finalAmount)}/mes (simulada)\n\n`;
+  msg += `*Mi configuración:*\n`;
+  state.finalSummaryLines.forEach(([l,v])=>msg+=`• ${l}: ${v}\n`);
+  msg += `\n*Mis datos:*\n`;
+  msg += `Tel: ${state.contact.phone}\n`;
+  if(state.contact.email) msg += `Email: ${state.contact.email}\n`;
+  if(state.contact.city) msg += `Ciudad: ${state.contact.city}\n`;
+  msg += `Timing: ${({ya:'lo antes posible',mes:'en 1 mes','3meses':'en 3 meses',explorando:'explorando'}[state.contact.timing])}\n\n`;
+  msg += `¿Cuándo nos podemos hablar?`;
+  const url = 'https://wa.me/529981633443?text='+encodeURIComponent(msg);
+  window.open(url,'_blank');
+});
+
+/* ============ CONFETTI ============ */
+function fireConfetti(){
+  const colors = ['#F26A2E','#1E3A5F','#FFFFFF','#F2B544'];
+  const c = document.createElement('canvas');
+  c.className='confetti';
+  c.width=window.innerWidth;c.height=window.innerHeight;
+  document.body.appendChild(c);
+  const ctx = c.getContext('2d');
+  const pieces = [];
+  for(let i=0;i<140;i++){
+    pieces.push({x:Math.random()*c.width,y:-20,vx:(Math.random()-.5)*4,vy:Math.random()*4+2,size:Math.random()*8+4,color:colors[Math.floor(Math.random()*colors.length)],rot:Math.random()*Math.PI});
+  }
+  let frames=0;
+  function tick(){
+    ctx.clearRect(0,0,c.width,c.height);
+    pieces.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;p.rot+=.05;p.vy+=.03;
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);
+      ctx.fillStyle=p.color;ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size);
+      ctx.restore();
+    });
+    frames++;
+    if(frames<260)requestAnimationFrame(tick);
+    else c.remove();
+  }
+  tick();
+}
+
+/* ============ INIT ============ */
+updateProgress('stage-hero');
+</script>
+</body>
+</html>
