@@ -670,6 +670,81 @@ img{max-width:100%;display:block}
 .text-center{text-align:center}
 .hidden{display:none!important}
 
+/* ============ GAMIFY (classy) ============ */
+/* Reveal stagger for type cards */
+.stage.active .type-card{animation:revealUp .55s cubic-bezier(.2,.7,.3,1) backwards}
+.stage.active .type-card:nth-child(1){animation-delay:.04s}
+.stage.active .type-card:nth-child(2){animation-delay:.10s}
+.stage.active .type-card:nth-child(3){animation-delay:.16s}
+.stage.active .type-card:nth-child(4){animation-delay:.22s}
+.stage.active .type-card:nth-child(5){animation-delay:.28s}
+.stage.active .type-card:nth-child(6){animation-delay:.34s}
+@keyframes revealUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+/* Soft pulse on option select */
+.opt.selected{animation:selectPulse .42s cubic-bezier(.2,.7,.3,1)}
+@keyframes selectPulse{
+  0%{box-shadow:0 0 0 0 rgba(242,106,46,0)}
+  50%{box-shadow:0 0 0 6px rgba(242,106,46,.18)}
+  100%{box-shadow:0 0 0 0 rgba(242,106,46,0)}
+}
+
+/* Live quote — value pulses orange when it changes; lines slide in when new */
+.quote-line{animation:lineEnter .42s cubic-bezier(.2,.7,.3,1) both}
+.quote-line.changed .val{animation:valFlash .55s cubic-bezier(.2,.7,.3,1)}
+@keyframes lineEnter{
+  from{opacity:0;transform:translateX(10px)}
+  to{opacity:1;transform:translateX(0)}
+}
+@keyframes valFlash{
+  0%{color:rgba(255,255,255,.95);text-shadow:0 0 0 rgba(242,106,46,0)}
+  35%{color:#FFB98C;text-shadow:0 0 14px rgba(242,106,46,.55)}
+  100%{color:rgba(255,255,255,.95);text-shadow:0 0 0 rgba(242,106,46,0)}
+}
+
+/* Quote amount: subtle breathing when updating */
+.quote-amount.updating{animation:amountBreathe .5s cubic-bezier(.2,.7,.3,1)}
+@keyframes amountBreathe{
+  0%{transform:scale(1)}
+  45%{transform:scale(1.04);text-shadow:0 0 30px rgba(242,106,46,.35)}
+  100%{transform:scale(1)}
+}
+
+/* Step dots — replace bare counter */
+.step-dots{
+  display:flex;align-items:center;gap:6px;
+  margin-bottom:12px;
+}
+.step-dot{
+  width:24px;height:4px;border-radius:99px;
+  background:var(--gray-100);
+  transition:background .3s ease, width .3s ease;
+}
+.step-dot.done{background:var(--orange-light)}
+.step-dot.current{background:var(--orange);width:36px}
+.step-dots-label{
+  font-size:11px;font-weight:700;letter-spacing:1.2px;
+  color:var(--orange);text-transform:uppercase;
+  margin-left:6px;
+}
+
+/* Wizard step content slide */
+.wizard-main > div:first-child{animation:stepSlide .42s cubic-bezier(.2,.7,.3,1)}
+@keyframes stepSlide{
+  from{opacity:0;transform:translateX(18px)}
+  to{opacity:1;transform:translateX(0)}
+}
+
+/* Final amount dramatic count-up */
+.final-amount.counting{animation:finalReveal .8s cubic-bezier(.2,.7,.3,1)}
+@keyframes finalReveal{
+  from{opacity:0;transform:translateY(20px) scale(.92)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* Card hover micro-tilt */
+.type-card{transition:transform .35s cubic-bezier(.2,.7,.3,1),box-shadow .35s,border-color .35s}
+
 /* ============ MOBILE TWEAKS ============ */
 @media(max-width:640px){
   .topbar{flex-wrap:wrap;gap:10px;padding:10px 16px}
@@ -1113,6 +1188,53 @@ function info(key){const i = INFO[key];if(i)showInfo(i.icon,i.title,i.body)}
 function fmt(n){return n.toLocaleString('es-MX',{maximumFractionDigits:0})}
 function fmtMx(n){return '$'+fmt(n)}
 
+/* ============ GAMIFY HELPERS ============ */
+const _amountState = new WeakMap();
+function setAmount(el, target, duration=520){
+  if(!el) return;
+  const from = _amountState.get(el) ?? 0;
+  if(target === from && el.textContent !== '—'){return}
+  _amountState.set(el, target);
+  const wrap = el.closest('.quote-amount,.final-amount');
+  if(wrap){wrap.classList.remove('updating');void wrap.offsetWidth;wrap.classList.add('updating')}
+  const start = performance.now();
+  function tick(now){
+    const t = Math.min(1, (now-start)/duration);
+    const eased = 1 - Math.pow(1-t, 3);
+    const v = Math.round(from + (target-from)*eased);
+    el.textContent = fmt(v);
+    if(t<1) requestAnimationFrame(tick);
+    else el.textContent = fmt(target);
+  }
+  requestAnimationFrame(tick);
+}
+
+const _summaryState = new Map();
+function renderSummary(containerId, lines){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  const prev = _summaryState.get(containerId) || [];
+  const html = lines.map((line, i)=>{
+    const [l, v] = line;
+    const prevLine = prev[i];
+    const isNew = !prevLine || prevLine[0] !== l;
+    const valChanged = prevLine && prevLine[0] === l && prevLine[1] !== v;
+    const cls = isNew ? '' : (valChanged ? 'changed' : 'static');
+    const style = isNew ? '' : 'animation:none;opacity:1;transform:none;';
+    return `<div class="quote-line ${cls}" style="${style}"><span class="lbl">${l}</span><span class="val">${v}</span></div>`;
+  }).join('');
+  el.innerHTML = html;
+  _summaryState.set(containerId, lines.map(l=>l.slice()));
+}
+
+function stepDotsHTML(currentStep, totalSteps, label){
+  const dots = Array.from({length:totalSteps}, (_,i)=>{
+    const cls = i < currentStep ? 'done' : (i === currentStep ? 'current' : '');
+    return `<span class="step-dot ${cls}"></span>`;
+  }).join('');
+  return `<div class="step-dots">${dots}<span class="step-dots-label">${label||''}</span></div>`;
+}
+
 /* ============================================== */
 /* ============ GMM WIZARD ====================== */
 /* ============================================== */
@@ -1135,7 +1257,7 @@ function renderGmm(){
   document.getElementById('gmmNext').textContent = state.gmm.step===gmmSteps.length-1 ? 'Continuar →' : 'Siguiente →';
 }
 function gmmStepWho(){
-  return `<div class="step-counter">Paso 1 de ${gmmSteps.length}</div>
+  return `${stepDotsHTML(0, gmmSteps.length)}
   <h3 class="step-title">¿Quién va a estar cubierto?</h3>
   <p class="step-help">Esto cambia mucho la prima. Un plan familiar es proporcionalmente más barato que individuales separados.</p>
   <div class="opts opts-3">
@@ -1146,7 +1268,7 @@ function gmmStepWho(){
   </div>`;
 }
 function gmmStepAge(){
-  return `<div class="step-counter">Paso 2 de ${gmmSteps.length}</div>
+  return `${stepDotsHTML(1, gmmSteps.length)}
   <h3 class="step-title">¿Tu edad?</h3>
   <p class="step-help">Es el factor #1 que define la prima. Cada año que pasa sube ~3%.</p>
   <div class="slider-wrap">
@@ -1167,7 +1289,7 @@ function gmmStepAge(){
   </div>`;
 }
 function gmmStepHealth(){
-  return `<div class="step-counter">Paso 3 de ${gmmSteps.length}</div>
+  return `${stepDotsHTML(2, gmmSteps.length)}
   <h3 class="step-title">Hábitos y salud
     <button class="info-btn" onclick="info('preexisting')">?</button>
   </h3>
@@ -1183,7 +1305,7 @@ function gmmStepDeductible(){
   const ex = 80000;
   const youPay = Math.min(val,ex);
   const insPay = Math.max(0,ex-val);
-  return `<div class="step-counter">Paso 4 de ${gmmSteps.length}</div>
+  return `${stepDotsHTML(3, gmmSteps.length)}
   <h3 class="step-title">Elige tu deducible
     <button class="info-btn" onclick="info('deductible')">?</button>
   </h3>
@@ -1211,7 +1333,7 @@ function gmmStepDeductible(){
   </div>`;
 }
 function gmmStepCoinsurance(){
-  return `<div class="step-counter">Paso 5 de ${gmmSteps.length}</div>
+  return `${stepDotsHTML(4, gmmSteps.length)}
   <h3 class="step-title">Coaseguro
     <button class="info-btn" onclick="info('coinsurance')">?</button>
   </h3>
@@ -1241,7 +1363,7 @@ function gmmStepCoinsurance(){
   </div>`;
 }
 function gmmStepHospital(){
-  return `<div class="step-counter">Paso 6 de ${gmmSteps.length}</div>
+  return `${stepDotsHTML(5, gmmSteps.length)}
   <h3 class="step-title">Nivel hospitalario
     <button class="info-btn" onclick="info('hospitalTier')">?</button>
   </h3>
@@ -1283,7 +1405,7 @@ function gmmStepHospital(){
   </div>`;
 }
 function gmmStepSum(){
-  return `<div class="step-counter">Paso 7 de ${gmmSteps.length}</div>
+  return `${stepDotsHTML(6, gmmSteps.length)}
   <h3 class="step-title">Suma asegurada
     <button class="info-btn" onclick="info('sumInsured')">?</button>
   </h3>
@@ -1303,7 +1425,7 @@ function gmmStepAddons(){
     ['vision','','Visión','Lentes, exámenes, cirugía láser',160],
     ['graves','','Enfermedades graves','Cáncer, infarto, ACV — pago suma fija',450]
   ];
-  return `<div class="step-counter">Paso 8 de ${gmmSteps.length}</div>
+  return `${stepDotsHTML(7, gmmSteps.length)}
   <h3 class="step-title">Coberturas opcionales</h3>
   <p class="step-help">Suma a tu prima base. Puedes agregar las que quieras o ninguna.</p>
   <div class="opts">
@@ -1370,9 +1492,8 @@ function gmmSummaryLines(){
 }
 function renderGmmQuote(){
   const p = gmmCalcPrice();
-  document.getElementById('gmmAmount').textContent = fmt(p);
-  const lines = gmmSummaryLines();
-  document.getElementById('gmmSummary').innerHTML = lines.map(([l,v])=>`<div class="quote-line"><span class="lbl">${l}</span><span class="val">${v}</span></div>`).join('');
+  setAmount(document.getElementById('gmmAmount'), p);
+  renderSummary('gmmSummary', gmmSummaryLines());
 }
 document.getElementById('gmmBack').addEventListener('click',()=>{
   if(state.gmm.step===0)go('stage-hero');else{state.gmm.step--;renderGmm()}
@@ -1399,7 +1520,7 @@ function renderAuto(){
   document.getElementById('autoNext').textContent = state.auto.step===autoSteps.length-1 ? 'Continuar →' : 'Siguiente →';
 }
 function autoStepBasic(){
-  return `<div class="step-counter">Paso 1 de ${autoSteps.length}</div>
+  return `${stepDotsHTML(0, autoSteps.length)}
   <h3 class="step-title">Tu auto</h3>
   <p class="step-help">Marca, modelo y año. Esto define la base del precio.</p>
   <div class="field-grid">
@@ -1415,7 +1536,7 @@ function autoStepBasic(){
   </div>`;
 }
 function autoStepUse(){
-  return `<div class="step-counter">Paso 2 de ${autoSteps.length}</div>
+  return `${stepDotsHTML(1, autoSteps.length)}
   <h3 class="step-title">¿Para qué lo usas?</h3>
   <p class="step-help">Uso comercial sube prima ~30%. Las aseguradoras lo verifican: si reportas particular y lo usas para Uber/reparto, no te pagan en siniestro.</p>
   <div class="opts opts-2">
@@ -1428,7 +1549,7 @@ function autoStepUse(){
   </div>`;
 }
 function autoStepCoverage(){
-  return `<div class="step-counter">Paso 3 de ${autoSteps.length}</div>
+  return `${stepDotsHTML(2, autoSteps.length)}
   <h3 class="step-title">Tipo de cobertura
     <button class="info-btn" onclick="info('coverageType')">?</button>
   </h3>
@@ -1453,11 +1574,11 @@ function autoStepCoverage(){
 }
 function autoStepDeductible(){
   if(state.auto.coverage==='rc'){
-    return `<div class="step-counter">Paso 4 de ${autoSteps.length}</div>
+    return `${stepDotsHTML(3, autoSteps.length)}
     <h3 class="step-title">RC no tiene deducible</h3>
     <p class="step-help">Como Responsabilidad Civil solo cubre a terceros, no aplica deducible. Saltamos al siguiente.</p>`;
   }
-  return `<div class="step-counter">Paso 4 de ${autoSteps.length}</div>
+  return `${stepDotsHTML(3, autoSteps.length)}
   <h3 class="step-title">Deducible
     <button class="info-btn" onclick="info('deductibleAuto')">?</button>
   </h3>
@@ -1485,7 +1606,7 @@ function autoStepAddons(){
     ['legal','','Asistencia legal','Abogado en accidentes, defensa',60],
     ['cero','','Deducible 0 en accidente','Si chocas, no pagas nada de deducible',180]
   ];
-  return `<div class="step-counter">Paso 5 de ${autoSteps.length}</div>
+  return `${stepDotsHTML(4, autoSteps.length)}
   <h3 class="step-title">Extras (opcional)</h3>
   <p class="step-help">Servicios que valen la pena evaluar.</p>
   <div class="opts">
@@ -1545,9 +1666,8 @@ function autoSummaryLines(){
   return lines;
 }
 function renderAutoQuote(){
-  document.getElementById('autoAmount').textContent = fmt(autoCalcPrice());
-  const lines = autoSummaryLines();
-  document.getElementById('autoSummary').innerHTML = lines.map(([l,v])=>`<div class="quote-line"><span class="lbl">${l}</span><span class="val">${v}</span></div>`).join('');
+  setAmount(document.getElementById('autoAmount'), autoCalcPrice());
+  renderSummary('autoSummary', autoSummaryLines());
 }
 document.getElementById('autoBack').addEventListener('click',()=>{if(state.auto.step===0)go('stage-hero');else{state.auto.step--;renderAuto()}});
 document.getElementById('autoNext').addEventListener('click',()=>{
@@ -1563,7 +1683,7 @@ const GENERIC_FLOWS = {
     title:'Plan Vida',
     steps:['age','sumInsured','term'],
     render:{
-      age:()=>`<div class="step-counter">Paso 1 de 3</div>
+      age:()=>`${stepDotsHTML(0, 3)}
         <h3 class="step-title">Tu edad y hábitos</h3>
         <p class="step-help">Vida cotiza por edad y si fumas. Honestidad obligatoria. <button class="info-btn" onclick="info('smoker')">?</button></p>
         <div class="slider-wrap">
@@ -1574,13 +1694,13 @@ const GENERIC_FLOWS = {
           <button class="opt ${!state.vida.smoker?'selected':''}" data-vsmoker="false"><div class="opt-body"><div class="opt-label">No fumo</div></div></button>
           <button class="opt ${state.vida.smoker?'selected':''}" data-vsmoker="true"><div class="opt-body"><div class="opt-label">Sí fumo</div><div class="opt-meta">+40% en prima vs no fumador</div></div></button>
         </div>`,
-      sumInsured:()=>`<div class="step-counter">Paso 2 de 3</div>
+      sumInsured:()=>`${stepDotsHTML(1, 3)}
         <h3 class="step-title">¿Cuánto recibe tu familia si tú faltas?</h3>
         <p class="step-help">Regla común: 5-10x tu ingreso anual. Suficiente para cubrir hipoteca, educación de hijos, gastos por años.</p>
         <div class="opts opts-3">
           ${[1,2,5,10].map(v=>`<button class="opt ${state.vida.sumInsured===v?'selected':''}" data-vsum="${v}"><div class="opt-body"><div class="opt-label">$${v}M</div><div class="opt-meta">${v===1?'mínimo':v===2?'común':v===5?'recomendado':'protección alta'}</div></div></button>`).join('')}
         </div>`,
-      term:()=>`<div class="step-counter">Paso 3 de 3</div>
+      term:()=>`${stepDotsHTML(2, 3)}
         <h3 class="step-title">Plazo del seguro</h3>
         <p class="step-help">Vida temporal: cubre x años, prima fija. Vida permanente: dura toda la vida (más cara, pero acumula valor).</p>
         <div class="opts opts-3">
@@ -1614,7 +1734,7 @@ const GENERIC_FLOWS = {
     title:'GNP Mi Mascota',
     steps:['species','sumInsured','deductible','addons'],
     render:{
-      species:()=>`<div class="step-counter">Paso 1 de 4</div>
+      species:()=>`${stepDotsHTML(0, 4)}
         <h3 class="step-title">Tu mascota
           <button class="info-btn" onclick="info('petPlan')">?</button>
         </h3>
@@ -1628,7 +1748,7 @@ const GENERIC_FLOWS = {
           <input type="range" min="0" max="9" value="${state.mascota.petAge}" class="slider" id="petAgeSlider">
           <div class="slider-marks"><span>3 meses</span><span>5</span><span>9 años</span></div>
         </div>`,
-      sumInsured:()=>`<div class="step-counter">Paso 2 de 4</div>
+      sumInsured:()=>`${stepDotsHTML(1, 4)}
         <h3 class="step-title">Suma asegurada anual</h3>
         <p class="step-help">El máximo que GNP cubrirá en gastos médicos veterinarios al año. Una cirugía mayor en perro grande puede pasar fácil de $30,000.</p>
         <div class="slider-wrap">
@@ -1636,7 +1756,7 @@ const GENERIC_FLOWS = {
           <input type="range" min="15000" max="80000" step="5000" value="${state.mascota.sumInsured}" class="slider" id="petSumSlider">
           <div class="slider-marks"><span>$15k</span><span>$30k</span><span>$50k</span><span>$80k</span></div>
         </div>`,
-      deductible:()=>`<div class="step-counter">Paso 3 de 4</div>
+      deductible:()=>`${stepDotsHTML(2, 4)}
         <h3 class="step-title">Deducible por evento</h3>
         <p class="step-help">Lo que pagas tú antes de que GNP cubra. Aplica por cada evento, no anual.</p>
         <div class="opts opts-3">
@@ -1645,7 +1765,7 @@ const GENERIC_FLOWS = {
       addons:()=>{
         const ad = state.mascota.addons;
         const items = [['fallece','','Fallecimiento','Indemnización por fallecimiento por enfermedad o accidente',60],['robo','','Robo con violencia','Indemnización tras acta del MP',40],['rc','','RC mascota ampliada','Daños a terceros — la mordida importa',45]];
-        return `<div class="step-counter">Paso 4 de 4</div>
+        return `${stepDotsHTML(3, 4)}
         <h3 class="step-title">Coberturas opcionales</h3>
         <p class="step-help">Periodos de espera de GNP: <strong>10 días para accidentes, 180 días para enfermedades</strong>. Aplica desde la firma.</p>
         <div class="opts">
@@ -1690,20 +1810,20 @@ const GENERIC_FLOWS = {
     title:'Plan Ahorro / Retiro',
     steps:['age','horizon','monthly','risk'],
     render:{
-      age:()=>`<div class="step-counter">Paso 1 de 4</div>
+      age:()=>`${stepDotsHTML(0, 4)}
         <h3 class="step-title">¿Cuántos años tienes?</h3>
         <p class="step-help">Mientras más joven, más se compone tu ahorro. Sí, importa.</p>
         <div class="slider-wrap">
           <div class="slider-row"><div><span class="slider-value" id="ahAgeVal">${state.ahorro.age}</span><span class="slider-suffix">años</span></div></div>
           <input type="range" min="20" max="60" value="${state.ahorro.age}" class="slider" id="ahAgeSlider">
         </div>`,
-      horizon:()=>`<div class="step-counter">Paso 2 de 4</div>
+      horizon:()=>`${stepDotsHTML(1, 4)}
         <h3 class="step-title">¿En cuántos años quieres tu dinero?</h3>
         <p class="step-help">Plazos largos permiten más rendimiento. Plazos cortos protegen capital.</p>
         <div class="opts opts-3">
           ${[5,10,20,30].map(v=>`<button class="opt ${state.ahorro.horizon===v?'selected':''}" data-ahorizon="${v}"><div class="opt-body"><div class="opt-label">${v} años</div></div></button>`).join('')}
         </div>`,
-      monthly:()=>`<div class="step-counter">Paso 3 de 4</div>
+      monthly:()=>`${stepDotsHTML(2, 4)}
         <h3 class="step-title">¿Cuánto puedes ahorrar al mes?</h3>
         <p class="step-help">Cualquier monto cuenta. Lo importante es la consistencia.</p>
         <div class="slider-wrap">
@@ -1711,7 +1831,7 @@ const GENERIC_FLOWS = {
           <input type="range" min="500" max="20000" step="500" value="${state.ahorro.monthly}" class="slider" id="ahMSlider">
           <div class="slider-marks"><span>$500</span><span>$5k</span><span>$10k</span><span>$20k</span></div>
         </div>`,
-      risk:()=>`<div class="step-counter">Paso 4 de 4</div>
+      risk:()=>`${stepDotsHTML(3, 4)}
         <h3 class="step-title">Tu perfil de riesgo</h3>
         <p class="step-help">Define la cartera del PPR. Más exposición a renta variable internacional eleva el rendimiento esperado y la volatilidad.</p>
         <div class="opts opts-3">
@@ -1746,7 +1866,7 @@ const GENERIC_FLOWS = {
     title:'Plan Casa / Patrimonial',
     steps:['homeValue','contentsValue','addons'],
     render:{
-      homeValue:()=>`<div class="step-counter">Paso 1 de 3</div>
+      homeValue:()=>`${stepDotsHTML(0, 3)}
         <h3 class="step-title">Valor de tu casa</h3>
         <p class="step-help">Valor de reconstrucción, no comercial. Cuánto costaría reconstruirla si se quema/colapsa.</p>
         <div class="slider-wrap">
@@ -1754,7 +1874,7 @@ const GENERIC_FLOWS = {
           <input type="range" min="500000" max="10000000" step="100000" value="${state.patrimonial.homeValue}" class="slider" id="hvSlider">
           <div class="slider-marks"><span>$500k</span><span>$2M</span><span>$5M</span><span>$10M</span></div>
         </div>`,
-      contentsValue:()=>`<div class="step-counter">Paso 2 de 3</div>
+      contentsValue:()=>`${stepDotsHTML(1, 3)}
         <h3 class="step-title">Valor de los contenidos</h3>
         <p class="step-help">Muebles, electrónicos, ropa, joyas. Lo que hay <em>dentro</em> de tu casa.</p>
         <div class="slider-wrap">
@@ -1765,7 +1885,7 @@ const GENERIC_FLOWS = {
       addons:()=>{
         const ad = state.patrimonial.addons;
         const items = [['rcfam','','RC familiar','Cubre daños que tú/familia causen a terceros',60],['cristales','','Cristales y rotura','Ventanas, ventanales, espejos',40],['equipos','','Equipos electrónicos extra','Cobertura adicional para laptops, cámaras',80],['robosin','','Robo sin violencia','Si te roban sin forzar entrada',100]];
-        return `<div class="step-counter">Paso 3 de 3</div>
+        return `${stepDotsHTML(2, 3)}
         <h3 class="step-title">Coberturas extra</h3>
         <p class="step-help">Protecciones adicionales recomendadas.</p>
         <div class="opts">
@@ -1811,9 +1931,8 @@ function renderGeneric(){
 }
 function renderGenericQuote(){
   const flow = GENERIC_FLOWS[state.type];
-  const p = flow.price();
-  document.getElementById('genAmount').textContent = fmt(p);
-  document.getElementById('genSummary').innerHTML = flow.summary().map(([l,v])=>`<div class="quote-line"><span class="lbl">${l}</span><span class="val">${v}</span></div>`).join('');
+  setAmount(document.getElementById('genAmount'), flow.price());
+  renderSummary('genSummary', flow.summary());
 }
 document.getElementById('genBack').addEventListener('click',()=>{
   const cur = state[state.type];
@@ -1844,7 +1963,6 @@ document.getElementById('cSubmit').addEventListener('click',()=>{
   }
   renderFinal();
   go('stage-final');
-  fireConfetti();
 });
 
 /* ============ FINAL ============ */
@@ -1852,8 +1970,15 @@ function renderFinal(){
   const productNames = {gmm:'Plan Gastos Médicos Mayores',auto:'Plan Auto',vida:'Plan Vida',mascota:'Plan Mascota',ahorro:'Plan Ahorro / Retiro',patrimonial:'Plan Casa / Patrimonial'};
   document.getElementById('fName').textContent = state.contact.name.split(' ')[0] || 'amig@';
   document.getElementById('fProductName').textContent = productNames[state.type];
-  document.getElementById('fAmount').textContent = fmt(state.finalAmount);
-  document.getElementById('fSummary').innerHTML = state.finalSummaryLines.map(([l,v])=>`<div class="quote-line"><span class="lbl">${l}</span><span class="val">${v}</span></div>`).join('');
+  const fAmt = document.getElementById('fAmount');
+  const fAmtWrap = fAmt.closest('.final-amount');
+  fAmtWrap.classList.remove('counting');void fAmtWrap.offsetWidth;fAmtWrap.classList.add('counting');
+  fAmt.textContent = '0';
+  _amountState.set(fAmt, 0);
+  setTimeout(()=>setAmount(fAmt, state.finalAmount, 1100), 250);
+  // Render summary with subtle stagger via animation delay
+  const lines = state.finalSummaryLines;
+  document.getElementById('fSummary').innerHTML = lines.map(([l,v],i)=>`<div class="quote-line" style="animation-delay:${.4+i*.07}s"><span class="lbl">${l}</span><span class="val">${v}</span></div>`).join('');
 }
 document.getElementById('fWhats').addEventListener('click',()=>{
   const product = {gmm:'Gastos Médicos Mayores',auto:'Auto',vida:'Vida',mascota:'Mascota',ahorro:'Ahorro/Retiro',patrimonial:'Casa/Patrimonial'}[state.type];
