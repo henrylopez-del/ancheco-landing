@@ -348,9 +348,7 @@ img{max-width:100%;display:block}
   gap:32px;
   align-items:start;
 }
-@media(max-width:900px){
-  .wizard{grid-template-columns:1fr}
-}
+/* wizard collapse handled in MOBILE TWEAKS section below (with order:-1 for quote panel) */
 .wizard-main{
   background:var(--white);
   border-radius:var(--radius-lg);
@@ -800,15 +798,118 @@ img{max-width:100%;display:block}
 .type-card{transition:transform .35s cubic-bezier(.2,.7,.3,1),box-shadow .35s,border-color .35s}
 
 /* ============ MOBILE TWEAKS ============ */
+/* Tablet (≤900px): wizard collapses to single column — quote panel must appear ABOVE wizard-main */
+@media(max-width:900px){
+  .wizard{grid-template-columns:1fr;gap:18px}
+  .quote-panel{
+    position:static;
+    order:-1;            /* force quote ABOVE form on mobile */
+    padding:20px 20px;
+  }
+  .quote-amount{font-size:38px}
+  .quote-summary{max-height:none;overflow-y:visible}
+}
+
+/* Small tablet / large phone (≤768px) */
+@media(max-width:768px){
+  .stages{padding:28px 18px 50px}
+  .wizard-main{padding:28px 22px;min-height:0}
+  .section-head{margin-bottom:28px}
+  .type-grid{gap:16px}
+  .type-card{min-height:240px}
+  .type-photo{height:120px}
+  .opts-2,.opts-3{grid-template-columns:1fr}
+  .hero-trust{gap:18px;margin-top:24px;padding-top:20px}
+  .trust-item{min-width:80px}
+}
+
+/* Phone (≤640px) */
 @media(max-width:640px){
-  .topbar{flex-wrap:wrap;gap:10px;padding:10px 16px}
-  .brand{font-size:18px}
+  .topbar{
+    flex-wrap:wrap;gap:8px;padding:10px 14px;
+  }
+  .brand{font-size:16px;letter-spacing:1px;gap:8px}
   .brand-mark{width:28px;height:28px}
-  .progress-wrap{flex-basis:100%;order:3}
-  .stages{padding:24px 16px 40px}
-  .wizard-main{padding:24px 20px}
-  .quote-panel{position:static;margin-bottom:18px}
-  .hero-trust{gap:24px}
+  .brand-tag{font-size:8px;letter-spacing:1px}
+  .progress-wrap{flex-basis:100%;order:3;max-width:none}
+  .progress-bar{height:6px}
+  .progress-label{font-size:10px;margin-top:3px}
+  .topbar-cta{font-size:12px;margin-left:auto}
+  .stages{padding:20px 14px 40px}
+  .intro{gap:14px;margin-bottom:22px}
+  .intro-portrait{width:64px;height:64px;border-width:2px}
+  .intro-sub{font-size:14px}
+  .intro-sub .hero-script{font-size:20px}
+  .wizard-main{padding:22px 18px}
+  .quote-panel{padding:18px 16px;border-radius:var(--radius-md)}
+  .quote-amount{font-size:34px}
+  .quote-amount .currency{font-size:18px}
+  .step-title{font-size:20px}
+  .step-help{font-size:13px;margin-bottom:18px}
+  .opt{padding:14px 14px;gap:12px;min-height:64px}
+  .opt-thumb{width:38px;height:38px}
+  .opt-label{font-size:14px}
+  .opt-meta{font-size:11px}
+  .explainer{padding:14px 16px;margin-bottom:18px}
+  .explainer-body{font-size:13px}
+  .explainer-block{padding:10px 12px;font-size:12px}
+  .viz{padding:14px}
+  .slider-value{font-size:28px}
+  .btn{padding:14px 22px;font-size:14px;gap:8px}
+  .btn-link{font-size:13px}
+  .wizard-nav{gap:10px;padding-top:18px}
+  .wizard-nav .btn{padding:14px 18px;flex:1;justify-content:center;min-height:48px}
+  /* Step dots: shrink so 8 dots fit in 320px */
+  .step-dots{gap:4px;flex-wrap:wrap}
+  .step-dot{width:18px;height:4px}
+  .step-dot.current{width:26px}
+  .step-dots-label{display:none}            /* hide label inline; current step is shown in step-title */
+  /* Modal */
+  .modal-backdrop{padding:12px}
+  .modal{padding:22px 18px;border-radius:var(--radius-md)}
+  .modal-title{font-size:19px}
+  .modal-body{font-size:13px}
+  .modal-close{width:30px;height:30px;top:10px;right:10px;font-size:16px}
+  /* Final */
+  .final-card{padding:24px 20px}
+  .final-amount{font-size:46px}
+  .final-amount .currency{font-size:24px}
+  .final-summary{padding:14px}
+  /* Footer */
+  .foot{padding:24px 16px;font-size:11px;line-height:1.6}
+  .hero-trust{gap:14px}
+  .trust-num{font-size:16px}
+}
+
+/* iPhone SE / very narrow (≤380px) */
+@media(max-width:380px){
+  .topbar{padding:8px 12px;gap:6px}
+  .brand{font-size:15px}
+  .brand-tag{display:none}
+  .topbar-cta{font-size:11px}
+  .stages{padding:16px 12px 32px}
+  .wizard-main{padding:18px 14px}
+  .quote-panel{padding:16px 14px}
+  .quote-amount{font-size:30px}
+  .step-title{font-size:18px}
+  .opt{padding:12px;gap:10px}
+  .btn{padding:12px 16px;font-size:13px}
+  .wizard-nav .btn{padding:12px 12px}
+  .modal{padding:18px 14px}
+  .modal-title{font-size:17px}
+  .step-dot{width:14px}
+  .step-dot.current{width:22px}
+  .final-amount{font-size:38px}
+  .final-amount .currency{font-size:20px}
+  .intro-portrait{width:56px;height:56px}
+  .type-card{min-height:220px}
+  .type-photo{height:110px}
+}
+
+/* Ensure all clickable elements meet 44px touch target on touch devices */
+@media(hover:none) and (pointer:coarse){
+  .btn,.opt,.type-card,.info-btn,.modal-close,.topbar-cta{min-height:44px}
+  .info-btn{width:28px;height:28px;font-size:13px}
 }
 </style>
 </head>
