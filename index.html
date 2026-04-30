@@ -1303,10 +1303,10 @@ function gmmStepSum(){
 function gmmStepAddons(){
   const ad = state.gmm.addons;
   const items = [
-    [\maternidad','','Maternidad','Embarazo, parto y complicaciones. 10 meses de espera.',380],
-    [\dental','','Dental','Limpiezas, ortodoncia, urgencias dentales',220],
-    [\vision','','Visión','Lentes, exámenes, cirugía láser',160],
-    [\graves','','Enfermedades graves','Cáncer, infarto, ACV — pago suma fija',450]
+    ['maternidad','','Maternidad','Embarazo, parto y complicaciones. 10 meses de espera.',380],
+    ['dental','','Dental','Limpiezas, ortodoncia, urgencias dentales',220],
+    ['vision','','Visión','Lentes, exámenes, cirugía láser',160],
+    ['graves','','Enfermedades graves','Cáncer, infarto, ACV — pago suma fija',450]
   ];
   return `<div class="step-counter">Paso 8 de ${gmmSteps.length}</div>
   <h3 class="step-title">Coberturas opcionales</h3>
@@ -1485,10 +1485,10 @@ function autoStepDeductible(){
 function autoStepAddons(){
   const ad = state.auto.addons;
   const items = [
-    [\vial','','Asistencia vial','Grúa, batería, llantas',80],
-    [\sustituto','','Auto sustituto','Auto rentado mientras reparan el tuyo',150],
-    [\legal','','Asistencia legal','Abogado en accidentes, defensa',60],
-    [\cero','','Deducible 0 en accidente','Si chocas, no pagas nada de deducible',180]
+    ['vial','','Asistencia vial','Grúa, batería, llantas',80],
+    ['sustituto','','Auto sustituto','Auto rentado mientras reparan el tuyo',150],
+    ['legal','','Asistencia legal','Abogado en accidentes, defensa',60],
+    ['cero','','Deducible 0 en accidente','Si chocas, no pagas nada de deducible',180]
   ];
   return `<div class="step-counter">Paso 5 de ${autoSteps.length}</div>
   <h3 class="step-title">Extras (opcional)</h3>
@@ -1649,7 +1649,7 @@ const GENERIC_FLOWS = {
         </div>`,
       addons:()=>{
         const ad = state.mascota.addons;
-        const items = [[\fallece','','Fallecimiento','Indemnización por fallecimiento por enfermedad o accidente',60],[\robo','','Robo con violencia','Indemnización tras acta del MP',40],[\rc','','RC mascota ampliada','Daños a terceros — la mordida importa',45]];
+        const items = [['fallece','','Fallecimiento','Indemnización por fallecimiento por enfermedad o accidente',60],['robo','','Robo con violencia','Indemnización tras acta del MP',40],['rc','','RC mascota ampliada','Daños a terceros — la mordida importa',45]];
         return `<div class="step-counter">Paso 4 de 4</div>
         <h3 class="step-title">Coberturas opcionales</h3>
         <p class="step-help">Periodos de espera de GNP: <strong>10 días para accidentes, 180 días para enfermedades</strong>. Aplica desde la firma.</p>
@@ -1769,7 +1769,7 @@ const GENERIC_FLOWS = {
         </div>`,
       addons:()=>{
         const ad = state.patrimonial.addons;
-        const items = [[\rcfam','','RC familiar','Cubre daños que tú/familia causen a terceros',60],[\cristales','','Cristales y rotura','Ventanas, ventanales, espejos',40],[\equipos','','Equipos electrónicos extra','Cobertura adicional para laptops, cámaras',80],[\robosin','','Robo sin violencia','Si te roban sin forzar entrada',100]];
+        const items = [['rcfam','','RC familiar','Cubre daños que tú/familia causen a terceros',60],['cristales','','Cristales y rotura','Ventanas, ventanales, espejos',40],['equipos','','Equipos electrónicos extra','Cobertura adicional para laptops, cámaras',80],['robosin','','Robo sin violencia','Si te roban sin forzar entrada',100]];
         return `<div class="step-counter">Paso 3 de 3</div>
         <h3 class="step-title">Coberturas extra</h3>
         <p class="step-help">Protecciones adicionales recomendadas.</p>
