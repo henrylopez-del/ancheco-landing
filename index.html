@@ -5,8 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ANCHECO — Encuentra tu seguro perfecto</title>
 <meta name="description" content="Cotiza tu seguro paso a paso con ANCHECO. Aprende mientras eliges. Paz, tranquilidad y confianza.">
+<meta name="theme-color" content="#F26A2E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://images.unsplash.com" crossorigin>
+<link rel="dns-prefetch" href="https://images.unsplash.com">
+<link rel="preload" as="image" href="assets/andy.webp" fetchpriority="high">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
 /* ============ ANCHECO BRAND TOKENS ============ */
@@ -127,8 +131,10 @@ img{max-width:100%;display:block}
   width:100%;
   max-width:1100px;
   animation:slideIn .55s var(--transition);
+  content-visibility:auto;
+  contain-intrinsic-size:auto 600px;
 }
-.stage.active{display:block}
+.stage.active{display:block;content-visibility:visible}
 @keyframes slideIn{
   from{opacity:0;transform:translateX(40px)}
   to{opacity:1;transform:translateX(0)}
@@ -291,6 +297,7 @@ img{max-width:100%;display:block}
   background-position:center;
   background-color:var(--navy-light);
   position:relative;
+  will-change:transform;
 }
 .type-photo::after{
   content:"";
@@ -701,10 +708,10 @@ img{max-width:100%;display:block}
             <div class="trust-item"><span class="trust-num">GNP</span><span class="trust-lbl">Aseguradora aliada</span></div>
             <div class="trust-item"><span class="trust-num">5 min</span><span class="trust-lbl">Cotización completa</span></div>
             <div class="trust-item"><span class="trust-num">Cancún</span><span class="trust-lbl">Q. Roo · presencial o remoto</span></div>
-            <div class="trust-item"><span class="trust-num">Sin spam</span><span class="trust-lbl">Solo Andy te contacta</span></div>
+            <div class="trust-item"><span class="trust-num">Personal</span><span class="trust-lbl">Andy te contacta directo</span></div>
           </div>
         </div>
-        <div class="hero-portrait" style="background-image:url('assets/andy.jpg'),url('https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=600&q=80')">
+        <div class="hero-portrait" style="background-image:url('assets/andy.webp')">
           <div class="hero-portrait-tag">
             <div class="who">Andy Cherro</div>
             <div class="role">Asesora GNP · ANCHECO</div>
@@ -722,42 +729,42 @@ img{max-width:100%;display:block}
       <div class="type-grid">
         <button class="type-card" data-type="gmm">
           <span class="type-badge popular">Más solicitado</span>
-          <div class="type-photo" style="background-image:url('https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=600&q=80')"></div>
+          <div class="type-photo" data-bg='https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=520&q=72&fm=webp'></div>
           <div class="type-body">
             <div class="type-name">Gastos Médicos Mayores</div>
             <div class="type-desc">Hospitalización, cirugías, enfermedades graves. Cubre lo que IMSS no.</div>
           </div>
         </button>
         <button class="type-card" data-type="auto">
-          <div class="type-photo" style="background-image:url('https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=600&q=80')"></div>
+          <div class="type-photo" data-bg='https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=520&q=72&fm=webp'></div>
           <div class="type-body">
             <div class="type-name">Auto</div>
             <div class="type-desc">Responsabilidad civil, robo total, daños materiales. Obligatorio en muchos estados.</div>
           </div>
         </button>
         <button class="type-card" data-type="vida">
-          <div class="type-photo" style="background-image:url('https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=600&q=80')"></div>
+          <div class="type-photo" data-bg='https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=520&q=72&fm=webp'></div>
           <div class="type-body">
             <div class="type-name">Vida</div>
             <div class="type-desc">Protección financiera para tu familia. Cubre hipoteca, educación, gastos.</div>
           </div>
         </button>
         <button class="type-card" data-type="mascota">
-          <div class="type-photo" style="background-image:url('https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80')"></div>
+          <div class="type-photo" data-bg='https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=520&q=72&fm=webp'></div>
           <div class="type-body">
             <div class="type-name">Mascota</div>
             <div class="type-desc">GNP Mi Mascota. Perros y gatos de 3 meses a 9 años. Suma y deducible modulares.</div>
           </div>
         </button>
         <button class="type-card" data-type="ahorro">
-          <div class="type-photo" style="background-image:url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=600&q=80')"></div>
+          <div class="type-photo" data-bg='https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=520&q=72&fm=webp'></div>
           <div class="type-body">
             <div class="type-name">Ahorro · Inversión · Retiro</div>
             <div class="type-desc">Plan Personal de Retiro con beneficios fiscales. Aportación deducible de ISR.</div>
           </div>
         </button>
         <button class="type-card" data-type="patrimonial">
-          <div class="type-photo" style="background-image:url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=600&q=80')"></div>
+          <div class="type-photo" data-bg='https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=520&q=72&fm=webp'></div>
           <div class="type-body">
             <div class="type-name">Casa / Patrimonial</div>
             <div class="type-desc">Hogar y contenidos. Incendio, robo, fenómenos naturales, RC familiar.</div>
@@ -1897,6 +1904,22 @@ function fireConfetti(){
   }
   tick();
 }
+
+/* ============ LAZY BG IMAGES ============ */
+const bgIO = new IntersectionObserver((entries,obs)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const el = e.target;
+      const url = el.dataset.bg;
+      if(url){
+        el.style.backgroundImage = `url(${url})`;
+        el.removeAttribute('data-bg');
+      }
+      obs.unobserve(el);
+    }
+  });
+},{rootMargin:'200px'});
+document.querySelectorAll('[data-bg]').forEach(el=>bgIO.observe(el));
 
 /* ============ INIT ============ */
 updateProgress('stage-hero');
