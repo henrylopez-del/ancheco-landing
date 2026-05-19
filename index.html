@@ -1357,7 +1357,7 @@ const INFO = {
     title:'Condiciones preexistentes',
     body:`<p>Cualquier diagnóstico, tratamiento o síntoma previo a la contratación. La aseguradora puede excluirlo de la cobertura, aplicar periodo de espera, o negar la póliza según el caso.</p>
     <p>No declararlo es causa de rescisión. Si se descubre durante un siniestro, la aseguradora puede negar el pago y cancelar la póliza completa.</p>
-    <p>Hay productos que cubren preexistentes después de 12-24 meses de espera. Andy revisa el caso específico antes de elegir aseguradora.</p>`
+    <p>GNP Personaliza Variable cubre preexistencias bajo dos rutas: (a) previa selección de riesgos, después de 6 meses a 2 años de vigencia según el padecimiento, siempre que no hayas tenido gastos ni tratamiento; (b) después de 5 años de vigencia sin tratamiento, hasta $500K (5-9 años) o $1M (10+ años). Andy revisa el caso antes de elegir aseguradora.</p>`
   },
   smoker:{
     icon:'',
@@ -1568,15 +1568,43 @@ function gmmStepHealth(){
       <div class="opt-body"><div class="opt-label">Sí fumo</div><div class="opt-meta">+15-25% en anualidad · declaración obligatoria</div></div>
     </button>
   </div>
-  <p class="step-help" style="margin-top:18px;font-size:12px;color:var(--gray-400)"><strong>Sobre condiciones preexistentes</strong> (diabetes, hipertensión, etc.): si las tienes, hay que declararlas. Algunos seguros las cubren después de 12-24 meses de espera. Andy te ayuda a elegir el producto correcto.</p>`;
+  <p class="step-help" style="margin-top:18px;font-size:12px;color:var(--gray-400)"><strong>Sobre condiciones preexistentes</strong> (diabetes, hipertensión, etc.): si las tienes, hay que declararlas. GNP cubre preexistencias después de 6 meses a 2 años de vigencia (con previa selección de riesgos), o después de 5 años sin tratamiento (cobertura $500K-$1M). Andy revisa cada caso.</p>`;
 }
 function gmmStepHospital(){
+  const hospitalsByRegion = {
+    qroo:{
+      A:'Amerimed, Cozumel International Clinic',
+      B:'Galenia, Costamed, Playamed',
+      C:'Hospiten, Quirúrgica del Sur, Clínica Carranza, Clínica Nazareth, Hospital de Tulum, Médica San Miguel Cozumel',
+      D:'Mayan Medical, Group Onco Center Cancún, UMIS (Unidad Médica Integral del Sur)'
+    },
+    yucatan:{
+      A:'Faro del Mayab',
+      B:'Star Médica, Mérida CEM, Clínica de Mérida, Medimac Mérida',
+      C:'Centro Médico de las Américas, Grupo Médico de Mérida, Centro Médico Americano',
+      D:'—'
+    },
+    cdmx:{
+      A:'ABC Observatorio, Hospital Ángeles Universidad, ABC Santa Fe, Hospital Ángeles del Pedregal',
+      B:'Médica Sur, Hospital Ángeles (Santa Mónica, Mocel, Roma, Clínica Londres, Metropolitano, Acoxpa, Lindavista, México), San Ángel Inn (Universidad, Sur, Chapultepec, Patriotismo), Hospital Español, HMG Coyoacán, Diomed, Centro Médico Dalinde, Hospital Infantil Privado',
+      C:'Star Médica Centro, Hospital Bite Médica, Centro Quirúrgico Río Consulado, Hospital MIG, Hospital Escandón, Hospital Mac La Viga, Medimac Cuemanco',
+      D:'Conde de Valenciana IAP, Unidad Oftalmológica del Valle, Centro Oftalmológico del Sur, Onco Quality Care, Superare, Medici, Laser Ocular Lomas, Clínica Quirúrgica Berlín, Centro Oncológico de Alta Especialidad, FUCAM, Clínica Atrys, San Ángel Inn del Valle, Elite Klinik'
+    }
+  };
+  if(!state.gmm.region) state.gmm.region = 'qroo';
+  const hb = hospitalsByRegion[state.gmm.region];
   const tiers = [
-    {k:'A', label:'Nivel A · Top tier', desc:'Hospitales premium del país', extra:`Coaseguro 20% · Tope ${fmtMx(94000)}`, rec:false, hospitales:'ABC, Ángeles del Pedregal, Amerimed, Cozumel International, Faro del Mayab'},
-    {k:'B', label:'Nivel B · Alta gama', desc:'Hospitales sólidos', extra:`Coaseguro 15% · Tope ${fmtMx(70000)}`, rec:true, hospitales:'Galenia, Médica Sur, Star Médica, Costamed, Playamed, Hospital Español, Mérida CEM'},
-    {k:'C', label:'Nivel C · Gama media', desc:'Privados regionales', extra:`Coaseguro 10% · Tope ${fmtMx(53000)}`, rec:false, hospitales:'Hospiten, Quirúrgica del Sur, Hospital de Tulum, CMA Mérida'},
-    {k:'D', label:'Nivel D · Clínicas de corta estancia', desc:'Privados básicos', extra:`Coaseguro 5% · Tope ${fmtMx(35000)}`, rec:false, hospitales:'Mayan Medical, Group Onco Center, UMIS, FUCAM'}
+    {k:'A', label:'Nivel A · Top tier', desc:'Hospitales premium del país', extra:`Coaseguro 20% · Tope ${fmtMx(94000)}`, rec:false, hospitales:hb.A},
+    {k:'B', label:'Nivel B · Alta gama', desc:'Hospitales sólidos', extra:`Coaseguro 15% · Tope ${fmtMx(70000)}`, rec:true, hospitales:hb.B},
+    {k:'C', label:'Nivel C · Gama media', desc:'Privados regionales', extra:`Coaseguro 10% · Tope ${fmtMx(53000)}`, rec:false, hospitales:hb.C},
+    {k:'D', label:'Nivel D · Clínicas de corta estancia', desc:'Privados básicos', extra:`Coaseguro 5% · Tope ${fmtMx(35000)}`, rec:false, hospitales:hb.D}
   ];
+  const regionPicker = `<div class="opts opts-3" style="margin-bottom:14px">
+    ${[['qroo','Quintana Roo'],['yucatan','Yucatán'],['cdmx','CDMX']].map(([k,l])=>`
+      <button class="opt ${state.gmm.region===k?'selected':''}" data-region="${k}">
+        <div class="opt-body"><div class="opt-label">${l}</div></div>
+      </button>`).join('')}
+  </div>`;
   return `${stepDotsHTML(3, gmmSteps.length)}
   <h3 class="step-title">Nivel hospitalario - Todo México</h3>
   ${explainerHTML({
@@ -1591,6 +1619,8 @@ function gmmStepHospital(){
     example:`<strong>Nivel A</strong>: vas al ABC en CDMX o Amerimed en Cancún, pero <strong>tú pagas 20%</strong> de la cuenta (máximo $94,000). <strong>Nivel D</strong> (Mayan, UMIS en Cancún): <strong>tú pagas solo 5%</strong> (máximo $35,000).`,
     rec:`<strong>Nivel B</strong> es el sweet spot para la mayoría — Galenia, Médica Sur, Costamed cubren bien sin el costo de Nivel A. Si vives en CDMX y quieres ABC sí o sí, ve a Nivel A.`
   })}
+  <div class="step-help" style="margin-top:14px;margin-bottom:8px"><strong>Tu región</strong> · los hospitales disponibles por nivel cambian por estado</div>
+  ${regionPicker}
   <div class="opts">
     ${tiers.map(t=>`
       <button class="opt ${state.gmm.hospitalTier===t.k?'selected':''}" data-tier="${t.k}">
@@ -1598,11 +1628,46 @@ function gmmStepHospital(){
         <div class="opt-body">
           <div class="opt-label">${t.label}</div>
           <div class="opt-meta">${t.desc} · ${t.extra}</div>
-          <div class="opt-meta" style="font-size:11px;color:var(--gray-400);margin-top:4px">Hospitales: ${t.hospitales}</div>
+          <div class="opt-meta" style="font-size:11px;color:var(--gray-400);margin-top:4px">Hospitales en ${state.gmm.region==='qroo'?'Q.Roo':state.gmm.region==='yucatan'?'Yucatán':'CDMX'}: ${t.hospitales}</div>
         </div>
       </button>`).join('')}
   </div>
-  ${comparativeTiersHTML(200000)}`;
+  <p class="step-help" style="margin-top:10px;font-size:11px;color:var(--gray-400)">Deducibles anuales por padecimiento, tope de 2 deducibles por año por póliza.</p>
+  ${comparativeTiersHTML(200000)}
+  ${honorariosTablaHTML()}`;
+}
+function honorariosTablaHTML(){
+  const rows = [
+    ['Consulta', '$2,780 / $2,280', '$2,380 / $1,950', '$1,990 / $1,630', '$1,590 / $1,300'],
+    ['Consulta de urgencia', '$4,040 / $3,310', '$3,460 / $2,840', '$2,890 / $2,360', '$2,310 / $1,890'],
+    ['Apendicectomía por laparoscopía', '$37,540 / $30,710', '$32,170 / $26,330', '$26,810 / $21,940', '$21,450 / $17,550'],
+    ['Amigdalectomía menor de 12 años', '$26,910 / $22,020', '$24,570 / $20,100', '$20,470 / $16,750', '$16,380 / $13,400'],
+    ['Histerectomía total', '$62,030 / $50,750', '$53,170 / $43,500', '$44,310 / $36,250', '$35,440 / $29,000'],
+    ['Reemplazo de válvula mitral', '$121,490 / $99,400', '$104,130 / $85,200', '$86,780 / $71,000', '$69,420 / $56,800'],
+    ['Derivación de arteria coronaria', '$120,680 / $98,740', '$103,440 / $84,630', '$86,200 / $70,530', '$68,960 / $56,420']
+  ];
+  return `<details style="margin-top:16px;padding:14px;background:var(--gray-50);border-radius:12px">
+    <summary style="cursor:pointer;font-weight:800;color:var(--navy);font-size:14px">Honorarios médicos por procedimiento · todos los niveles</summary>
+    <p style="margin:10px 0 6px;font-size:12px;color:var(--gray-700)">Monto máximo que GNP paga al médico (de red / externo). Aplica a cualquier región del país.</p>
+    <div style="overflow-x:auto;margin-top:10px">
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:var(--navy);color:var(--white)">
+          <th style="text-align:left;padding:8px;border-radius:6px 0 0 6px">Procedimiento</th>
+          <th style="padding:8px">Nivel A</th><th style="padding:8px">Nivel B</th><th style="padding:8px">Nivel C</th>
+          <th style="padding:8px;border-radius:0 6px 6px 0">Nivel D</th>
+        </tr></thead>
+        <tbody>
+          ${rows.map((r,i)=>`<tr style="background:${i%2?'var(--white)':'transparent'}">
+            <td style="padding:8px;font-weight:700;color:var(--navy)">${r[0]}</td>
+            <td style="padding:8px;text-align:center;color:var(--gray-700)">${r[1]}</td>
+            <td style="padding:8px;text-align:center;color:var(--gray-700)">${r[2]}</td>
+            <td style="padding:8px;text-align:center;color:var(--gray-700)">${r[3]}</td>
+            <td style="padding:8px;text-align:center;color:var(--gray-700)">${r[4]}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  </details>`;
 }
 function comparativeTiersHTML(ex){
   const rows = [
@@ -1734,13 +1799,13 @@ function gmmStepAddons(){
     ['cda','Cero Deducible por Accidente (CDA)','Si te accidentas (caída, choque, etc.), no pagas deducible — GNP cubre desde el primer peso.',1800],
     ['mp','Maternidad Plus Personaliza (MP)','Cobertura ampliada de maternidad. Real PDF: $47,000 a $64,500 según plan elegido. 10 meses de espera.',5200],
     ['ahr','Ampliación Hospitalaria Nacional (AHR)','Acceso a hospitales de niveles superiores en otras regiones del país, no solo tu nivel base.',2800],
-    ['psico','Asistencia Psicológica','Ya viene incluida — 2 sesiones/mes por videollamada (50 min). No suma costo, te lo recordamos.',0]
+    ['psico','Asistencia Psicológica','Ya viene incluida — 2 sesiones/mes por videollamada (50 min). Ansiedad, estrés, depresión, insomnio, problemas de pareja. Aplica para terapia de pareja y para menores con consentimiento del tutor.',0]
   ];
   return `${stepDotsHTML(6, gmmSteps.length)}
   <h3 class="step-title">Coberturas adicionales — Personaliza Variable</h3>
   ${explainerHTML({
     intro:'Lo que puedes agregar',
-    body:`El plan base ya incluye <strong>Asistencia en Viajes</strong>, <strong>Membresía Médica Móvil</strong> (orientación telefónica, videollamada, ambulancia, traslados) y <strong>Ayuda para Maternidad básica</strong>. Estas son las coberturas <strong>opcionales</strong> que puedes agregar.`,
+    body:`El plan base ya incluye <strong>Asistencia en Viajes</strong>, <strong>Membresía Médica Móvil</strong> (orientación médica telefónica, orientación por videollamada, consulta médica a domicilio, ambulancia por emergencia, traslados programados a costo preferencial, concierge para referencias médicas y hospitalarias) y <strong>Ayuda para Maternidad básica</strong>. Estas son las coberturas <strong>opcionales</strong> que puedes agregar.`,
     example:`<strong>CDA</strong> es el más popular: $1,800/año aprox que te ahorra el deducible cada vez que tengas un accidente. <strong>Maternidad Plus</strong>: si planeas embarazo en los próximos 2-3 años, vale la pena.`,
     rec:`<strong>CDA siempre vale la pena</strong>. <strong>MP</strong> solo si hay plan de embarazo cercano (10 meses de espera). <strong>AHR</strong> si viajas frecuentemente a otras regiones.`
   })}
@@ -1752,6 +1817,49 @@ function gmmStepAddons(){
         <div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div>
         ${p>0?`<span class="opt-pill">+${fmtMx(p)}/año</span>`:''}
       </button>`).join('')}
+  </div>
+  <div style="margin-top:24px;padding:18px;background:var(--gray-50);border-radius:14px">
+    <div style="font-weight:900;font-size:14px;color:var(--navy);letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px">Beneficios incluidos sin costo extra</div>
+    <details style="margin-bottom:8px"><summary style="cursor:pointer;font-weight:700;color:var(--navy);padding:8px 0">GNP Cuida tu Salud</summary>
+      <ul style="margin:6px 0 10px 18px;color:var(--gray-700);font-size:13px;line-height:1.6">
+        <li><strong>Prevención y Diagnóstico:</strong> Check-up básico (incluye química de 3 elementos), cuidado dental (higiene dental incluida), vacunas con 20% de descuento.</li>
+        <li><strong>Consultas (App GNP):</strong> Videoconsultas con receta digital, médico a domicilio.</li>
+        <li><strong>Red Médica de Especialidad:</strong> Consultas de especialidad costo fijo $650, sub-especialidades $850.</li>
+        <li><strong>Apoyo en Medicamentos:</strong> Medicamentos sin costo, descuentos exclusivos en laboratorios.</li>
+      </ul>
+    </details>
+    <details style="margin-bottom:8px"><summary style="cursor:pointer;font-weight:700;color:var(--navy);padding:8px 0">Emergencias de gastos médicos NO cubiertos · hasta $1,000,000</summary>
+      <p style="margin:6px 0 10px 0;color:var(--gray-700);font-size:13px;line-height:1.6">Para emergencias que pongan en peligro la vida o la viabilidad de algún órgano, por tratamientos no indispensables y no cubiertos normalmente: estéticos, calvicie, dietéticos, obesidad, anorexia, bulimia, infertilidad, esterilidad, control natal, impotencia sexual, disfunción eréctil, dentales, alveolares, gingivales, estudios de prevención y check-ups. Suma asegurada: <strong>máximo $1,000,000</strong>.</p>
+    </details>
+    <details style="margin-bottom:8px"><summary style="cursor:pointer;font-weight:700;color:var(--navy);padding:8px 0">Membresía Asegurado VIP · Grupo APSAR</summary>
+      <ul style="margin:6px 0 10px 18px;color:var(--gray-700);font-size:13px;line-height:1.6">
+        <li><strong>Hospital Galenia:</strong> descuento $8,000 en deducible, consulta médico general $350, 15% farmacia, 30% laboratorios cuadro básico, 30% imagenología, 20% check-up ejecutivo.</li>
+        <li><strong>Clínica Mayan:</strong> descuento $4,000 en deducible.</li>
+        <li><strong>Odontoheart Cancún · Bukkadent Odontología Avanzada:</strong> beneficios para asegurados.</li>
+      </ul>
+    </details>
+    <details style="margin-bottom:8px"><summary style="cursor:pointer;font-weight:700;color:var(--navy);padding:8px 0">Asistencia Médica Móvil · 6 servicios</summary>
+      <ol style="margin:6px 0 10px 18px;color:var(--gray-700);font-size:13px;line-height:1.6">
+        <li>Orientación médica telefónica</li>
+        <li>Orientación médica por videollamada</li>
+        <li>Consulta médica a domicilio</li>
+        <li>Ambulancia por emergencia</li>
+        <li>Traslados programados a costo preferencial</li>
+        <li>Concierge para referencias médicas y hospitalarias</li>
+      </ol>
+    </details>
+    <details><summary style="cursor:pointer;font-weight:700;color:var(--navy);padding:8px 0">Terminología que vas a escuchar</summary>
+      <dl style="margin:6px 0 0 0;color:var(--gray-700);font-size:13px;line-height:1.6">
+        <dt style="font-weight:800;color:var(--navy);margin-top:8px">Deducible</dt>
+        <dd style="margin:2px 0 0 0">Cantidad fija que pagas cada vez que usas el seguro. Puede ser único (se paga una vez al inicio de cada enfermedad y al agotarse la suma, termina el seguro para ese padecimiento) o anual por enfermedad (se paga cada vez que se utiliza pero la suma asegurada se reinstala, volviéndose ilimitada).</dd>
+        <dt style="font-weight:800;color:var(--navy);margin-top:8px">Coaseguro</dt>
+        <dd style="margin:2px 0 0 0">Porcentaje sobre la factura hospitalaria que tú pagas en cada siniestro, con tope. Su objetivo es que revises los gastos en factura y los prestadores no se excedan.</dd>
+        <dt style="font-weight:800;color:var(--navy);margin-top:8px">Suma asegurada</dt>
+        <dd style="margin:2px 0 0 0">Monto total por el que estás protegido. Se elige al contratar y puede ser única o reinstalable anual, dependiendo de si el deducible es único o anual.</dd>
+        <dt style="font-weight:800;color:var(--navy);margin-top:8px">Tabulador médico</dt>
+        <dd style="margin:2px 0 0 0">Monto máximo que GNP acepta pagar al médico por consultas, cirugías y procedimientos. Varía según nivel hospitalario.</dd>
+      </dl>
+    </details>
   </div>`;
 }
 function bindGmm(){
@@ -1764,6 +1872,9 @@ function bindGmm(){
     // Reset deducible al primero del nivel
     state.gmm.deductible = NIVEL_DATA[state.gmm.hospitalTier].deducibles[0];
     renderGmm();renderGmmQuote();
+  }));
+  document.querySelectorAll('[data-region]').forEach(b=>b.addEventListener('click',()=>{
+    state.gmm.region=b.dataset.region;renderGmm();
   }));
   document.querySelectorAll('[data-sum]').forEach(b=>b.addEventListener('click',()=>{state.gmm.sumInsured=parseFloat(b.dataset.sum);renderGmm();renderGmmQuote()}));
   document.querySelectorAll('[data-kidscount]').forEach(b=>b.addEventListener('click',()=>{state.gmm.kidsCount=parseInt(b.dataset.kidscount);renderGmm();renderGmmQuote()}));
@@ -1781,12 +1892,12 @@ function bindGmm(){
   const kSlider = document.getElementById('kidsAgeSlider');
   if(kSlider){kSlider.addEventListener('input',()=>{state.gmm.kidsAvgAge=parseInt(kSlider.value);document.getElementById('kidsAgeVal').textContent=kSlider.value;renderGmmQuote()})}
 }
-/* Anchor: Vanesa Gutiérrez 25 años, F, no fumadora, Nivel A, deducible $32K (opción 2), suma 25M ≈ $20,814/año real PDF.
+/* Anchor: Vanesa Gutiérrez 25 años, F, no fumadora, Nivel B, deducible $32K (opción 2), suma $40.81M ≈ $20,814.49/año real PDF.
    Personaliza Variable es ANUAL — todas las cifras devueltas son anualidad. */
 function gmmCalcPrice(){
   function personBase(age, sex, isSelf){
     // Base anual a 25 años Nivel A opción 0 ($21K) suma 25M
-    // Anclado a Vanesa real: 25y F nofum Nivel A ded $32K suma ~40M = $20,814
+    // Anclado a Vanesa real: 25y F nofum Nivel B ded $32K suma $40.81M = $20,814.49
     let p = 19500;
     p *= Math.pow(1.038, Math.max(0, age - 25));
     if(isSelf && state.gmm.smoker) p *= 1.20;
@@ -2137,6 +2248,10 @@ const GENERIC_FLOWS = {
         })}
         <div class="opts opts-3">
           ${[[10,'10 años','temporal corto'],[20,'20 años','temporal estándar · recomendado'],[30,'30 años','temporal largo'],[99,'Permanente','toda la vida + valor en efectivo']].map(([v,l,m])=>`<button class="opt ${state.vida.term===v?'selected':''}" data-vterm="${v}">${v===20?REC_BADGE:''}<div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div></button>`).join('')}
+        </div>
+        <div style="margin-top:18px;padding:14px;background:var(--orange-light);border-radius:12px;border-left:4px solid var(--orange)">
+          <div style="font-weight:800;color:var(--orange-dark);font-size:13px;letter-spacing:.5px;text-transform:uppercase">Para mujeres · Cobertura Mujer y Doble Cobertura Mujer</div>
+          <p style="margin:6px 0 0;font-size:13px;color:var(--gray-700);line-height:1.5">Protección para padecimientos frecuentes o propios del género. GNP paga las veces que se presenten, hasta el límite de la suma asegurada. Doble Cobertura incluye respaldo financiero para complicaciones del embarazo (tú o el recién nacido). Andy te explica si aplica a tu caso.</p>
         </div>`
     },
     bind:()=>{
