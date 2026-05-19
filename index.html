@@ -183,11 +183,14 @@ img{max-width:100%;display:block}
   max-width:680px;
 }
 .intro-sub .hero-script{
-  font-family:'Great Vibes',cursive;
-  color:var(--orange);
-  font-size:22px;
+  font-family:inherit;
+  font-weight:900;
+  color:var(--navy);
+  font-size:clamp(20px,3vw,28px);
   margin-left:4px;
+  font-style:normal;
 }
+.intro-sub .hero-script::before{content:""}
 @media(max-width:600px){
   .intro{flex-direction:column;text-align:center;gap:14px;align-items:center}
   .intro-portrait{width:72px;height:72px}
@@ -911,7 +914,7 @@ img{max-width:100%;display:block}
   <header class="topbar">
     <div class="brand">
       <div class="brand-mark">
-        <img src="assets/logo-dark.png" alt="ANCHECO Seguros" style="height:36px;width:auto;display:block;">
+        <img src="assets/logo-dark.png" alt="ANCHECO Seguros" style="height:56px;width:auto;display:block;">
       </div>
     </div>
     <div class="progress-wrap">
@@ -931,7 +934,7 @@ img{max-width:100%;display:block}
       <div class="intro">
         <div class="intro-portrait" style="background-image:url('assets/andy.webp')" aria-hidden="true"></div>
         <div class="intro-text">
-          <span class="hero-eyebrow">Andy Cherro · Agente de Seguros · México · Céd. Prof. V338401</span>
+          <span class="hero-eyebrow">Andy Cherro · Agente de Seguros · México · cédula profesional V338401</span>
           <h1 class="intro-title">¿Qué quieres <span class="accent">proteger</span>?</h1>
           <p class="intro-sub">
             Cada decisión tomada hoy — salud, protección, retiro digno — tiene una consecuencia concreta.
@@ -1013,7 +1016,7 @@ img{max-width:100%;display:block}
           <div class="quote-panel-tag">Tu cotización en vivo</div>
           <div class="quote-panel-title">Plan Personaliza Variable</div>
           <div class="quote-amount"><span class="currency">$</span><span id="gmmAmount">—</span></div>
-          <div class="quote-period">aprox. anual · simulación · GNP financia 3, 6 o 12 MSI</div>
+          <div class="quote-period">aprox. anual · simulación · GNP financia 3 y 6 MSI el 1er año</div>
           <div class="quote-summary" id="gmmSummary"></div>
           <div class="quote-disclaimer">
             Pre-cotización informativa. La anualidad exacta depende de cuestionario médico y revisión personalizada.
@@ -1122,7 +1125,7 @@ img{max-width:100%;display:block}
           <div class="quote-panel-tag" style="color:var(--orange)">Pre-cotización · simulación</div>
           <div class="quote-panel-title" style="color:var(--gray-700)" id="fProductName">Plan Gastos Médicos Mayores</div>
           <div class="final-amount"><span class="currency">$</span><span id="fAmount">—</span></div>
-          <div class="final-period">aprox. anual MXN · GNP financia 3, 6 o 12 MSI · simulación basada en tus elecciones</div>
+          <div class="final-period">aprox. anual MXN · GNP financia 3 y 6 MSI el 1er año · simulación basada en tus elecciones</div>
 
           <div class="final-summary">
             <h4>Tu configuración</h4>
@@ -1148,7 +1151,7 @@ img{max-width:100%;display:block}
 
   <!-- FOOTER -->
   <footer class="foot">
-    <strong>ANCHECO</strong> · Andy Cherro · Agente profesional de seguros · Aliada GNP · Céd. Prof. V338401<br>
+    <strong>ANCHECO</strong> · Andy Cherro · Agente profesional de seguros · Aliada GNP · cédula profesional V338401<br>
     Tel <a href="https://wa.me/529981633443">998 163 3443</a> · Email <a href="mailto:ancheco.gnp@gmail.com">ancheco.gnp@gmail.com</a> · México<br>
     <span style="opacity:.6">Pre-cotización informativa basada en parámetros de mercado 2026. La anualidad exacta la emite la aseguradora tras suscripción y cuestionario médico.</span>
   </footer>
@@ -1169,7 +1172,7 @@ img{max-width:100%;display:block}
 /* ============ APP STATE ============ */
 const state = {
   type:null,
-  gmm:{step:0,who:'individual',age:35,sex:'F',smoker:false,partnerAge:35,kidsCount:1,kidsAvgAge:8,hospitalTier:'A',deductible:21000,sumInsured:25,addons:[]},
+  gmm:{step:0,who:'individual',age:35,sex:'F',smoker:false,partnerAge:35,kidsCount:1,kidsAvgAge:8,hospitalTier:'A',deductible:21000,sumInsured:40.8,addons:[]},
   auto:{step:0,brand:'',model:'',year:2020,vehicleValue:300000,use:'particular',coverage:'amplia',deductibleTheft:10,deductibleDamage:5,addons:['vial']},
   vida:{step:0,age:35,smoker:false,sumInsured:2,term:20,beneficiaries:1,dependents:2,monthlyIncome:30000,monthlyExpense:25000,asAhorro:false},
   mascota:{step:0,species:'perro',petAge:3,petSize:'mediano',sumInsured:30000,deductible:1500,addons:[]},
@@ -1489,15 +1492,15 @@ function gmmStepWho(){
   <h3 class="step-title">Empezamos: ¿quién va a estar cubierto?</h3>
   ${explainerHTML({
     intro:'Antes de empezar',
-    body:`Este es <strong>GNP Personaliza Variable</strong>, un seguro de <strong>gastos médicos mayores</strong>. Cubre cosas grandes — hospitalizaciones, cirugías, enfermedades graves. <strong>No</strong> cubre consultas con tu médico ni medicina del día a día (eso ya viene como beneficio aparte).<br><br>Te voy a hacer 7 preguntas. En cada una te explico qué significa, qué te recomiendo y cómo cambia la anualidad.`,
-    example:`Una familia de 3 con pólizas individuales paga ~$86,000/año. La misma familia con un plan que comparte deducibles paga ~$65,000/año. La diferencia es real.`,
+    body:`Seguro de <strong>gastos médicos mayores</strong>. Cubre cosas grandes — hospitalizaciones, cirugías, enfermedades graves. <strong>No</strong> cubre consultas con tu médico ni medicina del día a día (eso ya viene como beneficio aparte).<br><br>Te voy a hacer 7 preguntas. En cada una te explico qué significa, qué te recomiendo y cómo cambia la anualidad.`,
+    example:`Una familia de 4 con pólizas individuales paga ~$86,000/año. La misma familia con un plan que comparte deducibles paga ~$65,000/año. La diferencia es real.`,
     rec:`Si tienes pareja o hijos, casi siempre conviene un plan que comparta deducibles familiares.`
   })}
   <div class="opts opts-3">
-    ${[['individual','Individual','Solo yo',false],['pareja','Pareja','Yo + mi pareja',false],['familia','Familia','Yo + pareja + hijos',true]].map(([k,l,m,r])=>`
+    ${[['individual','Individual',false],['pareja','Pareja',false],['familia','Familiar',true]].map(([k,l,r])=>`
     <button class="opt ${state.gmm.who===k?'selected':''}" data-who="${k}">
       ${r?REC_BADGE:''}
-      <div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div>
+      <div class="opt-body"><div class="opt-label">${l}</div></div>
     </button>`).join('')}
   </div>`;
 }
@@ -1508,9 +1511,9 @@ function gmmStepAge(){
   <h3 class="step-title">Edad${showKids||showPartner?'es':''} y sexo</h3>
   ${explainerHTML({
     intro:'¿Por qué te lo pregunto?',
-    body:`La edad es el factor que <strong>más mueve la anualidad</strong>. Cada año arriba de 25 años, la anualidad sube ~3-4%. Es así para todas las aseguradoras — son estadísticas de salud, no es personal.${showPartner?' En planes de pareja/familia, cada miembro suma según su propia edad.':''}`,
+    body:`La edad es el factor que <strong>más mueve la anualidad</strong>. Es así para todas las aseguradoras — son estadísticas de salud, no es personal.${showPartner?' En planes de pareja/familia, cada miembro suma según su propia edad.':''}`,
     example:`Persona sana, no fumadora, Nivel B, suma 25M: 25 años ~$20,800/año. 35 años ~$30,000/año. 50 años ~$53,000/año. 65 años ~$95,000/año.${showKids?' Los hijos menores de 10 años son más baratos de asegurar.':''}`,
-    rec:`Pon edades reales. Contratar joven sale mucho más barato a largo plazo — la anualidad se calcula con la edad de ingreso, y GNP financia con 3, 6 o 12 MSI con tarjetas participantes.`
+    rec:`Pon edades reales. Contratar joven sale mucho más barato a largo plazo — la anualidad se calcula con la edad de ingreso, y GNP financia con 3 y 6 MSI con tarjetas participantes el 1er año.`
   })}
   <div class="step-help" style="margin-top:6px"><strong>${showPartner?'Tu edad':'Edad'}</strong></div>
   <div class="slider-wrap">
@@ -1520,7 +1523,7 @@ function gmmStepAge(){
     <input type="range" min="18" max="75" value="${state.gmm.age}" class="slider" id="ageSlider">
     <div class="slider-marks"><span>18</span><span>30</span><span>45</span><span>60</span><span>75</span></div>
   </div>
-  <div class="step-help" style="margin-top:18px"><strong>Sexo</strong> · afecta la prima ~5% (mujeres antes de 50, hombres después)</div>
+  <div class="step-help" style="margin-top:18px"><strong>Sexo</strong></div>
   <div class="opts opts-2">
     <button class="opt ${state.gmm.sex==='F'?'selected':''}" data-sex="F">
       <div class="opt-body"><div class="opt-label">Femenino</div></div>
@@ -1571,21 +1574,21 @@ function gmmStepHospital(){
   const tiers = [
     {k:'A', label:'Nivel A · Top tier', desc:'Hospitales premium del país', extra:`Coaseguro 20% · Tope ${fmtMx(94000)}`, rec:false, hospitales:'ABC, Ángeles del Pedregal, Amerimed, Cozumel International, Faro del Mayab'},
     {k:'B', label:'Nivel B · Alta gama', desc:'Hospitales sólidos', extra:`Coaseguro 15% · Tope ${fmtMx(70000)}`, rec:true, hospitales:'Galenia, Médica Sur, Star Médica, Costamed, Playamed, Hospital Español, Mérida CEM'},
-    {k:'C', label:'Nivel C · Media', desc:'Privados regionales', extra:`Coaseguro 10% · Tope ${fmtMx(53000)}`, rec:false, hospitales:'Hospiten, Quirúrgica del Sur, Hospital de Tulum, CMA Mérida'},
-    {k:'D', label:'Nivel D · Esencial', desc:'Privados básicos', extra:`Coaseguro 5% · Tope ${fmtMx(35000)}`, rec:false, hospitales:'Mayan Medical, Group Onco Center, UMIS, FUCAM'}
+    {k:'C', label:'Nivel C · Gama media', desc:'Privados regionales', extra:`Coaseguro 10% · Tope ${fmtMx(53000)}`, rec:false, hospitales:'Hospiten, Quirúrgica del Sur, Hospital de Tulum, CMA Mérida'},
+    {k:'D', label:'Nivel D · Clínicas de corta estancia', desc:'Privados básicos', extra:`Coaseguro 5% · Tope ${fmtMx(35000)}`, rec:false, hospitales:'Mayan Medical, Group Onco Center, UMIS, FUCAM'}
   ];
   return `${stepDotsHTML(3, gmmSteps.length)}
-  <h3 class="step-title">Nivel de hospitales (Personaliza Variable)</h3>
+  <h3 class="step-title">Nivel hospitalario · Todo México</h3>
   ${explainerHTML({
-    intro:'La decisión que más mueve la prima',
+    intro:'4 niveles de red hospitalaria',
     body:`GNP <strong>Personaliza Variable</strong> tiene <strong>4 niveles</strong> de red hospitalaria. Cada nivel determina <strong>a qué hospitales puedes ir</strong> y <strong>cuánto absorbes tú</strong> en cada hospitalización (coaseguro y deducible mínimo).`,
     bullets:[
-      `<strong>Nivel A:</strong> hospitales más caros del país. Coaseguro 20% (tope $94K).`,
-      `<strong>Nivel B:</strong> alta gama. Coaseguro 15% (tope $70K).`,
-      `<strong>Nivel C:</strong> regionales. Coaseguro 10% (tope $53K).`,
-      `<strong>Nivel D:</strong> esencial. Coaseguro 5% (tope $35K).`
+      `<strong>Nivel A:</strong> hospitales más caros del país. Coaseguro 20% (tope $94,000).`,
+      `<strong>Nivel B:</strong> alta gama. Coaseguro 15% (tope $70,000).`,
+      `<strong>Nivel C:</strong> gama media. Coaseguro 10% (tope $53,000).`,
+      `<strong>Nivel D:</strong> clínicas de corta estancia. Coaseguro 5% (tope $35,000).`
     ],
-    example:`<strong>Nivel A</strong>: vas al ABC en CDMX o Amerimed en Cancún, pero <strong>tú pagas 20%</strong> de la cuenta hasta $94K. <strong>Nivel D</strong>: red más limitada (Mayan, UMIS), pero <strong>tú pagas solo 5%</strong> hasta $35K.`,
+    example:`<strong>Nivel A</strong>: vas al ABC en CDMX o Amerimed en Cancún, pero <strong>tú pagas 20%</strong> de la cuenta (máximo $94,000). <strong>Nivel D</strong> (Mayan, UMIS en Cancún): <strong>tú pagas solo 5%</strong> (máximo $35,000).`,
     rec:`<strong>Nivel B</strong> es el sweet spot para la mayoría — Galenia, Médica Sur, Costamed cubren bien sin el costo de Nivel A. Si vives en CDMX y quieres ABC sí o sí, ve a Nivel A.`
   })}
   <div class="opts">
@@ -1614,11 +1617,11 @@ function gmmStepDeductible(){
   const youTotal = youDed + youCo;
   const insTotal = ex - youTotal;
   return `${stepDotsHTML(4, gmmSteps.length)}
-  <h3 class="step-title">Deducible — 10 opciones del Nivel ${tier}</h3>
+  <h3 class="step-title">Deducible</h3>
   ${explainerHTML({
-    intro:'Las 10 opciones reales de Personaliza Variable',
-    body:`Para el <strong>Nivel ${tier}</strong> que elegiste, GNP te da <strong>10 opciones de deducible</strong>. El coaseguro queda fijo en <strong>${co}%</strong> con tope anual de <strong>${fmtMx(data.topeCoaseguro)}</strong>. Deducible más alto = anualidad más baja, pero pagas más cuando te internas.`,
-    example:`Hospitalización ${fmtMx(ex)} · Deducible ${fmtMx(val)} · Coaseguro ${co}% — Tú pones <strong>${fmtMx(Math.round(youTotal))}</strong>, GNP cubre <strong>${fmtMx(Math.round(insTotal))}</strong>. Mira la barra cómo cambia conforme eliges.`,
+    intro:'10 opciones del Nivel '+tier,
+    body:`GNP te da <strong>10 opciones de deducible</strong>. Empezando desde <strong>$21,000</strong> pesos mexicanos hasta <strong>$233,000</strong>.`,
+    example:`Eliges un hospital de Nivel ${tier} y la cuenta fue de ${fmtMx(ex)}. Deducible ${fmtMx(val)}. Coaseguro ${co}% — tú pones <strong>${fmtMx(Math.round(youTotal))}</strong>, GNP cubre <strong>${fmtMx(Math.round(insTotal))}</strong>. Mira la barra cómo cambia conforme eliges.`,
     rec:`Para arrancar, las <strong>2 opciones más bajas</strong> (${fmtMx(opts[0])}-${fmtMx(opts[1])}) dan el balance prima/protección que Andy recomienda. Si tienes ahorro de emergencia +$100K, salta a opción 4-5 y baja anualidad ~10%.`
   })}
   <div class="opts opts-3">
@@ -1657,13 +1660,12 @@ function gmmStepSum(){
   ${explainerHTML({
     intro:'Tu tope anual reinstalable',
     body:`Es el <strong>máximo que GNP pagará</strong> en gastos médicos al año. En Personaliza Variable la suma se <strong>reinstala cada año</strong> automáticamente, así que vuelve a estar disponible aunque la hayas usado el año anterior.`,
-    example:`Referencias reales: una semana en terapia intensiva por COVID grave: <strong>$2-3M</strong>. Tratamiento de cáncer (1er año): <strong>$1.5-4M</strong>. Trasplante: <strong>$2-5M</strong>. La cotización formal de Personaliza Variable empieza en suma asegurada de ~37M reinstalables.`,
-    rec:`<strong>$25M</strong> es el estándar Personaliza Variable. $50M para perfiles con dependientes y posibles eventos catastróficos. $5M-$10M solo en planes más básicos.`
+    rec:`Recomendado: <strong>$40,800,000</strong> para cubrir cualquier posible evento o enfermedad catastrófica.`
   })}
   <div class="opts opts-3">
-    ${[[5,'$5M','Básica'],[10,'$10M','Intermedia'],[25,'$25M','Personaliza estándar'],[50,'$50M','Robusta']].map(([v,l,m])=>`
+    ${[[5,'$5M','Básica'],[10,'$10M','Intermedia'],[25,'$25M','Personaliza estándar'],[40.8,'$40.8M','Catastrófica',true]].map(([v,l,m,r])=>`
       <button class="opt ${state.gmm.sumInsured===v?'selected':''}" data-sum="${v}">
-        ${v===25?REC_BADGE:''}
+        ${r?REC_BADGE:''}
         <div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div>
       </button>`).join('')}
   </div>`;
@@ -1706,7 +1708,7 @@ function bindGmm(){
     state.gmm.deductible = NIVEL_DATA[state.gmm.hospitalTier].deducibles[0];
     renderGmm();renderGmmQuote();
   }));
-  document.querySelectorAll('[data-sum]').forEach(b=>b.addEventListener('click',()=>{state.gmm.sumInsured=parseInt(b.dataset.sum);renderGmm();renderGmmQuote()}));
+  document.querySelectorAll('[data-sum]').forEach(b=>b.addEventListener('click',()=>{state.gmm.sumInsured=parseFloat(b.dataset.sum);renderGmm();renderGmmQuote()}));
   document.querySelectorAll('[data-kidscount]').forEach(b=>b.addEventListener('click',()=>{state.gmm.kidsCount=parseInt(b.dataset.kidscount);renderGmm();renderGmmQuote()}));
   document.querySelectorAll('[data-addon]').forEach(b=>b.addEventListener('click',()=>{
     const k=b.dataset.addon;
@@ -1755,7 +1757,7 @@ function gmmCalcPrice(){
   const dedMult = Math.pow(0.955, Math.max(0, dedIdx));
   aggregate *= dedMult;
   // Suma asegurada
-  const sumMult = {5:0.55, 10:0.72, 25:1.0, 50:1.22}[state.gmm.sumInsured] || 1.0;
+  const sumMult = {5:0.55, 10:0.72, 25:1.0, 40.8:1.14}[state.gmm.sumInsured] || 1.0;
   aggregate *= sumMult;
   // Coberturas adicionales (anuales)
   const addonsCost = state.gmm.addons.reduce((s,k)=>s+({cda:1800, mp:5200, ahr:2800}[k]||0), 0);
