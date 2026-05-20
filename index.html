@@ -1273,6 +1273,32 @@ function sumaVidaAhorro(productName, age, contrib){
   return Math.round(contrib * mult);
 }
 
+/* Valor proyectado por cada $1 de aportación anual (plan GNP indexado 5%, 10 años de aporte),
+   según edad de inicio. Anclado a los 3 casos reales del PPT Ahorro Inteligente 2026:
+   Carola 5 → 453.13x@65 / 647.22x@70 · Sofía 18 → 217.71 / 313.55 · Elia 43 → 43.45 / 67.47
+   (multiplicador = valor proyectado ÷ aportación anual; reproduce los casos exacto a 10 años) */
+const AHORRO_MULT = [
+  {age:5,  m65:453.13, m70:647.22, rec65:36.03, rec70:51.46},
+  {age:18, m65:217.71, m70:313.55, rec65:17.31, rec70:24.93},
+  {age:43, m65:43.45,  m70:67.47,  rec65:3.62,  rec70:5.62}
+];
+function ahorroMult(age, key){
+  const P = AHORRO_MULT.map(a=>({x:a.age, y:Math.log(a[key])}));
+  const lerp=(x0,y0,x1,y1,x)=>y0+(y1-y0)*(x-x0)/(x1-x0);
+  const y = age<=P[1].x ? lerp(P[0].x,P[0].y,P[1].x,P[1].y,age)
+                        : lerp(P[1].x,P[1].y,P[2].x,P[2].y,age);
+  return Math.exp(y);
+}
+// Tasa efectiva que reproduce el multiplicador real a 10 años (para plazos distintos de 10)
+function ahorroRateFromMult(age){
+  const target = ahorroMult(age,'m65');
+  const H = Math.max(1, 65-age);
+  const f = r => { let s=0; for(let k=0;k<10;k++){ s += Math.pow(1.05,k)*Math.pow(1+r,H-k); } return s; };
+  let lo=0.0, hi=0.15;
+  for(let i=0;i<50;i++){ const mid=(lo+hi)/2; if(f(mid)<target) lo=mid; else hi=mid; }
+  return (lo+hi)/2;
+}
+
 /* ============ STAGE ROUTER ============ */
 function go(stageId){
   document.querySelectorAll('.stage').forEach(s=>s.classList.remove('active'));
@@ -2515,24 +2541,31 @@ const GENERIC_FLOWS = {
     price:()=>state.ahorro.annualContribution,
     summary:()=>{
       const p = PRODUCTOS_AHORRO[state.ahorro.product];
-      const yearsToRetire = Math.max(1, 65 - state.ahorro.age);
-      // Aportas N años, luego dejas crecer hasta los 65 con rendimiento compuesto del producto
-      const totalAportado = state.ahorro.annualContribution * state.ahorro.years;
-      const r = p.rendimientoBase;
-      // Future value at end of contribution period
-      const fvAporte = state.ahorro.annualContribution * ((Math.pow(1+r, state.ahorro.years) - 1) / r) * (1+r);
-      // Then grows untouched until 65
-      const yearsGrowing = Math.max(0, yearsToRetire - state.ahorro.years);
-      const fv65 = fvAporte * Math.pow(1+r, yearsGrowing);
-      const fv70 = fv65 * Math.pow(1+r, 5);
+      const C = state.ahorro.annualContribution, Y = state.ahorro.years, age = state.ahorro.age;
+      let fv65, fv70, totalAportado;
+      if(Y === 10){
+        // Caso real exacto: multiplicador y recuperación por edad anclados a Carola/Sofía/Elia (plan estándar 10 años)
+        fv65 = C * ahorroMult(age, 'm65');
+        fv70 = C * ahorroMult(age, 'm70');
+        // Total aportado se deriva de la recuperación real (las aportaciones se indexan a inflación)
+        totalAportado = Math.round(fv65 / ahorroMult(age, 'rec65'));
+      } else {
+        // Plazo distinto de 10: tasa efectiva calibrada al caso real de esa edad, aporte indexado 5%
+        const r = ahorroRateFromMult(age), H = Math.max(1, 65 - age);
+        const fvAt = h => { let s=0; for(let k=0;k<Y;k++){ s += C*Math.pow(1.05,k)*Math.pow(1+r,h-k); } return s; };
+        fv65 = fvAt(H); fv70 = fvAt(H+5);
+        totalAportado = Math.round(C * ((Math.pow(1.05, Y) - 1) / 0.05));
+      }
+      const recupPct = Math.round(fv65 / totalAportado * 100);
       const sumaVida = sumaVidaAhorro(state.ahorro.product, state.ahorro.age, state.ahorro.annualContribution);
       return [
         ['Producto', p.name+' · '+p.tag],
         ['Tu edad', state.ahorro.age+' años'],
         ['Aportación', '$'+fmt(state.ahorro.annualContribution)+'/año durante '+state.ahorro.years+' años'],
-        ['Total que aportas', '$'+fmt(totalAportado)],
+        ['Total que aportas (indexado 5%)', '$'+fmt(totalAportado)],
         ['Seguro de vida desde día 1', '$'+fmt(Math.round(sumaVida))],
         ['Saldo proyectado a los 65', '$'+fmt(Math.round(fv65))+' (libre de impuestos)'],
+        ['Recuperación a los 65', recupPct+'% de lo aportado'],
         ['Saldo proyectado a los 70', '$'+fmt(Math.round(fv70))]
       ];
     }
