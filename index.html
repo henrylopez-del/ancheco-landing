@@ -1493,8 +1493,8 @@ function gmmStepWho(){
   ${explainerHTML({
     intro:'Antes de empezar',
     body:`Seguro de <strong>gastos médicos mayores</strong>. Cubre cosas grandes — hospitalizaciones, cirugías, enfermedades graves. <strong>No</strong> cubre consultas con tu médico ni medicina del día a día (eso ya viene como beneficio aparte).<br><br>Te voy a hacer 7 preguntas. En cada una te explico qué significa, qué te recomiendo y cómo cambia la anualidad.`,
-    example:`Una familia de 4 con pólizas individuales paga ~$86,000/año. La misma familia con un plan que comparte deducibles paga ~$65,000/año. La diferencia es real.`,
-    rec:`Si tienes pareja o hijos, casi siempre conviene un plan que comparta deducibles familiares.`
+    example:`Una familia de 4 (2 adultos + 2 hijos) en Nivel B con suma $37M paga ~$66,500/año en una sola póliza que comparte deducible. Es un caso real de cartera.`,
+    rec:`El descuento por compartir deducible aplica a partir de 4 integrantes. Con menos personas cada quien paga según su propia edad, sin descuento familiar.`
   })}
   <div class="opts opts-3">
     ${[['individual','Individual',false],['pareja','Pareja',false],['familia','Familiar',true]].map(([k,l,r])=>`
@@ -1905,9 +1905,11 @@ function gmmCalcPrice(){
     return p;
   }
   let aggregate = personBase(state.gmm.age, state.gmm.sex, true);
+  let memberCount = 1;
   if(state.gmm.who !== 'individual'){
     const partnerSex = state.gmm.sex==='F'?'M':'F';
-    aggregate += personBase(state.gmm.partnerAge, partnerSex, false) * 0.95;
+    aggregate += personBase(state.gmm.partnerAge, partnerSex, false);
+    memberCount += 1;
   }
   if(state.gmm.who === 'familia'){
     const kc = state.gmm.kidsCount || 1;
@@ -1915,6 +1917,11 @@ function gmmCalcPrice(){
     const kidBase = 9000 * (ka < 10 ? 0.7 : ka < 18 ? 0.85 : 1.05);
     const bulkFactor = kc === 1 ? 1.0 : kc === 2 ? 1.85 : kc === 3 ? 2.55 : 3.10;
     aggregate += kidBase * bulkFactor;
+    memberCount += kc;
+  }
+  // Descuento por compartir deducible: solo a partir de 4 integrantes (regla GNP, Andy 19-may)
+  if(memberCount >= 4){
+    aggregate *= 0.90;
   }
   // Hospital tier: D = mejor cobertura (5% coas) = anualidad más alta
   const tierMult = {A:1.0, B:1.15, C:1.32, D:1.50}[state.gmm.hospitalTier] || 1.0;
@@ -2512,7 +2519,7 @@ const GENERIC_FLOWS = {
         <h3 class="step-title">Edad de tu hijo/a</h3>
         ${explainerHTML({
           intro:'Sobre el plan Educativo · Profesional',
-          body:`Es un plan de ahorro <strong>diseñado para asegurar el futuro académico</strong> de tus hijos. Lo aportas durante los primeros años — cuando llegue el momento de la universidad o posgrado, tu hijo recibe el monto comprometido. <strong>Si tú faltas en el camino, GNP completa los aportes</strong> para que tu hijo igual reciba lo planeado.`,
+          body:`Es un plan de ahorro <strong>diseñado para asegurar el futuro académico</strong> de tus hijos. Lo aportas durante los primeros años — cuando llegue el momento de la universidad, posgrado o su propio proyecto, tu hijo recibe el monto comprometido. <strong>El plan se puede entregar hasta los 33 años del menor asegurado</strong>, así que puedes planear universidad, posgrado o un fondo para que arranque su negocio. <strong>Si tú faltas en el camino, GNP completa los aportes</strong> para que tu hijo igual reciba lo planeado.`,
           example:`Empezar cuando tu hijo tiene <strong>5 años</strong> con $2,000/mes te puede dar ~$650K para los 18 años. Empezar a los 12 con el mismo monto te da solo ~$200K — el tiempo es la palanca.`,
           rec:`Mientras más joven tu hijo, mejor. La diferencia entre empezar a los 5 vs a los 12 es ~3x el valor final.`
         })}
@@ -2525,7 +2532,8 @@ const GENERIC_FLOWS = {
         const targets = [
           ['universidad', 'Universidad', '~$600K-$1.2M para 5 años de licenciatura', 18],
           ['posgrado', 'Universidad + Posgrado', '~$1.2M-$2.5M (lic + maestría)', 24],
-          ['intercambio', 'Universidad con intercambio internacional', '~$2.5M-$4M', 22]
+          ['intercambio', 'Universidad con intercambio internacional', '~$2.5M-$4M', 22],
+          ['proyecto', 'Proyecto personal o negocio', 'Fondo para que arranque su proyecto · entrega hasta 33 años', 33]
         ];
         return `${stepDotsHTML(1, 3)}
         <h3 class="step-title">¿Para qué momento?</h3>
@@ -2573,7 +2581,7 @@ const GENERIC_FLOWS = {
       const monthlyR = r/12;
       const fv = state.educativo.monthly * ((Math.pow(1+monthlyR,months)-1)/monthlyR) * (1+monthlyR);
       const totalAportado = state.educativo.monthly*months;
-      const targetLbl = {universidad:'Universidad',posgrado:'Universidad + Posgrado',intercambio:'Universidad con intercambio'}[state.educativo.target];
+      const targetLbl = {universidad:'Universidad',posgrado:'Universidad + Posgrado',intercambio:'Universidad con intercambio',proyecto:'Proyecto personal o negocio'}[state.educativo.target];
       return [
         ['Plan','Educativo · Profesional GNP'],
         ['Edad de tu hijo/a',state.educativo.kidAge+' años'],
