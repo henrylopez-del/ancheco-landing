@@ -2595,7 +2595,7 @@ const GENERIC_FLOWS = {
         <h3 class="step-title">¿Cuánto quieres asegurar para tu hijo/a?</h3>
         ${explainerHTML({
           intro:'Sobre el plan Educativo · Profesional',
-          body:`Plan de ahorro <strong>garantizado</strong> para blindar el futuro académico de tus hijos. Aportas una prima fija durante el plazo que elijas y, al cumplir la meta, tu hijo/a recibe la <strong>suma asegurada garantizada</strong>. Se puede <strong>entregar hasta los 33 años</strong> — universidad, posgrado o un fondo para su proyecto. Si tú faltas en el camino, GNP completa los aportes (protección por fallecimiento e invalidez).`,
+          body:`Plan de ahorro <strong>garantizado</strong> para blindar el futuro académico de tus hijos. Aportas una prima fija durante el plazo que elijas y, al cumplir la meta, tu hijo/a recibe la <strong>suma asegurada garantizada</strong>. Se puede <strong>entregar hasta los 33 años</strong> — universidad, posgrado o un fondo para su proyecto.<br><br>Si algo te pasa en el camino, el plan te respalda: <strong>$2,000,000</strong> por incapacidad total y permanente, <strong>$600,000</strong> por enfermedad terminal, gastos funerarios, y <strong>exención del pago de prima</strong> — GNP completa tus aportes para que tu hijo/a igual reciba lo planeado.`,
           example:`Caso real: protección $1,000,000, pago 7 años a $75,670/año → tu hijo recibe ~$670,048 a los 18 (109% de lo aportado).`,
           rec:`$1,000,000 es la protección más contratada para una meta universitaria completa.`
         })}
@@ -2648,7 +2648,9 @@ const GENERIC_FLOWS = {
         ['Total que aportas','$'+fmt(c.total)],
         ['Tu hijo/a recibe (~'+c.entrega+' años)','$'+fmt(c.valor)],
         ['Recuperación',c.rec+'% de lo aportado'],
-        ['Si tú faltas','GNP completa los aportes — protección por fallecimiento e invalidez']
+        ['Exención de prima','Si faltas, GNP completa los aportes'],
+        ['Incapacidad total','Anticipo de $2,000,000'],
+        ['Enfermedad terminal','Anticipo de $600,000 + gastos funerarios']
       ];
     }
   },
