@@ -1201,7 +1201,7 @@ const state = {
   mascota:{step:0,species:'perro',petAge:3,petSize:'mediano',sumInsured:30000,deductible:1500,addons:[]},
   ahorro:{step:0,product:'TRASCIENDE',age:35,annualContribution:36000,years:10},
   patrimonial:{step:0,homeValue:2000000,contentsValue:300000,addons:['rcfam']},
-  educativo:{step:0,kidAge:5,monthly:2000,target:'universidad',horizon:13},
+  educativo:{step:0,proteccion:1000000,plazo:11},
   contact:{name:'',phone:'',email:'',city:'',timing:'ya'},
   finalAmount:0,
   finalSummaryLines:[]
@@ -1915,16 +1915,19 @@ function bindGmm(){
   const kSlider = document.getElementById('kidsAgeSlider');
   if(kSlider){kSlider.addEventListener('input',()=>{state.gmm.kidsAvgAge=parseInt(kSlider.value);document.getElementById('kidsAgeVal').textContent=kSlider.value;renderGmmQuote()})}
 }
-/* Anchor: Vanesa Gutiérrez 25 años, F, no fumadora, Nivel B, deducible $32K (opción 2), suma $40.81M ≈ $20,814.49/año real PDF.
-   Personaliza Variable es ANUAL — todas las cifras devueltas son anualidad. */
+/* Anclas reales (póliza familiar GNP 697309037, material AnCheco 19-may):
+   ref = Nivel B, suma ~$40M, deducible medio. Primas NETAS por asegurado:
+   Tomás 41 M = 16,558 · Nelissa 41 F = 19,732 · Mateo 6 = 8,605 · Federico 9 = 8,557
+   Total póliza = (neta + derecho $970/persona) × IVA 1.16 = $66,506.
+   Vanesa 25 F = ~$20,814 total. Personaliza Variable es ANUAL. */
 function gmmCalcPrice(){
   function personBase(age, sex, isSelf){
-    // Base anual a 25 años Nivel A opción 0 ($21K) suma 25M
-    // Anclado a Vanesa real: 25y F nofum Nivel B ded $32K suma $40.81M = $20,814.49
-    let p = 19500;
-    p *= Math.pow(1.038, Math.max(0, age - 25));
+    // Prima NETA en config de referencia (Nivel B, suma 40.8M, deducible medio)
+    const maleRef25 = 14260;
+    const ageMult = age <= 45 ? (1 + 0.0093*(age-25)) : (1 + 0.0093*20 + 0.05*(age-45));
+    let p = maleRef25 * ageMult;
+    if(sex==='F' && age < 55) p *= 1.19;
     if(isSelf && state.gmm.smoker) p *= 1.20;
-    if(sex==='F' && age<50) p *= 1.05;
     return p;
   }
   let aggregate = personBase(state.gmm.age, state.gmm.sex, true);
@@ -1937,29 +1940,29 @@ function gmmCalcPrice(){
   if(state.gmm.who === 'familia'){
     const kc = state.gmm.kidsCount || 1;
     const ka = state.gmm.kidsAvgAge || 8;
-    const kidBase = 9000 * (ka < 10 ? 0.7 : ka < 18 ? 0.85 : 1.05);
-    const bulkFactor = kc === 1 ? 1.0 : kc === 2 ? 1.85 : kc === 3 ? 2.55 : 3.10;
+    const kidBase = 11400 * (ka < 10 ? 0.75 : ka < 18 ? 0.92 : 1.05);
+    const bulkFactor = kc === 1 ? 1.0 : kc === 2 ? 2.0 : kc === 3 ? 2.9 : 3.7;
     aggregate += kidBase * bulkFactor;
     memberCount += kc;
   }
-  // Descuento por compartir deducible: solo a partir de 4 integrantes (regla GNP, Andy 19-may)
-  if(memberCount >= 4){
-    aggregate *= 0.90;
-  }
-  // Hospital tier: D = mejor cobertura (5% coas) = anualidad más alta
-  const tierMult = {A:1.0, B:1.15, C:1.32, D:1.50}[state.gmm.hospitalTier] || 1.0;
+  // Sin descuento agregado: la póliza real suma las primas por persona (Andy: GNP solo arma póliza familiar compartida desde 4 integrantes, no es descuento de línea).
+  // Hospital tier relativo a Nivel B (ref). D = mejor cobertura (5% coas) = más caro
+  const tierMult = {A:0.85, B:1.0, C:1.13, D:1.28}[state.gmm.hospitalTier] || 1.0;
   aggregate *= tierMult;
-  // Deducible: 10 opciones por nivel. Cada paso arriba reduce ~4-5% anualidad
+  // Deducible: 10 opciones por nivel. Referencia = opción media (índice 2). Cada paso arriba reduce ~4.5%
   const data = NIVEL_DATA[state.gmm.hospitalTier] || NIVEL_DATA.A;
   const dedIdx = data.deducibles.indexOf(state.gmm.deductible);
-  const dedMult = Math.pow(0.955, Math.max(0, dedIdx));
+  const dedMult = Math.pow(0.955, dedIdx - 2);
   aggregate *= dedMult;
-  // Suma asegurada
-  const sumMult = {5:0.55, 10:0.72, 25:1.0, 40.8:1.14}[state.gmm.sumInsured] || 1.0;
+  // Suma asegurada (ref 40.8M = 1.0)
+  const sumMult = {5:0.50, 10:0.65, 25:0.88, 40.8:1.0}[state.gmm.sumInsured] || 1.0;
   aggregate *= sumMult;
-  // Coberturas adicionales (anuales)
+  // Coberturas adicionales (anuales, netas)
   const addonsCost = state.gmm.addons.reduce((s,k)=>s+({cda:1800, mp:5200, ahr:2800}[k]||0), 0);
-  return Math.round(aggregate + addonsCost);
+  aggregate += addonsCost;
+  // Prima neta → total que paga el cliente: derecho de póliza (~$970/asegurado) + IVA 16%
+  const total = (aggregate + 970*memberCount) * 1.16;
+  return Math.round(total);
 }
 function gmmSummaryLines(){
   const tier = state.gmm.hospitalTier;
@@ -2536,83 +2539,79 @@ const GENERIC_FLOWS = {
   },
   educativo:{
     title:'Plan Educativo · Profesional',
-    steps:['kidAge','target','monthly'],
+    steps:['proteccion','plazo'],
+    // Casos reales GNP Profesional (material AnCheco 19-may, proyección al 5% de inflación)
+    cases:{
+      500000:{
+        7:{prima:39235,total:319452,entrega:18,valor:335024,rec:105},
+        10:{prima:28730,total:361363,entrega:21,valor:387832,rec:107},
+        11:{prima:27975,total:351867,entrega:18,valor:407224,rec:116},
+        14:{prima:27395,total:344571,entrega:21,valor:471412,rec:137}
+      },
+      1000000:{
+        7:{prima:75670,total:616106,entrega:18,valor:670048,rec:109},
+        11:{prima:53150,total:668515,entrega:18,valor:814447,rec:122}
+      }
+    },
     render:{
-      kidAge:()=>`${stepDotsHTML(0, 3)}
-        <h3 class="step-title">Edad de tu hijo/a</h3>
+      proteccion:()=>`${stepDotsHTML(0, 2)}
+        <h3 class="step-title">¿Cuánto quieres asegurar para tu hijo/a?</h3>
         ${explainerHTML({
           intro:'Sobre el plan Educativo · Profesional',
-          body:`Es un plan de ahorro <strong>diseñado para asegurar el futuro académico</strong> de tus hijos. Lo aportas durante los primeros años — cuando llegue el momento de la universidad, posgrado o su propio proyecto, tu hijo recibe el monto comprometido. <strong>El plan se puede entregar hasta los 33 años del menor asegurado</strong>, así que puedes planear universidad, posgrado o un fondo para que arranque su negocio. <strong>Si tú faltas en el camino, GNP completa los aportes</strong> para que tu hijo igual reciba lo planeado.`,
-          example:`Empezar cuando tu hijo tiene <strong>5 años</strong> con $2,000/mes te puede dar ~$650K para los 18 años. Empezar a los 12 con el mismo monto te da solo ~$200K — el tiempo es la palanca.`,
-          rec:`Mientras más joven tu hijo, mejor. La diferencia entre empezar a los 5 vs a los 12 es ~3x el valor final.`
+          body:`Plan de ahorro <strong>garantizado</strong> para blindar el futuro académico de tus hijos. Aportas una prima fija durante el plazo que elijas y, al cumplir la meta, tu hijo/a recibe la <strong>suma asegurada garantizada</strong>. Se puede <strong>entregar hasta los 33 años</strong> — universidad, posgrado o un fondo para su proyecto. Si tú faltas en el camino, GNP completa los aportes (protección por fallecimiento e invalidez).`,
+          example:`Caso real: protección $1,000,000, pago 7 años a $75,670/año → tu hijo recibe ~$670,048 a los 18 (109% de lo aportado).`,
+          rec:`$1,000,000 es la protección más contratada para una meta universitaria completa.`
         })}
-        <div class="slider-wrap">
-          <div class="slider-row"><div><span class="slider-value" id="edAgeVal">${state.educativo.kidAge}</span><span class="slider-suffix">años</span></div></div>
-          <input type="range" min="0" max="17" value="${state.educativo.kidAge}" class="slider" id="edAgeSlider">
-          <div class="slider-marks"><span>recién nacido</span><span>9</span><span>17</span></div>
+        <div class="opts opts-2">
+          ${[[500000,'$500,000','Meta universitaria base'],[1000000,'$1,000,000','Universidad completa o posgrado']].map(([v,l,m])=>`
+            <button class="opt ${state.educativo.proteccion===v?'selected':''}" data-edprot="${v}">
+              ${v===1000000?REC_BADGE:''}
+              <div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div>
+            </button>`).join('')}
         </div>`,
-      target:()=>{
-        const targets = [
-          ['universidad', 'Universidad', '~$600K-$1.2M para 5 años de licenciatura', 18],
-          ['posgrado', 'Universidad + Posgrado', '~$1.2M-$2.5M (lic + maestría)', 24],
-          ['intercambio', 'Universidad con intercambio internacional', '~$2.5M-$4M', 22],
-          ['proyecto', 'Proyecto personal o negocio', 'Fondo para que arranque su proyecto · entrega hasta 33 años', 33]
-        ];
-        return `${stepDotsHTML(1, 3)}
-        <h3 class="step-title">¿Para qué momento?</h3>
+      plazo:()=>{
+        const cases = GENERIC_FLOWS.educativo.cases[state.educativo.proteccion];
+        const plazos = Object.keys(cases).map(Number).sort((a,b)=>a-b);
+        return `${stepDotsHTML(1, 2)}
+        <h3 class="step-title">¿Durante cuántos años quieres pagar?</h3>
         ${explainerHTML({
-          intro:'Tu meta',
-          body:`Define para cuándo necesitas el dinero. Eso fija tu <strong>horizonte</strong> — años para que crezca el ahorro.`,
-          rec:`Si no estás segura, planea para <strong>universidad</strong>. Siempre puedes aportar más después si tu hijo decide posgrado.`
+          intro:'El plazo define tu prima',
+          body:`Mientras <strong>más corto el plazo</strong>, mayor la prima anual pero terminas de pagar antes. Plazos más largos bajan la prima. Todos los montos son <strong>casos reales GNP</strong>, proyectados al 5% de inflación.`,
+          rec:`Si tu hijo es pequeño, un plazo largo (11-14 años) baja la prima y deja crecer más el ahorro.`
         })}
         <div class="opts">
-          ${targets.map(([k,l,m,age])=>`
-            <button class="opt ${state.educativo.target===k?'selected':''}" data-edtarget="${k}" data-edage="${age}">
-              ${k==='universidad'?REC_BADGE:''}
-              <div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m} · entrega ~${age} años de tu hijo/a</div></div>
-            </button>`).join('')}
+          ${plazos.map(pl=>{const c=cases[pl];return `
+            <button class="opt ${state.educativo.plazo===pl?'selected':''}" data-edplazo="${pl}">
+              <div class="opt-body"><div class="opt-label">${pl} años de pago · $${fmt(c.prima)}/año</div><div class="opt-meta">Entrega a los ${c.entrega} años → tu hijo/a recibe ~$${fmt(c.valor)} (${c.rec}% de lo aportado)</div></div>
+            </button>`}).join('')}
         </div>`;
-      },
-      monthly:()=>`${stepDotsHTML(2, 3)}
-        <h3 class="step-title">¿Cuánto puedes aportar al mes?</h3>
-        ${explainerHTML({
-          intro:'La regla del tiempo + consistencia',
-          body:`Cualquier monto consistente cuenta. <strong>$1,500-$3,000/mes</strong> es el rango común para una meta universitaria. Recuerda que GNP <strong>completa tus aportes si tú faltas</strong> — es ahorro + protección en un solo plan.`,
-          example:`Niño de 5 años · meta universidad (13 años de ahorro) · $2,000/mes a 8% real → ~$650K a los 18. $3,000/mes en mismo escenario → ~$975K.`,
-          rec:`Empieza con lo que puedas mantener todos los meses sin esfuerzo. Mejor $1,500 sostenidos que $5,000 que dejas a los 6 meses.`
-        })}
-        <div class="slider-wrap">
-          <div class="slider-row"><div><span class="slider-value" id="edMVal">$${fmt(state.educativo.monthly)}</span><span class="slider-suffix">/mes</span></div></div>
-          <input type="range" min="500" max="15000" step="500" value="${state.educativo.monthly}" class="slider" id="edMSlider">
-          <div class="slider-marks"><span>$500</span><span>$3k</span><span>$8k</span><span>$15k</span></div>
-        </div>`
+      }
     },
     bind:()=>{
-      const a=document.getElementById('edAgeSlider');if(a)a.addEventListener('input',()=>{state.educativo.kidAge=parseInt(a.value);document.getElementById('edAgeVal').textContent=a.value;state.educativo.horizon=Math.max(1,18-state.educativo.kidAge);renderGenericQuote()});
-      document.querySelectorAll('[data-edtarget]').forEach(b=>b.addEventListener('click',()=>{
-        state.educativo.target=b.dataset.edtarget;
-        const targetAge = parseInt(b.dataset.edage);
-        state.educativo.horizon=Math.max(1, targetAge - state.educativo.kidAge);
+      document.querySelectorAll('[data-edprot]').forEach(b=>b.addEventListener('click',()=>{
+        const v=parseInt(b.dataset.edprot);
+        state.educativo.proteccion=v;
+        const cases=GENERIC_FLOWS.educativo.cases[v];
+        if(!cases[state.educativo.plazo]) state.educativo.plazo=parseInt(Object.keys(cases)[0]);
         renderGeneric();renderGenericQuote();
       }));
-      const m=document.getElementById('edMSlider');if(m)m.addEventListener('input',()=>{state.educativo.monthly=parseInt(m.value);document.getElementById('edMVal').textContent='$'+fmt(parseInt(m.value));renderGenericQuote()});
+      document.querySelectorAll('[data-edplazo]').forEach(b=>b.addEventListener('click',()=>{
+        state.educativo.plazo=parseInt(b.dataset.edplazo);
+        renderGeneric();renderGenericQuote();
+      }));
     },
-    price:()=>state.educativo.monthly*12,
+    price:()=>GENERIC_FLOWS.educativo.cases[state.educativo.proteccion][state.educativo.plazo].prima,
     summary:()=>{
-      const r = 0.08;
-      const months = state.educativo.horizon*12;
-      const monthlyR = r/12;
-      const fv = state.educativo.monthly * ((Math.pow(1+monthlyR,months)-1)/monthlyR) * (1+monthlyR);
-      const totalAportado = state.educativo.monthly*months;
-      const targetLbl = {universidad:'Universidad',posgrado:'Universidad + Posgrado',intercambio:'Universidad con intercambio',proyecto:'Proyecto personal o negocio'}[state.educativo.target];
+      const c=GENERIC_FLOWS.educativo.cases[state.educativo.proteccion][state.educativo.plazo];
       return [
         ['Plan','Educativo · Profesional GNP'],
-        ['Edad de tu hijo/a',state.educativo.kidAge+' años'],
-        ['Meta',targetLbl],
-        ['Aportación','$'+fmt(state.educativo.monthly)+'/mes durante '+state.educativo.horizon+' años'],
-        ['Total que aportas','$'+fmt(totalAportado)],
-        ['Saldo proyectado al cumplir meta','$'+fmt(Math.round(fv))],
-        ['Si tú faltas','GNP completa los aportes — tu hijo recibe la meta completa']
+        ['Protección garantizada','$'+fmt(state.educativo.proteccion)],
+        ['Plazo de pago',state.educativo.plazo+' años'],
+        ['Prima anual','$'+fmt(c.prima)],
+        ['Total que aportas','$'+fmt(c.total)],
+        ['Tu hijo/a recibe (~'+c.entrega+' años)','$'+fmt(c.valor)],
+        ['Recuperación',c.rec+'% de lo aportado'],
+        ['Si tú faltas','GNP completa los aportes — protección por fallecimiento e invalidez']
       ];
     }
   },
