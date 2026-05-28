@@ -2760,6 +2760,7 @@ document.getElementById('cBack').addEventListener('click',()=>{
   else if(state.type==='auto') go('stage-auto');
   else go('stage-generic');
 });
+const ANCHECO_WEBHOOK = 'https://n8n-ntcue-u59578.vm.elestio.app/webhook/4bdf33e2-a2c6-4ce7-ba62-6cda1976408e';
 document.getElementById('cSubmit').addEventListener('click',()=>{
   state.contact.name = document.getElementById('cName').value.trim();
   state.contact.phone = document.getElementById('cPhone').value.trim();
@@ -2770,6 +2771,11 @@ document.getElementById('cSubmit').addEventListener('click',()=>{
     showInfo('','Faltan datos','Por favor ingresa al menos tu nombre y WhatsApp para que Andy pueda contactarte.');
     return;
   }
+  // Fire-and-forget al webhook n8n → GHL CRM (state completo)
+  try {
+    const fd = new URLSearchParams({ data: JSON.stringify(state) });
+    fetch(ANCHECO_WEBHOOK, { method:'POST', mode:'no-cors', body: fd }).catch(()=>{});
+  } catch(e){}
   renderFinal();
   go('stage-final');
 });
