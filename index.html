@@ -958,13 +958,6 @@ img{max-width:100%;display:block}
             <div class="type-desc">Responsabilidad civil, robo total, daños materiales. Obligatorio en muchos estados.</div>
           </div>
         </button>
-        <button class="type-card" data-type="vida">
-          <div class="type-photo" data-bg='https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=520&q=72&fm=webp'></div>
-          <div class="type-body">
-            <div class="type-name">Vida</div>
-            <div class="type-desc">Protección financiera para tu familia. Puede transformarse en plan de ahorro.</div>
-          </div>
-        </button>
         <button class="type-card" data-type="mascota">
           <div class="type-photo" data-bg='https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=520&q=72&fm=webp'></div>
           <div class="type-body">
@@ -1200,8 +1193,7 @@ img{max-width:100%;display:block}
 const state = {
   type:null,
   gmm:{step:0,who:'individual',age:35,sex:'F',smoker:false,partnerAge:35,kidsCount:1,kidsAvgAge:8,hospitalTier:'A',deductible:21000,sumInsured:40.8,addons:[]},
-  auto:{step:0,brand:'',model:'',year:2020,vehicleValue:300000,use:'particular',coverage:'amplia',deductibleTheft:10,deductibleDamage:5,addons:['vial']},
-  vida:{step:0,age:35,smoker:false,sumInsured:2,term:20,beneficiaries:1,dependents:2,monthlyIncome:30000,monthlyExpense:25000,asAhorro:false},
+  auto:{step:0,brand:'',model:'',year:2020,vehicleValue:300000,use:'particular',coverage:'amplia',deductibleTheft:10,deductibleDamage:5,addons:[]},
   mascota:{step:0,species:'perro',petAge:3,petSize:'mediano',sumInsured:30000,deductible:1500,addons:[]},
   ahorro:{step:0,product:'TRASCIENDE',age:35,annualContribution:36000,years:10},
   patrimonial:{step:0,homeValue:2000000,contentsValue:300000,addons:['rcfam']},
@@ -1224,7 +1216,7 @@ const PRODUCTOS_AHORRO = {
     name:'TRASCIENDE',
     tag:'Ahorro tradicional flexible',
     rendimientoBase:0.071,
-    description:'Aportas <strong>solo 5, 10 o 15 años</strong>. Desde el año 11 hasta tus 60 puedes hacer 3 retiros (hasta 50% de tu saldo). Después de 60 años, retiros libres. Protección por fallecimiento <strong>vitalicia</strong>.',
+    description:'Aportas <strong>solo 5, 10 o 15 años</strong>. Desde el año 11 hasta tus 60 puedes hacer 3 retiros (hasta 50% de tu saldo). Después de 60 años, un retiro anual hasta el 50% del saldo. Protección por fallecimiento <strong>vitalicia</strong>.',
     bestFor:'Quien quiere flexibilidad y dejar herencia garantizada.',
     realCase:'Sofía, 18 años: $43,374/año × 10 años. Seguro de vida $1.1M desde día uno. A los 65 años: $9.4M (1,731% sobre lo aportado).'
   },
@@ -1241,7 +1233,7 @@ const PRODUCTOS_AHORRO = {
     tag:'Ahorro tradicional + beneficio fiscal',
     rendimientoBase:0.070,
     description:'Genera ahorro garantizado para tu retiro <strong>y reduces ISR</strong>: deducible hasta 10% de tu ingreso anual (tope 5 UMA — ~$213,973 en 2026). 2 fondos disponibles. Retiros desde año 3 si los necesitas.',
-    bestFor:'Profesionales con ingresos medios-altos buscando reducir su carga fiscal.',
+    bestFor:'Profesionales y asalariados con ingresos medios-altos buscando reducir su carga fiscal.',
     realCase:'$36,000/año deducibles a tasa marginal 30% = $10,800 menos de ISR cada año. En 10 años recuperas $108,000 solo en impuestos.'
   },
   PROYECTA:{
@@ -1545,7 +1537,7 @@ function gmmStepWho(){
   <h3 class="step-title">Empezamos: ¿quién va a estar cubierto?</h3>
   ${explainerHTML({
     intro:'Antes de empezar',
-    body:`Seguro de <strong>gastos médicos mayores</strong>. Cubre cosas grandes — hospitalizaciones, cirugías, enfermedades graves. <strong>No</strong> cubre consultas con tu médico ni medicina del día a día (eso ya viene como beneficio aparte).<br><br>Te voy a hacer 7 preguntas. En cada una te explico qué significa, qué te recomiendo y cómo cambia la anualidad.`,
+    body:`Los accidentes y enfermedades ocurren de un día para otro: preferible tener un seguro y no necesitarlo, que necesitarlo y no tenerlo. <strong>¡Protégete!</strong><br><br>Seguro de <strong>gastos médicos mayores</strong>. Cubre cosas grandes — hospitalizaciones, cirugías, enfermedades graves. <strong>No</strong> cubre consultas con tu médico ni medicina del día a día (eso ya viene como beneficio aparte).<br><br>Te voy a hacer 7 preguntas. En cada una te explico qué significa, qué te recomiendo y cómo cambia la anualidad.`,
     example:`Una familia de 4 (2 adultos + 2 hijos) en Nivel B con suma $37M paga ~$66,500/año en una sola póliza que comparte deducible. Es un caso real de cartera.`,
     rec:`El descuento por compartir deducible aplica a partir de 4 integrantes. Con menos personas cada quien paga según su propia edad, sin descuento familiar.`
   })}
@@ -1565,7 +1557,7 @@ function gmmStepAge(){
   ${explainerHTML({
     intro:'¿Por qué te lo pregunto?',
     body:`La edad es el factor que <strong>más mueve la anualidad</strong>. Es así para todas las aseguradoras — son estadísticas de salud, no es personal.${showPartner?' En planes de pareja/familia, cada miembro suma según su propia edad.':''}`,
-    example:`Persona sana, no fumadora, Nivel B, suma 25M: 25 años ~$20,800/año. 35 años ~$30,000/año. 50 años ~$53,000/año. 65 años ~$95,000/año.${showKids?' Los hijos menores de 10 años son más baratos de asegurar.':''}`,
+    example:`Persona sana, no fumadora, Tabulador B, suma 40M: 25 años ~$18,100/año. 35 años ~$25,812/año. 50 años ~$38,056/año. 65 años ~$101,664/año.${showKids?' Los hijos menores de 10 años son más baratos de asegurar.':''}`,
     rec:`Pon edades reales. Contratar joven sale mucho más barato a largo plazo — la anualidad se calcula con la edad de ingreso, y GNP financia con 3 y 6 MSI con tarjetas participantes el 1er año.`
   })}
   <div class="step-help" style="margin-top:6px"><strong>${showPartner?'Tu edad':'Edad'}</strong></div>
@@ -1610,7 +1602,7 @@ function gmmStepHealth(){
     intro:'Por qué importa',
     body:`Los fumadores pagan más anualidad — son estadísticas de salud. Si fumas y <strong>no lo declaras</strong>, cuando haya un siniestro y se compruebe (autopsia, expediente médico), <strong>la aseguradora anula tu póliza y no paga</strong>.`,
     example:`El factor exacto varía por aseguradora pero típicamente <strong>15-20%</strong> en GMM. Misma persona, 35 años, mismo plan: no fumadora ~$30,000/año vs fumadora ~$36,000/año. Diferencia anual: $6,000.`,
-    rec:`Sé honesta. Vale más pagar la anualidad correcta que dejar a tu familia sin cobertura cuando más se necesita. Si dejas de fumar 12 meses seguidos, casi todas las aseguradoras te bajan a tarifa de no fumador.`
+    rec:`Sé ${state.gmm.sex==='F'?'honesta':'honesto'}. Vale más pagar la anualidad correcta que dejar a tu familia sin cobertura cuando más se necesita. Si dejas de fumar 12 meses seguidos, casi todas las aseguradoras te bajan a tarifa de no fumador.`
   })}
   <div class="opts opts-2">
     <button class="opt ${!state.gmm.smoker?'selected':''}" data-smoker="false">
@@ -1687,40 +1679,7 @@ function gmmStepHospital(){
   </div>
   <p class="step-help" style="margin-top:10px;font-size:11px;color:var(--gray-400)">Deducibles anuales por padecimiento, tope de 2 deducibles por año por póliza.</p>
   ${comparativeTiersHTML(200000)}
-  ${honorariosTablaHTML()}`;
-}
-function honorariosTablaHTML(){
-  const rows = [
-    ['Consulta', '$2,780 / $2,280', '$2,380 / $1,950', '$1,990 / $1,630', '$1,590 / $1,300'],
-    ['Consulta de urgencia', '$4,040 / $3,310', '$3,460 / $2,840', '$2,890 / $2,360', '$2,310 / $1,890'],
-    ['Apendicectomía por laparoscopía', '$37,540 / $30,710', '$32,170 / $26,330', '$26,810 / $21,940', '$21,450 / $17,550'],
-    ['Amigdalectomía menor de 12 años', '$26,910 / $22,020', '$24,570 / $20,100', '$20,470 / $16,750', '$16,380 / $13,400'],
-    ['Histerectomía total', '$62,030 / $50,750', '$53,170 / $43,500', '$44,310 / $36,250', '$35,440 / $29,000'],
-    ['Reemplazo de válvula mitral', '$121,490 / $99,400', '$104,130 / $85,200', '$86,780 / $71,000', '$69,420 / $56,800'],
-    ['Derivación de arteria coronaria', '$120,680 / $98,740', '$103,440 / $84,630', '$86,200 / $70,530', '$68,960 / $56,420']
-  ];
-  return `<details style="margin-top:16px;padding:14px;background:var(--gray-50);border-radius:12px">
-    <summary style="cursor:pointer;font-weight:800;color:var(--navy);font-size:14px">Honorarios médicos por procedimiento · todos los niveles</summary>
-    <p style="margin:10px 0 6px;font-size:12px;color:var(--gray-700)">Monto máximo que GNP paga al médico (de red / externo). Aplica a cualquier región del país.</p>
-    <div style="overflow-x:auto;margin-top:10px">
-      <table style="width:100%;border-collapse:collapse;font-size:12px">
-        <thead><tr style="background:var(--navy);color:var(--white)">
-          <th style="text-align:left;padding:8px;border-radius:6px 0 0 6px">Procedimiento</th>
-          <th style="padding:8px">Nivel A</th><th style="padding:8px">Nivel B</th><th style="padding:8px">Nivel C</th>
-          <th style="padding:8px;border-radius:0 6px 6px 0">Nivel D</th>
-        </tr></thead>
-        <tbody>
-          ${rows.map((r,i)=>`<tr style="background:${i%2?'var(--white)':'transparent'}">
-            <td style="padding:8px;font-weight:700;color:var(--navy)">${r[0]}</td>
-            <td style="padding:8px;text-align:center;color:var(--gray-700)">${r[1]}</td>
-            <td style="padding:8px;text-align:center;color:var(--gray-700)">${r[2]}</td>
-            <td style="padding:8px;text-align:center;color:var(--gray-700)">${r[3]}</td>
-            <td style="padding:8px;text-align:center;color:var(--gray-700)">${r[4]}</td>
-          </tr>`).join('')}
-        </tbody>
-      </table>
-    </div>
-  </details>`;
+  <p class="step-help" style="margin-top:16px;font-weight:800;color:var(--navy);background:var(--orange-light);padding:12px 14px;border-radius:10px">El nivel hospitalario lo eliges en el momento de usar tu seguro, no al contratarlo. Atenderte en un hospital de menor nivel reduce tu deducible y coaseguro.</p>`;
 }
 function comparativeTiersHTML(ex){
   const rows = [
@@ -1740,7 +1699,7 @@ function comparativeTiersHTML(ex){
     ${rows.map(r=>`
       <div style="margin:10px 0">
         <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;color:var(--gray-700);margin-bottom:4px">
-          <span>Nivel ${r.k} · coaseguro ${r.co}%</span>
+          <span>Nivel ${r.k} · deducible ${fmtMx(r.ded)} · coaseguro ${r.co}%</span>
           <span>Tú ${fmtMx(Math.round(r.you))} · GNP ${fmtMx(Math.round(r.gnp))}</span>
         </div>
         <div class="viz-bar" style="height:18px">
@@ -1835,10 +1794,10 @@ function gmmStepSum(){
   ${explainerHTML({
     intro:'Tu tope anual reinstalable',
     body:`Es el <strong>máximo que GNP pagará</strong> en gastos médicos al año. En Personaliza Variable la suma se <strong>reinstala cada año</strong> automáticamente, así que vuelve a estar disponible aunque la hayas usado el año anterior.`,
-    rec:`Recomendado: <strong>$40,800,000</strong> para cubrir cualquier posible evento o enfermedad catastrófica.`
+    rec:`Recomendado: <strong>$40,800,000</strong> para cubrir cualquier posible evento o enfermedad catastrófica. Bajar la suma casi no abarata la anualidad (a veces ~$200 al año) pero te deja expuesto a un gasto grande, por eso conviene mantenerla alta.`
   })}
   <div class="opts opts-3">
-    ${[[5,'$5M','Básica'],[10,'$10M','Intermedia'],[25,'$25M','Personaliza estándar'],[40.8,'$40.8M','Catastrófica',true]].map(([v,l,m,r])=>`
+    ${[[2.2,'$2.2M','Básica'],[17.5,'$17.5M','Intermedia'],[40.8,'$40.8M','Personaliza estándar',true],[58.3,'$58.3M','Mayor cobertura']].map(([v,l,m,r])=>`
       <button class="opt ${state.gmm.sumInsured===v?'selected':''}" data-sum="${v}">
         ${r?REC_BADGE:''}
         <div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div>
@@ -1850,7 +1809,7 @@ function gmmStepAddons(){
   // Costos anuales estimados de coberturas adicionales reales GNP Personaliza Variable
   const items = [
     ['cda','Cero Deducible por Accidente (CDA)','Si te accidentas (caída, choque, etc.), no pagas deducible — GNP cubre desde el primer peso.',1800],
-    ['mp','Maternidad Plus Personaliza (MP)','Cobertura ampliada de maternidad. Real PDF: $47,000 a $64,500 según plan elegido. 10 meses de espera.',5200],
+    ['mp','Maternidad Plus Personaliza (MP)','3 opciones de cobertura: $47,000, $64,500 y $81,500. 10 meses de espera.',5200],
     ['ahr','Ampliación Hospitalaria Nacional (AHR)','Acceso a hospitales de niveles superiores en otras regiones del país, no solo tu nivel base.',2800],
     ['psico','Asistencia Psicológica','Ya viene incluida — 2 sesiones/mes por videollamada (50 min). Ansiedad, estrés, depresión, insomnio, problemas de pareja. Aplica para terapia de pareja y para menores con consentimiento del tutor.',0]
   ];
@@ -1985,7 +1944,7 @@ function gmmCalcPrice(){
   const dedMult = Math.pow(0.955, dedIdx - 2);
   aggregate *= dedMult;
   // Suma asegurada (ref 40.8M = 1.0)
-  const sumMult = {5:0.50, 10:0.65, 25:0.88, 40.8:1.0}[state.gmm.sumInsured] || 1.0;
+  const sumMult = {2.2:0.42, 17.5:0.82, 40.8:1.0, 58.3:1.12}[state.gmm.sumInsured] || 1.0;
   aggregate *= sumMult;
   // Coberturas adicionales (anuales, netas)
   const addonsCost = state.gmm.addons.reduce((s,k)=>s+({cda:1800, mp:5200, ahr:2800}[k]||0), 0);
@@ -2054,7 +2013,7 @@ function autoStepBasic(){
   <h3 class="step-title">Empezamos: ¿qué auto vas a asegurar?</h3>
   ${explainerHTML({
     intro:'Antes de empezar',
-    body:`Te voy a hacer 5 preguntas. Las respuestas determinan tu anualidad. <strong>Pon datos reales</strong> — la aseguradora los verifica con la factura del auto cuando emites la póliza.`,
+    body:`Protege tu auto, tu patrimonio y a quienes más quieres. Conduce con confianza que nosotros te respaldamos en cada kilómetro; la protección que mereces al mejor costo.<br><br>Te voy a hacer 5 preguntas. Las respuestas determinan tu anualidad. <strong>Pon datos reales</strong> — la aseguradora los verifica con la factura del auto cuando emites la póliza.`,
     example:`Mientras más nuevo y más caro tu auto, más cara la anualidad. Un Versa 2018 cuesta mucho menos asegurar que un Honda HRV 2024.`,
     rec:`Si no recuerdas el modelo exacto, está bien. Andy te ayuda a confirmar después.`
   })}
@@ -2083,7 +2042,7 @@ function autoStepUse(){
   ${explainerHTML({
     intro:'Por qué importa',
     body:`Si usas tu auto para <strong>generar ingreso</strong> (Uber, DiDi, repartos, taxi), la aseguradora lo considera comercial. La anualidad sube ~30%. Las aseguradoras lo verifican — y si reportas "particular" pero lo usas comercialmente, en un siniestro <strong>te pueden negar el pago</strong>.`,
-    rec:`Sé honesta. Si usas tu auto comercialmente más del 20% del tiempo, declara comercial. La anualidad sube pero tienes cobertura real cuando algo pase.`
+    rec:`Conviene declararlo tal cual. Si usas tu auto comercialmente más del 20% del tiempo, declara comercial. La anualidad sube pero tienes cobertura real cuando algo pase.`
   })}
   <div class="opts opts-2">
     <button class="opt ${state.auto.use==='particular'?'selected':''}" data-use="particular">
@@ -2115,11 +2074,12 @@ function autoStepCoverage(){
       <span class="opt-pill" style="background:var(--success)">−60%</span>
     </button>
     <button class="opt ${state.auto.coverage==='limitada'?'selected':''}" data-coverage="limitada">
+      ${state.auto.vehicleValue<=150000?REC_BADGE:''}
       <div class="opt-body"><div class="opt-label">Limitada</div><div class="opt-meta">RC + robo total + asistencia. Choques NO cubiertos.</div></div>
       <span class="opt-pill" style="background:var(--gray-400)">−30%</span>
     </button>
     <button class="opt ${state.auto.coverage==='amplia'?'selected':''}" data-coverage="amplia">
-      ${REC_BADGE}
+      ${state.auto.vehicleValue>150000?REC_BADGE:''}
       <div class="opt-body"><div class="opt-label">Amplia</div><div class="opt-meta">Todo: RC + robo + daños + fenómenos naturales. La que tiene sentido si tu auto vale +$150k.</div></div>
       <span class="opt-pill" style="background:var(--orange)">base</span>
     </button>
@@ -2165,14 +2125,13 @@ function autoStepAddons(){
   ${explainerHTML({
     intro:'Servicios opcionales',
     body:`Ninguno es obligatorio. Cada uno suma a tu anualidad.`,
-    rec:`<strong>Asistencia vial vale la pena</strong> — ~$960/año y te ahorran un dolor de cabeza cuando te quedas tirada (grúa puede costar $1,500). <strong>Auto sustituto</strong> solo si dependes diario del coche y no tienes otro. Los demás son lujos.`
+    rec:`<strong>Auto sustituto</strong> solo si dependes diario del coche y no tienes otro. Llantas y rines vale la pena en zonas con baches. Los demás según tu uso.`
   })}
   <div class="opts">
-    ${[['vial','Asistencia vial','Grúa, batería, llantas, gasolina si te quedas tirado.',960],['sustituto','Auto sustituto','Auto rentado mientras reparan el tuyo (10-30 días).',1800],['legal','Asistencia legal','Abogado en accidentes graves o disputas.',720],['cero','Deducible cero en accidente','Si chocas tu auto, no pagas el deducible — la aseguradora cubre todo.',2160]].map(([k,l,m,p])=>`
+    ${[['sustituto','Auto sustituto','Auto rentado mientras reparan el tuyo (10-30 días).',960],['llantas','Ayuda para llantas y rines','Cubre hasta $25,000 con deducible del 25%.',1511],['llave','Llave de repuesto','Cubre hasta $5,000 con deducible del 20%.',621],['cero','Deducible cero','Si chocas tu auto, no pagas el deducible — la aseguradora cubre todo.',null],['agencia','Siempre en agencia','Reparan tu coche siempre en la agencia.',null]].map(([k,l,m,p])=>`
       <button class="opt ${ad.includes(k)?'selected':''}" data-aaddon="${k}">
-        ${k==='vial'?REC_BADGE:''}
         <div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div>
-        <span class="opt-pill">+${fmtMx(p)}/año</span>
+        <span class="opt-pill">${p?('+'+fmtMx(p)+'/año'):'según vehículo'}</span>
       </button>`).join('')}
   </div>`;
 }
@@ -2208,7 +2167,8 @@ function autoCalcPrice(){
     base *= ddMult;
   }
   // Costos anuales de coberturas adicionales (aprox)
-  const addonsCost = state.auto.addons.reduce((s,k)=>s+({vial:960,sustituto:1800,legal:720,cero:2160}[k]||0),0);
+  // cero y agencia: precio pendiente de AnCheco (no suma al cotizador hasta confirmar)
+  const addonsCost = state.auto.addons.reduce((s,k)=>s+({sustituto:960,llantas:1511,llave:621}[k]||0),0);
   return Math.round(base + addonsCost);
 }
 function autoSummaryLines(){
@@ -2224,7 +2184,7 @@ function autoSummaryLines(){
     lines.push(['Deducible daños',state.auto.deductibleDamage+'%']);
   }
   if(state.auto.addons.length){
-    lines.push(['Extras',state.auto.addons.map(a=>({vial:'Asistencia vial',sustituto:'Auto sustituto',legal:'Legal',cero:'Deducible 0'}[a])).join(', ')]);
+    lines.push(['Extras',state.auto.addons.map(a=>({sustituto:'Auto sustituto',llantas:'Llantas y rines',llave:'Llave de repuesto',cero:'Deducible 0',agencia:'Siempre en agencia'}[a])).filter(Boolean).join(', ')]);
   }
   return lines;
 }
@@ -2242,115 +2202,6 @@ document.getElementById('autoNext').addEventListener('click',()=>{
 /* ============ GENERIC WIZARD (vida/mascota/ahorro/patrimonial) === */
 /* ============================================== */
 const GENERIC_FLOWS = {
-  vida:{
-    title:'Plan Vida',
-    steps:['age','protection','sumInsured','term'],
-    render:{
-      age:()=>`${stepDotsHTML(0, 4)}
-        <h3 class="step-title">Empezamos: tu edad y si fumas</h3>
-        ${explainerHTML({
-          intro:'Sobre el seguro de vida',
-          body:`Un seguro de vida le da <strong>dinero a tu familia si tú faltas</strong>. Cubre hipoteca, educación de hijos, gastos para que vivan tranquilos por años. <strong>Vida puede transformarse en plan de ahorro</strong> en versiones flexibles (Trasciende, Capitaliza). La anualidad depende mucho de tu edad y si fumas.`,
-          example:`Hombre de 30 años, no fumador, $1M de cobertura: ~$2,940/año. Misma persona fumadora: ~$4,120/año (+40%).`,
-          rec:`Sé honesta sobre fumar. Si lo niegas y se descubre en el siniestro (autopsia, expediente), la aseguradora no paga y tu familia se queda sin nada.`
-        })}
-        <div class="slider-wrap">
-          <div class="slider-row"><div><span class="slider-value" id="vAgeVal">${state.vida.age}</span><span class="slider-suffix">años</span></div></div>
-          <input type="range" min="18" max="70" value="${state.vida.age}" class="slider" id="vAgeSlider">
-        </div>
-        <div class="opts opts-2">
-          <button class="opt ${!state.vida.smoker?'selected':''}" data-vsmoker="false">${REC_BADGE}<div class="opt-body"><div class="opt-label">No fumo</div></div></button>
-          <button class="opt ${state.vida.smoker?'selected':''}" data-vsmoker="true"><div class="opt-body"><div class="opt-label">Sí fumo</div><div class="opt-meta">+40% en anualidad vs no fumador</div></div></button>
-        </div>`,
-      protection:()=>{
-        const exp = state.vida.monthlyExpense;
-        const proteccionIdeal = exp * 12 * 5; // fórmula de ANCHECO: gastos × 12 × 5
-        const proteccionMM = Math.max(1, Math.round(proteccionIdeal/1000000));
-        return `${stepDotsHTML(1, 4)}
-        <h3 class="step-title">¿Cuánta protección necesita tu familia?</h3>
-        ${explainerHTML({
-          intro:'La fórmula de ANCHECO (basada en estudios de la Ley de los Grandes Números)',
-          body:`Cuando el pilar de la familia falta repentinamente, <strong>la familia tarda 5 años</strong> en restablecerse financieramente. Por eso la <strong>protección ideal = gasto fijo mensual × 12 × 5</strong>.`,
-          example:`Si tu familia gasta $${fmt(exp)}/mes en lo fijo (renta/hipoteca, escuelas, alimentación, servicios), la protección ideal es <strong>$${fmt(proteccionIdeal)}</strong> (~$${proteccionMM}M). Eso da 5 años para reorganizarse sin presión económica.`,
-          rec:`Si tienes hipoteca activa, súmale el saldo pendiente. Si tienes hijos pequeños, agrega ~$500K por cada uno para asegurar educación.`
-        })}
-        <div class="step-help" style="margin-top:6px"><strong>Gasto mensual fijo de tu familia</strong> (renta/hipoteca + escuelas + alimentación + servicios)</div>
-        <div class="slider-wrap">
-          <div class="slider-row"><div><span class="slider-value" id="vExpVal">$${fmt(exp)}</span></div></div>
-          <input type="range" min="10000" max="150000" step="2500" value="${exp}" class="slider" id="vExpSlider">
-          <div class="slider-marks"><span>$10k</span><span>$50k</span><span>$100k</span><span>$150k</span></div>
-        </div>
-        <div class="step-help" style="margin-top:18px"><strong>¿Cuántas personas dependen económicamente de ti?</strong></div>
-        <div class="opts opts-3">
-          ${[0,1,2,3,4].map(n=>`<button class="opt ${state.vida.dependents===n?'selected':''}" data-vdep="${n}"><div class="opt-body"><div class="opt-label">${n}${n===4?'+':''}</div></div></button>`).join('')}
-        </div>
-        <div class="explainer" style="margin-top:18px"><div class="explainer-body" style="background:var(--orange-light);color:var(--orange-dark);padding:14px;border-radius:8px"><strong>Tu protección ideal calculada:</strong> $${fmt(proteccionIdeal)} · sugerencia <strong>$${proteccionMM}M</strong> de suma asegurada.</div></div>`;
-      },
-      sumInsured:()=>{
-        const exp = state.vida.monthlyExpense;
-        const calc = Math.max(1, Math.min(10, Math.round((exp*12*5 + state.vida.dependents*500000)/1000000)));
-        return `${stepDotsHTML(2, 4)}
-        <h3 class="step-title">¿Cuánto recibe tu familia si tú faltas?</h3>
-        ${explainerHTML({
-          intro:'La cifra que define todo',
-          body:`Es lo que la aseguradora le da a tus beneficiarios. <strong>Tienen que poder vivir con eso sin tu ingreso por al menos 5 años.</strong>`,
-          example:`<strong>Tu situación:</strong> gasto fijo $${fmt(exp)}/mes y ${state.vida.dependents} dependiente${state.vida.dependents===1?'':'s'}. La fórmula ANCHECO sugiere <strong>~$${calc}M</strong>.`,
-          rec:`<strong>$${calc}M</strong> según tus números. Si vas a transformar Vida en plan de ahorro, considera $1-2M extra para tener seguro de vida + componente de ahorro.`
-        })}
-        <div class="opts opts-3">
-          ${[1,2,5,10].map(v=>`<button class="opt ${state.vida.sumInsured===v?'selected':''}" data-vsum="${v}">${v===calc?REC_BADGE:''}<div class="opt-body"><div class="opt-label">$${v}M</div><div class="opt-meta">${v===1?'mínimo':v===2?'común':v===5?'protección alta':'protección máxima'}</div></div></button>`).join('')}
-        </div>`;
-      },
-      term:()=>`${stepDotsHTML(3, 4)}
-        <h3 class="step-title">¿Temporal o transformable en ahorro?</h3>
-        ${explainerHTML({
-          intro:'Tres caminos en GNP',
-          body:`<strong>Temporal:</strong> cubre x años. Si faltas dentro del plazo, paga. Si llegas vivo al final, no recibes nada — pero pagaste mucho menos.<br><br><strong>Permanente:</strong> dura toda tu vida. GNP <em>seguro</em> va a pagar. Por eso es 2-3x más cara.<br><br><strong>Transformable a Ahorro</strong> (Trasciende/Capitaliza): te cubre vida + acumula valor que puedes retirar. Ideal si buscas protección + ahorro.`,
-          example:`Persona de 30 años, $1M cobertura: 20 años temporal ~$2,940/año. Permanente ~$6,960/año pero acumula valor. Trasciende: ~$23,400/año aporte que se transforma en $9.4M a los 65.`,
-          rec:`<strong>Temporal a 20-30 años</strong> es lo más común y eficiente. Si quieres protección + ahorro en uno, salta a <strong>Trasciende</strong> en la sección Ahorro.`
-        })}
-        <div class="opts opts-3">
-          ${[[10,'10 años','temporal corto'],[20,'20 años','temporal estándar · recomendado'],[30,'30 años','temporal largo'],[99,'Permanente','toda la vida + valor en efectivo']].map(([v,l,m])=>`<button class="opt ${state.vida.term===v?'selected':''}" data-vterm="${v}">${v===20?REC_BADGE:''}<div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div></button>`).join('')}
-        </div>
-        <div style="margin-top:18px;padding:14px;background:var(--orange-light);border-radius:12px;border-left:4px solid var(--orange)">
-          <div style="font-weight:800;color:var(--orange-dark);font-size:13px;letter-spacing:.5px;text-transform:uppercase">Para mujeres · Cobertura Mujer y Doble Cobertura Mujer</div>
-          <p style="margin:6px 0 0;font-size:13px;color:var(--gray-700);line-height:1.5">Protección para padecimientos frecuentes o propios del género. GNP paga las veces que se presenten, hasta el límite de la suma asegurada. Doble Cobertura incluye respaldo financiero para complicaciones del embarazo (tú o el recién nacido). Andy te explica si aplica a tu caso.</p>
-        </div>`
-    },
-    bind:()=>{
-      const a=document.getElementById('vAgeSlider');if(a)a.addEventListener('input',()=>{state.vida.age=parseInt(a.value);document.getElementById('vAgeVal').textContent=a.value;renderGenericQuote()});
-      document.querySelectorAll('[data-vsmoker]').forEach(b=>b.addEventListener('click',()=>{state.vida.smoker=b.dataset.vsmoker==='true';renderGeneric();renderGenericQuote()}));
-      document.querySelectorAll('[data-vsum]').forEach(b=>b.addEventListener('click',()=>{state.vida.sumInsured=parseInt(b.dataset.vsum);renderGeneric();renderGenericQuote()}));
-      document.querySelectorAll('[data-vterm]').forEach(b=>b.addEventListener('click',()=>{state.vida.term=parseInt(b.dataset.vterm);renderGeneric();renderGenericQuote()}));
-      document.querySelectorAll('[data-vdep]').forEach(b=>b.addEventListener('click',()=>{state.vida.dependents=parseInt(b.dataset.vdep);renderGeneric();renderGenericQuote()}));
-      const exp=document.getElementById('vExpSlider');if(exp)exp.addEventListener('input',()=>{state.vida.monthlyExpense=parseInt(exp.value);document.getElementById('vExpVal').textContent='$'+fmt(parseInt(exp.value));renderGeneric();renderGenericQuote()});
-    },
-    price:()=>{
-      // Anualidad: $245/mes (vieja) → $2,940/año para perfil base 30y nofum $1M temporal 20 años
-      let base = 2940;
-      base *= 1 + Math.max(0,(state.vida.age-30))*0.06;
-      if(state.vida.smoker) base *= 1.4;
-      base *= state.vida.sumInsured;
-      if(state.vida.term===99) base *= 2.4;
-      else if(state.vida.term===30) base *= 1.45;
-      else if(state.vida.term===20) base *= 1.18;
-      return Math.round(base);
-    },
-    summary:()=>{
-      const exp = state.vida.monthlyExpense;
-      const proteccionIdeal = exp * 12 * 5;
-      return [
-        ['Plan','Vida GNP'],
-        ['Edad',state.vida.age+' años'],
-        ['Fumador',state.vida.smoker?'Sí':'No'],
-        ['Dependientes',state.vida.dependents+(state.vida.dependents===4?'+':'')],
-        ['Gasto mensual','$'+fmt(state.vida.monthlyExpense)],
-        ['Protección ideal (gasto×12×5)','$'+fmt(proteccionIdeal)],
-        ['Suma asegurada','$'+state.vida.sumInsured+'M'],
-        ['Plazo',state.vida.term===99?'Permanente':state.vida.term+' años (temporal)']
-      ];
-    }
-  },
   mascota:{
     title:'GNP Mi Mascota',
     steps:['species','sumInsured','deductible','addons'],
@@ -2528,7 +2379,7 @@ const GENERIC_FLOWS = {
         <h3 class="step-title">¿Por cuántos años aportas?</h3>
         ${explainerHTML({
           intro:`Plazos disponibles en ${p.name}`,
-          body:`En ${p.name} eliges <strong>cuántos años aportas</strong>. Después dejas el dinero crecer hasta cuando quieras retirarlo. ${state.ahorro.product==='TRASCIENDE'?'Desde el año 11 puedes hacer 3 retiros (hasta 50% del saldo). Después de 60 años, retiros libres.':state.ahorro.product==='CAPITALIZA'?'Retiros libres desde el año 11. Aportaciones adicionales cuando quieras desde $1,000.':state.ahorro.product==='CONSOLIDA'?'Retiros desde el año 3 si los necesitas. La deducción fiscal aplica cada año que aportas.':'Plazo único de 10 años. A los 65 o 70 recibes todo en una sola exhibición o como renta vitalicia.'}`,
+          body:`En ${p.name} eliges <strong>cuántos años aportas</strong>. Después dejas el dinero crecer hasta cuando quieras retirarlo. ${state.ahorro.product==='TRASCIENDE'?'Desde el año 11 puedes hacer 3 retiros (hasta 50% del saldo). Después de 60 años, un retiro anual hasta el 50% del saldo.':state.ahorro.product==='CAPITALIZA'?'Retiros libres desde el año 11. Aportaciones adicionales cuando quieras desde $1,000.':state.ahorro.product==='CONSOLIDA'?'Retiros desde el año 3 si los necesitas. La deducción fiscal aplica cada año que aportas.':'Plazo único de 10 años. A los 65 o 70 recibes todo en una sola exhibición o como renta vitalicia.'}`,
           rec:`<strong>${validYears.length>1?'10 años':'10 años (único plazo)'}</strong> es el balance más común — total aportado manejable y suficiente tiempo para que el interés compuesto haga lo suyo.`
         })}
         <div class="opts opts-3">
@@ -2730,7 +2581,7 @@ const GENERIC_FLOWS = {
 function renderGeneric(){
   const flow = GENERIC_FLOWS[state.type] || GENERIC_FLOWS['ahorro'];
   const cur = state[state.type] || state['ahorro'];
-  const productNames = {gmm:'Plan Personaliza Variable',auto:'Plan Auto',vida:'Plan Vida',mascota:'Plan Mascota',ahorro:'Plan Ahorro / Retiro',patrimonial:'Plan Casa / Patrimonial',educativo:'Plan Educativo · Profesional'};
+  const productNames = {gmm:'Plan Personaliza Variable',auto:'Plan Auto',mascota:'Plan Mascota',ahorro:'Plan Ahorro / Retiro',patrimonial:'Plan Casa / Patrimonial',educativo:'Plan Educativo · Profesional'};
   const stepKey = flow.steps[cur.step];
   document.getElementById('genContent').innerHTML = flow.render[stepKey]();
   document.getElementById('genQuoteTitle').textContent = productNames[state.type] || flow.title;
@@ -2782,7 +2633,7 @@ document.getElementById('cSubmit').addEventListener('click',()=>{
 
 /* ============ FINAL ============ */
 function renderFinal(){
-  const productNames = {gmm:'Plan Personaliza Variable',auto:'Plan Auto',vida:'Plan Vida',mascota:'Plan Mascota',ahorro:'Plan Ahorro / Retiro',patrimonial:'Plan Casa / Patrimonial',educativo:'Plan Educativo · Profesional'};
+  const productNames = {gmm:'Plan Personaliza Variable',auto:'Plan Auto',mascota:'Plan Mascota',ahorro:'Plan Ahorro / Retiro',patrimonial:'Plan Casa / Patrimonial',educativo:'Plan Educativo · Profesional'};
   document.getElementById('fName').textContent = state.contact.name.split(' ')[0] || 'amig@';
   document.getElementById('fProductName').textContent = productNames[state.type];
   const fAmt = document.getElementById('fAmount');
@@ -2796,7 +2647,7 @@ function renderFinal(){
   document.getElementById('fSummary').innerHTML = lines.map(([l,v],i)=>`<div class="quote-line" style="animation-delay:${.4+i*.07}s"><span class="lbl">${l}</span><span class="val">${v}</span></div>`).join('');
 }
 document.getElementById('fWhats').addEventListener('click',()=>{
-  const product = {gmm:'Gastos Médicos Mayores (Personaliza Variable)',auto:'Auto',vida:'Vida',mascota:'Mascota',ahorro:'Ahorro/Retiro',patrimonial:'Casa/Patrimonial',educativo:'Educativo · Profesional'}[state.type];
+  const product = {gmm:'Gastos Médicos Mayores (Personaliza Variable)',auto:'Auto',mascota:'Mascota',ahorro:'Ahorro/Retiro',patrimonial:'Casa/Patrimonial',educativo:'Educativo · Profesional'}[state.type];
   let msg = `Hola Andy! Soy ${state.contact.name}.\n\nCompleté la pre-cotización en tu landing:\n\n`;
   msg += `*Producto:* ${product}\n`;
   const labelMonto = (state.type==='ahorro' || state.type==='educativo') ? 'aportación anual' : 'anualidad simulada';
