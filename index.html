@@ -1250,9 +1250,14 @@ const PRODUCTOS_AHORRO = {
 };
 
 const PRODUCTOS_PATRIMONIAL = {
-  VITAL:{name:'VITAL',tag:'Lo esencial cubierto',homeRate:0.00145,contentsRate:0.0028,fixedBase:278,coberturas:[['Edificio (incendio + fenómenos naturales)','100% del valor asegurado'],['Contenidos generales','100% del valor declarado'],['Robo con violencia','100% de contenidos'],['Responsabilidad civil familiar','$500,000'],['Gastos extra por inhabitabilidad','$50,000'],['Remoción de escombros','10% suma asegurada']],bestFor:'Casa familiar estándar sin objetos de alto valor declarados.',deducibleNote:'2% suma asegurada en incendio · 5% en fenómenos hidromet'},
-  PLUS:{name:'PLUS',tag:'Cobertura amplia con sumas mayores',homeRate:0.00211,contentsRate:0.00406,fixedBase:403,coberturas:[['Edificio (incendio + fenómenos naturales)','120% del valor asegurado'],['Contenidos generales','120% del valor declarado'],['Robo con violencia','100% de contenidos'],['Robo sin violencia','30% de contenidos'],['Responsabilidad civil familiar','$1,000,000'],['Cristales y rotura','$50,000 incluido'],['Daños eléctricos','$100,000'],['Gastos extra por inhabitabilidad','$120,000']],bestFor:'Casa con electrónica/electrodomésticos premium o zona de mayor exposición.',deducibleNote:'1.5% en incendio · 4% en fenómenos hidromet'},
-  AMEDIDA:{name:'A TU MEDIDA',tag:'Cobertura premium con extras incluidos',homeRate:0.00377,contentsRate:0.00728,fixedBase:722,coberturas:[['Edificio (incendio + fenómenos naturales)','125% del valor asegurado'],['Contenidos generales','125% del valor declarado'],['Robo con/sin violencia','100% / 50% de contenidos'],['Responsabilidad civil familiar','$2,000,000'],['Cristales y rotura','$100,000 incluido'],['Daños eléctricos','$200,000'],['Equipo de teletrabajo','$50,000 incluido (vale $541/año aparte)'],['Servicios funerarios para mascotas','$15,000 incluido (vale $365/año aparte)'],['Menaje de casa premium','$300,000 incluido (vale $1,721/año aparte)'],['Artículos en tránsito','$100,000 incluido (vale $1,102/año aparte)'],['Asistencia hogar 24/7','Plomería, cerrajería, electricidad']],bestFor:'Casa con home office, mascotas, contenido de alto valor o quien quiere paz total.',deducibleNote:'1% en incendio · 3% en fenómenos hidromet'}
+  // Tarifas derivadas del desglose línea por línea de los PDFs GNP reales:
+  // - homeRate = (Incendio Edificio + RC + Gastos extra + Remoción + Asistencias) / valor casa
+  // - contentsRate = (Incendio Contenidos + Electrónico + Cristales + extras de contenido) / valor contenidos
+  // - fixedBase para AMEDIDA refleja el paquete premium que no escala con sumas (teletrabajo, menaje, tránsito, funmascotas)
+  // Anclas reales: Vital casa $2.196M + cont $878k = $4,018 · Plus = $5,365 · A tu medida casa $2.196M + cont $300k = $8,794
+  VITAL:{name:'VITAL',tag:'Lo esencial cubierto',homeRate:0.00095,contentsRate:0.00220,fixedBase:0,coberturas:[['Edificio (incendio + fenómenos naturales)','100% del valor asegurado'],['Contenidos generales','100% del valor declarado'],['Robo con violencia','100% de contenidos'],['Responsabilidad civil familiar','$500,000'],['Gastos extra por inhabitabilidad','$50,000'],['Remoción de escombros','10% suma asegurada']],bestFor:'Casa familiar estándar sin objetos de alto valor declarados.',deducibleNote:'Equipo electrónico 20% · Cristales $700 · Hidromet 5% + coaseguro 10%'},
+  PLUS:{name:'PLUS',tag:'Cobertura amplia con sumas mayores',homeRate:0.00093,contentsRate:0.00380,fixedBase:0,coberturas:[['Edificio (incendio + fenómenos naturales)','120% del valor asegurado'],['Contenidos generales','120% del valor declarado'],['Robo con violencia','100% de contenidos'],['Artículos en tránsito','$35,000 incluido'],['Menaje de casa','$88,000 incluido'],['Responsabilidad civil familiar','$1,000,000'],['Cristales y rotura','$50,000 incluido'],['Gastos extra por inhabitabilidad','$120,000']],bestFor:'Casa con electrónica/electrodomésticos premium o zona de mayor exposición.',deducibleNote:'Equipo electrónico 20% · Artículos/Menaje $1,700 · Cristales $700'},
+  AMEDIDA:{name:'A TU MEDIDA',tag:'Cobertura premium con extras incluidos',homeRate:0.00098,contentsRate:0.00220,fixedBase:5978,coberturas:[['Edificio (incendio + fenómenos naturales)','125% del valor asegurado'],['Contenidos generales','125% del valor declarado'],['Robo con/sin violencia','100% / 50% de contenidos'],['Responsabilidad civil familiar','$3,000,000'],['Cristales y rotura','$50,000 incluido'],['Equipo de teletrabajo','$25,000 incluido (vale $541/año aparte)'],['Servicios funerarios para mascotas','Amparada (vale $365/año aparte)'],['Menaje de casa premium','$150,000 incluido (vale $1,721/año aparte)'],['Artículos en tránsito','$50,000 incluido (vale $1,102/año aparte)'],['Asistencia hogar 24/7','Plomería, cerrajería, electricidad']],bestFor:'Casa con home office, mascotas, contenido de alto valor o quien quiere paz total.',deducibleNote:'Equipo electrónico 20% · Teletrabajo 35% · Artículos/Menaje $1,700 · Cristales $700'}
 };
 
 /* Suma asegurada de vida real GNP — depende de edad y producto.
@@ -1519,6 +1524,8 @@ function explainerHTML({intro, body, example, rec, bullets}){
   </div>`;
 }
 const REC_BADGE = '<span class="opt-rec-badge">Recomendado</span>';
+const POPULAR_BADGE = '<span class="opt-rec-badge" style="background:var(--navy);color:var(--white)">Más solicitado</span>';
+const PREMIUM_BADGE = '<span class="opt-rec-badge" style="background:var(--orange);color:var(--white)">Premium</span>';
 const OPT_HINT = '<div class="opt-hint">Si dudas, deja la recomendación de Andy.</div>';
 
 /* ============================================== */
@@ -2522,9 +2529,9 @@ const GENERIC_FLOWS = {
         <h3 class="step-title">¿Cuánto vale tu casa (sin contar el terreno)?</h3>
         ${explainerHTML({
           intro:'Sobre el seguro de hogar',
-          body:`El seguro de Hogar es un seguro <strong>multipropósito</strong>: protege tu casa contra <strong>incendio, robo y daños materiales</strong>, y además puedes complementarlo con coberturas adicionales según lo que necesites. Aquí no aseguras el valor comercial — aseguras el <strong>valor de reconstrucción</strong>.`,
-          example:`Si tu casa vale $4M comerciales pero reconstruirla costaría $2.5M (el terreno no se asegura), debes asegurar los $2.5M. Pagar de más es desperdicio; pagar de menos te deja descubierta al momento del siniestro.`,
-          rec:`Si no conoces el valor exacto de reconstrucción, una regla práctica es de <strong>$15,000 a $25,000 por m²</strong> en zonas costeras (Cancún) y CDMX, y de $10,000 a $15,000 en el interior del país. Andy te ayuda a calcularlo con precisión.`
+          body:`Protege tu casa contra <strong>incendio, robo, fenómenos naturales</strong> (huracanes, sismos, inundaciones, etc), <strong>explosiones y daños eléctricos</strong>. Se toma en cuenta el <strong>valor de reconstrucción</strong> (no el valor comercial).`,
+          example:`Si tu casa vale $4M a la venta pero reconstruirla costaría $2.5M (terreno aparte), se aseguran los $2.5M; pagar más es desperdicio y pagar menos te deja descubierta.`,
+          rec:`Si no sabes el valor exacto de tu casa, te comparto una regla aproximada: <strong>$15,000-$25,000 por m²</strong> en zonas costeras (Cancún) y <strong>$10,000-$15,000</strong> en el interior (CDMX). Andy te ayuda a calcular preciso.`
         })}
         <div class="slider-wrap">
           <div class="slider-row"><div><span class="slider-value" id="hvVal">$${fmt(state.patrimonial.homeValue)}</span></div></div>
@@ -2534,10 +2541,10 @@ const GENERIC_FLOWS = {
       contentsValue:()=>`${stepDotsHTML(1, 4)}
         <h3 class="step-title">¿Y los contenidos?</h3>
         ${explainerHTML({
-          intro:'Lo que hay dentro y lo que cargas contigo',
-          body:`Aquí proteges tres tipos de bienes que el plan unifica en un solo monto:<br><br><strong>Contenidos:</strong> muebles, electrodomésticos, ropa, utensilios y cosas de uso diario dentro de tu casa.<br><strong>Electrónicos:</strong> televisiones, audio, consolas, computadoras de escritorio y demás aparatos eléctricos del hogar.<br><strong>Bienes en tránsito:</strong> laptops, cámaras, teléfonos y equipo que sales de tu casa (oficina, escuela, viajes). <strong>Sin esta cobertura solo te pagan la casa, no las cosas.</strong>`,
-          example:`Casa amueblada estándar: TV $20k + lavadora y secadora $30k + muebles $80k + electrónicos $40k + ropa $30k + utensilios $20k + laptop y celular fuera de casa $180k = alrededor de <strong>$400,000</strong>.`,
-          rec:`Sé realista: suma lo que hoy reemplazarías si lo perdieras todo. Una cifra demasiado baja deja huecos; una demasiado alta te hace pagar prima de más. Las joyas y arte de alto valor se aseguran aparte con cobertura específica.`
+          intro:'Lo que hay dentro',
+          body:`Aquí proteges tres tipos de bienes que el plan unifica en un solo monto:<br><br><strong>CONTENIDOS:</strong> muebles, decoración, artículos personales y electrodomésticos. Joyas y arte de alto valor se aseguran aparte con cobertura específica.<br><br><strong>ELECTRÓNICOS:</strong> televisores, cómputo, celulares, audio, entretenimiento, etc (aplica deducible).<br><br><strong>BIENES EN TRÁNSITO:</strong> te cubre el robo de tus artículos portátiles de uso personal que se encuentren temporalmente fuera del inmueble — celulares, tabletas, ropa y accesorios, bolsas, carteras, relojes, binoculares, anteojos, plumas estilográficas, lapiceros, joyas, bicicletas, patines y patinetas, aparatos fotográficos o de video, artículos y aparatos deportivos. Se te reponen descontando el deducible correspondiente. <strong>Si se queman o roban, la aseguradora te lo repone.</strong>`,
+          example:`Casa promedio amueblada: muebles $200,000 + electrodomésticos $50,000 + ropa $50,000 + electrónicos $100,000 = ~<strong>$400,000</strong>.`,
+          rec:`Suma todo lo que tengas de ambos rubros; sé realista y conserva facturas, recibos o fotos para que en caso de robo o ruptura compruebes que existían.`
         })}
         <div class="slider-wrap">
           <div class="slider-row"><div><span class="slider-value" id="cvVal">$${fmt(state.patrimonial.contentsValue)}</span></div></div>
@@ -2553,13 +2560,13 @@ const GENERIC_FLOWS = {
         ${explainerHTML({
           intro:'3 niveles de protección, mismas bases de cobertura',
           body:`GNP Hogar maneja <strong>3 paquetes</strong> que escalan en sumas aseguradas, deducibles y extras incluidos. La base (incendio, robo con violencia, fenómenos naturales) viene en los 3. Lo que cambia: <strong>topes de cobertura, deducibles y coberturas adicionales incluidas</strong>.`,
-          example:`Casa $2M + $300k contenidos: <strong>Vital ~$4,018/año</strong> · <strong>Plus ~$5,826/año</strong> · <strong>A tu medida ~$10,447/año</strong>.`,
+          example:`Casa $2M + $300k contenidos: <strong>Vital ~$2,560/año</strong> · <strong>Plus ~$3,000/año</strong> · <strong>A tu medida ~$8,600/año</strong>. Para casa $2.2M con contenidos $878k (cotización real GNP): <strong>Vital $4,018 · Plus $5,365 · A tu medida $8,794</strong>.`,
           rec:`<strong>Vital</strong> para casa familiar estándar. <strong>Plus</strong> si tienes home office o vives en zona costera. <strong>A tu medida</strong> si tienes mascotas, joyas, arte o quieres cero preocupaciones.`
         })}
         <div class="opts">
           ${productos.map(p=>`
             <button class="opt ${state.patrimonial.package===p.name?'selected':''}" data-ppackage="${p.name}">
-              ${p.name==='VITAL'?REC_BADGE:''}
+              ${p.name==='VITAL'?REC_BADGE:(p.name==='PLUS'?POPULAR_BADGE:PREMIUM_BADGE)}
               <div class="opt-body">
                 <div class="opt-label">${p.name} <span style="font-weight:400;color:var(--orange-dark);font-size:13px">— $${fmt(calcPrima(p))}/año</span></div>
                 <div class="opt-meta" style="font-size:13px;color:var(--gray-700);margin-bottom:6px"><em>${p.tag}</em></div>
@@ -2572,18 +2579,18 @@ const GENERIC_FLOWS = {
       addons:()=>{
         const ad = state.patrimonial.addons;
         const hv = state.patrimonial.homeValue;
-        const hidrometCost = Math.round(hv * 0.00307);
+        const hidrometCost = Math.round(hv * 0.003);
         const items = [
-          ['hidromet','Hidrometeorológicos','Cubre los daños que provocan huracanes, ciclones, granizo, inundaciones, marejadas y vientos fuertes. En zona costera (Cancún, Riviera Maya) es la cobertura que evita la mayor pérdida tras un huracán.',hidrometCost],
-          ['terremoto','Terremoto y/o erupción volcánica','Protege tu casa frente a sismos y erupciones volcánicas, eventos que el plan base no cubre. Recomendado para CDMX, Puebla, Oaxaca, Guerrero y demás zonas sísmicas. (Precio según valor casa — Andy lo confirma)',0],
-          ['funmascotas','Servicio funerario para mascotas','Si tu perro o gato fallece, GNP cubre el servicio funerario (cremación o entierro) para que no cargues con ese gasto en un momento difícil. Cubre perros y gatos.',1200]
+          ['hidromet','Hidrometeorológicos','Cubre las pérdidas y/o daños físicos al inmueble, así como a sus cimentaciones e instalaciones fijas subterráneas, originados por avalanchas de lodo, granizo, helada, huracán, inundación, inundación por lluvia, golpe de mar, tsunami, marejada, nevada y vientos tempestuosos.',hidrometCost],
+          ['terremoto','Terremoto y/o erupción volcánica','Se cubren las pérdidas por daños materiales al inmueble asegurado, así como a sus cimientos e instalaciones fijas subterráneas, causados por terremoto y/o erupción volcánica.',0],
+          ['funmascotas','Servicio funerario para mascotas','En caso de fallecimiento de tu mascota, esta asistencia brinda los siguientes servicios: recolección del cuerpo, cremación individual de la mascota, urna básica y entrega a domicilio de las cenizas.',1200]
         ];
         return `${stepDotsHTML(3, 4)}
         <h3 class="step-title">Último paso: extras opcionales</h3>
         ${explainerHTML({
           intro:'Coberturas adicionales',
           body:`Tu paquete ya incluye lo principal (incendio, robo con violencia, daños materiales). Estas son protecciones adicionales que se contratan según la zona donde vives y lo que quieras proteger.`,
-          example:`<strong>Hidrometeorológicos:</strong> casa $2.2M en Cancún ≈ $6,760/año (cubre $300k edificio + $300k contenidos contra huracán). En zona costera es prácticamente obligatorio; en interior rara vez se justifica.`,
+          example:`<strong>Hidrometeorológicos:</strong> casa $2.2M en Cancún ≈ $6,600/año (cubre $300k edificio + $300k contenidos contra huracán). En zona costera es prácticamente obligatorio; en interior rara vez se justifica.`,
           rec:`Si vives en <strong>zona costera</strong> (Cancún, Riviera Maya, Golfo, Pacífico), <strong>Hidrometeorológicos no es opcional</strong>: un huracán fuerte puede causar pérdidas por millones. En <strong>zonas sísmicas</strong> (CDMX, Puebla, Oaxaca, Guerrero) Terremoto cierra el hueco más grande del plan base. El Servicio Funerario para Mascotas es un extra de tranquilidad para quienes consideran a su perro o gato parte de la familia.`
         })}
         <div class="opts">
@@ -2605,14 +2612,13 @@ const GENERIC_FLOWS = {
       }));
     },
     price:()=>{
-      // Calibrado a cotizaciones PDF reales GNP Hogar.
-      // Vital ancla: casa $2M + contenidos $300k = $4,018 (homeRate 0.00145 + contentsRate 0.0028 + fixed 278)
-      // Plus = 1.45x Vital · A tu medida = 2.60x Vital (incluye extras teletrabajo/mascotas/menaje/tránsito)
+      // Tarifas calibradas al desglose línea por línea de los PDFs GNP reales.
+      // Anclas: Vital casa $2.196M + cont $878k = $4,018 · Plus = $5,365 · A tu medida casa $2.196M + cont $300k = $8,794.
       const p = PRODUCTOS_PATRIMONIAL[state.patrimonial.package] || PRODUCTOS_PATRIMONIAL.VITAL;
       const base = state.patrimonial.homeValue * p.homeRate + state.patrimonial.contentsValue * p.contentsRate + p.fixedBase;
       const hv = state.patrimonial.homeValue;
-      // Hidromet escala 0.307% del valor de casa (ancla PDF $6,760 / $2.2M)
-      const hidrometCost = Math.round(hv * 0.00307);
+      // Hidromet: delta PDF Huracán = $6,585 / casa $2.196M ≈ 0.3% del valor de casa.
+      const hidrometCost = Math.round(hv * 0.003);
       const costs = {hidromet:hidrometCost, terremoto:0, funmascotas:1200};
       const ad = state.patrimonial.addons.reduce((s,k)=>s+(costs[k]||0),0);
       return Math.round(base + ad);
@@ -2632,10 +2638,10 @@ const GENERIC_FLOWS = {
       lines.push(['Deducibles', p.deducibleNote]);
       if(state.patrimonial.addons.length){
         const addonLabels = {hidromet:'Hidrometeorológicos', terremoto:'Terremoto/Erupción volcánica', funmascotas:'Servicio funerario mascotas'};
-        const hidrometCost = Math.round(hv * 0.00307);
+        const hidrometCost = Math.round(hv * 0.003);
         const addonCosts = {hidromet:hidrometCost, terremoto:0, funmascotas:1200};
         state.patrimonial.addons.forEach(k=>{
-          const costoStr = addonCosts[k]===0 ? 'Consultar' : '$'+fmt(addonCosts[k])+'/año';
+          const costoStr = addonCosts[k]===0 ? 'Cotiza Andy aparte' : '$'+fmt(addonCosts[k])+'/año';
           lines.push(['+ '+addonLabels[k], costoStr]);
         });
       }
