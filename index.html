@@ -2421,7 +2421,7 @@ const GENERIC_FLOWS = {
               </div>
             </button>`).join('')}
         </div>
-        ${insiderHTML(`La diferencia contra ahorrar en el banco: aquí tu familia queda protegida <strong>desde el día 1</strong> con un seguro de vida por una suma mucho mayor a lo que llevas aportado. El banco te da lo que juntaste; esto te respalda desde la primera aportación.`)}
+        ${insiderHTML(`Si comparas solo la tasa, un CETES o un fondo indexado pueden ganarle. Lo que ninguno de los dos te da: <strong>seguro de vida por una suma mucho mayor a lo aportado desde el día 1</strong> (si faltas en el año 2, tu familia recibe millones, no tus dos aportaciones), rendimiento <strong>libre de impuestos</strong>, entrega garantizada por contrato en los planes garantizados, y en CONSOLIDA <strong>devolución de impuestos cada año</strong> que se suma al rendimiento. Compara el paquete completo, no solo la tasa: son productos para cosas distintas.`)}
         ${explainerHTML({_cmsKey:'auto.exp.18', intro:'Los 4 productos reales de Andy',
           body:`GNP tiene <strong>4 productos de ahorro/inversión</strong>. Cada uno está diseñado para un objetivo distinto: flexibilidad, control activo, beneficio fiscal, o disciplina forzada. Todos incluyen <strong>seguro de vida</strong> desde el primer día.`
         })}
@@ -2511,10 +2511,12 @@ const GENERIC_FLOWS = {
       const retiroLbl65 = N('ahorroTables.retiroEdad65', 65);
       const retiroLbl70 = N('ahorroTables.retiroEdad70', 70);
       const idxPct = Math.round((N('ahorroTables.indexacionAnual', 1.05) - 1) * 100);
+      const tasaImplicita = (ahorroRateFromMult(state.ahorro.age)*100).toFixed(1);
       return [
         ['Producto', p.name+' · '+p.tag],
         ['Tu edad', state.ahorro.age+' años'],
         ['Aportación', '$'+fmt(state.ahorro.annualContribution)+'/año durante '+state.ahorro.years+' años'],
+        ['Rendimiento anual implícito', '~'+tasaImplicita+'% compuesto, libre de impuestos'],
         ['Total que aportas (indexado '+idxPct+'%)', '$'+fmt(totalAportado)],
         ['Seguro de vida desde día 1', '$'+fmt(Math.round(sumaVida))],
         ['Saldo proyectado a los '+retiroLbl65, '$'+fmt(Math.round(fv65))+' (libre de impuestos)'],
