@@ -1658,10 +1658,7 @@ function gmmStepWho(){
     </button>`).join('')}
   </div>
   ${insiderHTML(`Una póliza familiar no es "precio de paquete": <strong>cada persona paga según su edad</strong>. El descuento familiar sí existe, pero aplica a partir de 4 integrantes.`)}
-  ${explainerHTML({_cmsKey:'auto.exp.1',
-    example:`Una familia de 4 (2 adultos + 2 hijos) con tabulador B y suma asegurada de $40millones paga ~$66,500/año en una sola póliza.`
-  })}
-  <p class="step-help" style="margin-top:10px;font-size:14px;color:var(--gray-700)">El "tabulador médico" del ejemplo es el nivel de honorarios que la aseguradora acepta pagar a médicos y hospitales: mientras mejor el tabulador, más alta la anualidad (el costo del seguro por año).</p>`;
+  <div class="explainer"><div class="explainer-block"><strong>Ejemplo real:</strong> <span data-cms-html="gmm.who.ejemplo_familia">una familia de 4 (papás de 36 años y niños de 7 y 10) paga ~$66,500 al año en una sola póliza, con protección de hasta $40 millones al año en gastos médicos. El descuento familiar aplica a partir de 4 integrantes; con menos personas, cada quien paga según su propia edad.</span></div></div>`;
 }
 function gmmStepAge(){
   const showPartner = state.gmm.who !== 'individual';
