@@ -1658,10 +1658,10 @@ function gmmStepWho(){
     </button>`).join('')}
   </div>
   ${insiderHTML(`Una póliza familiar no es "precio de paquete": <strong>cada persona paga según su edad</strong>. El descuento familiar sí existe, pero aplica a partir de 4 integrantes.`)}
-  ${deepDiveHTML('La guía de Andy: los términos del seguro, explicados', explainerHTML({_cmsKey:'auto.exp.1', intro:'Empezamos:',
-    body:`Los accidentes y enfermedades ocurren de un día para otro, preferible tener un seguro y no necesitarlo, que necesitarlo y no tenerlo; <strong>PROTEGETE!</strong><br><br><strong>Terminología que vas a escuchar</strong><br><br><strong>Suma asegurada</strong><br>Monto total por el que estás protegido.<br>Se elige al contratar y puede ser única o reinstalable anual, dependiendo de si el deducible es único o anual.<br><br><strong>Deducible</strong><br>Cantidad fija que pagas cada vez que usas el seguro. Puede ser único (se paga una vez al inicio de cada enfermedad y al agotarse la suma, termina el seguro para ese padecimiento) o anual por enfermedad (se paga cada vez que se utiliza pero la suma asegurada se reinstala, volviéndose ilimitada).<br><em>Deducibles anuales por padecimiento, tope de 2 deducibles por año por póliza</em><br><br><strong>Coaseguro</strong><br>Porcentaje sobre la factura hospitalaria que tú pagas en cada siniestro, con tope. Su objetivo es que revises los gastos en factura y los prestadores no se excedan.<br><br><strong>Tabulador médico</strong><br>Monto máximo que GNP acepta pagar al médico por consultas, cirugías, procedimientos, terapias, etc; cuanto mejor sea el tabulador más alta será tu anualidad.<br><br><strong>Prima / costo del seguro</strong><br><br>El seguro de <strong>gastos médicos mayores</strong> cubre padecimientos <strong>grandes, cuando el gasto ocasionado es mayor a tu deducible</strong> — hospitalizaciones, cirugías, enfermedades graves. <strong>No</strong> cubre consultas preventivas con tu médico ni medicina del día a día.<br><br>Te voy a hacer algunas preguntas, y en cada una te explico qué significa, qué te recomiendo y cómo cambia la anualidad.`,
+  ${explainerHTML({_cmsKey:'auto.exp.1',
     example:`Una familia de 4 (2 adultos + 2 hijos) con tabulador B y suma asegurada de $40millones paga ~$66,500/año en una sola póliza.`
-  }))}`;
+  })}
+  <p class="step-help" style="margin-top:10px;font-size:14px;color:var(--gray-700)">El "tabulador médico" del ejemplo es el nivel de honorarios que la aseguradora acepta pagar a médicos y hospitales: mientras mejor el tabulador, más alta la anualidad (el costo del seguro por año).</p>`;
 }
 function gmmStepAge(){
   const showPartner = state.gmm.who !== 'individual';
