@@ -617,6 +617,17 @@ img{max-width:100%;display:block}
 .stepper-btn:hover{background:var(--navy);color:var(--white)}
 .stepper-btn:active{transform:scale(.93)}
 .stepper-value{flex:1;text-align:center}
+.insider{
+  margin-top:18px;padding:14px 18px;border-radius:14px;
+  background:linear-gradient(135deg, #1E3A5F 0%, #27496b 100%);
+  color:#fff;
+}
+.insider-tag{
+  display:inline-block;font-size:12px;font-weight:900;letter-spacing:1px;
+  text-transform:uppercase;color:#F2B544;margin-bottom:6px;
+}
+.insider p{margin:0;font-size:15.5px;line-height:1.6;color:rgba(255,255,255,.95)}
+.insider strong{color:#F2B544}
 .quote-summary{
   font-size:13px;
   border-top:1px solid rgba(255,255,255,.12);
@@ -1569,6 +1580,9 @@ const OPT_HINT = '<div class="opt-hint">Si dudas, deja la recomendación de Andy
 /* Micro-explicación visible bajo el título: UNA idea en lenguaje llano.
    La explicación completa de Andy vive después de los controles, íntegra. */
 function microHTML(txt){ return `<p class="step-micro">${txt}</p>`; }
+/* Dato de agente: el insight que la gente común desconoce, en una caja propia.
+   Va DESPUÉS de los controles: no estorba la decisión, la eleva. */
+function insiderHTML(txt){ return `<div class="insider"><span class="insider-tag">💡 Dato de agente</span><p>${txt}</p></div>`; }
 /* Explicación larga plegada: conserva el texto de Andy completo sin
    enterrar la pregunta del paso debajo de un muro de texto. */
 function deepDiveHTML(label, inner){
@@ -1631,6 +1645,7 @@ function gmmStepWho(){
       <div class="opt-body"><div class="opt-label">${l}</div></div>
     </button>`).join('')}
   </div>
+  ${insiderHTML(`Una póliza familiar no es "precio de paquete": <strong>cada persona paga según su edad</strong>. El descuento familiar sí existe, pero aplica a partir de 4 integrantes.`)}
   ${deepDiveHTML('📖 La guía de Andy: los términos del seguro, explicados', explainerHTML({_cmsKey:'auto.exp.1', intro:'Empezamos:',
     body:`Los accidentes y enfermedades ocurren de un día para otro, preferible tener un seguro y no necesitarlo, que necesitarlo y no tenerlo; <strong>PROTEGETE!</strong><br><br><strong>Terminología que vas a escuchar</strong><br><br><strong>Suma asegurada</strong><br>Monto total por el que estás protegido.<br>Se elige al contratar y puede ser única o reinstalable anual, dependiendo de si el deducible es único o anual.<br><br><strong>Deducible</strong><br>Cantidad fija que pagas cada vez que usas el seguro. Puede ser único (se paga una vez al inicio de cada enfermedad y al agotarse la suma, termina el seguro para ese padecimiento) o anual por enfermedad (se paga cada vez que se utiliza pero la suma asegurada se reinstala, volviéndose ilimitada).<br><em>Deducibles anuales por padecimiento, tope de 2 deducibles por año por póliza</em><br><br><strong>Coaseguro</strong><br>Porcentaje sobre la factura hospitalaria que tú pagas en cada siniestro, con tope. Su objetivo es que revises los gastos en factura y los prestadores no se excedan.<br><br><strong>Tabulador médico</strong><br>Monto máximo que GNP acepta pagar al médico por consultas, cirugías, procedimientos, terapias, etc; cuanto mejor sea el tabulador más alta será tu anualidad.<br><br><strong>Prima / costo del seguro</strong><br><br>El seguro de <strong>gastos médicos mayores</strong> cubre padecimientos <strong>grandes, cuando el gasto ocasionado es mayor a tu deducible</strong> — hospitalizaciones, cirugías, enfermedades graves. <strong>No</strong> cubre consultas preventivas con tu médico ni medicina del día a día.<br><br>Te voy a hacer algunas preguntas, y en cada una te explico qué significa, qué te recomiendo y cómo cambia la anualidad.`,
     example:`Una familia de 4 (2 adultos + 2 hijos) con tabulador B y suma asegurada de $40millones paga ~$66,500/año en una sola póliza.`
@@ -1674,6 +1689,7 @@ function gmmStepAge(){
     <input type="range" min="0" max="25" value="${state.gmm.kidsAvgAge}" class="slider" id="kidsAgeSlider">
     <div class="slider-marks"><span data-cms-html="auto.slider_mark.66">0</span><span data-cms-html="auto.slider_mark.67">10</span><span data-cms-html="auto.slider_mark.68">18</span><span data-cms-html="auto.slider_mark.69">25</span></div>
   </div>`:''}
+  ${insiderHTML(`El seguro cubre lo que te enferme <strong>después</strong> de contratar. Lo que ya tengas hoy entra como "preexistencia" y no se cubre. Por eso esperar un año no solo sube el precio: <strong>reduce lo que el seguro te va a cubrir</strong>. Contratar sano es la única ventaja que no se puede comprar después.`)}
   ${explainerHTML({_cmsKey:'auto.exp.2', intro:'¿Por qué te lo pregunto?',
     body:`La edad es el factor que <strong>más mueve la anualidad</strong>. Es así para todas las aseguradoras — son estadísticas de salud, no es personal.${showPartner?' En planes de pareja/familia, cada miembro suma según su propia edad.':''}`,
     example:`Persona sana, no fumadora, Tabulador B, suma 40M: 25 años ~$18,100/año. 35 años ~$25,812/año. 50 años ~$38,056/año. 65 años ~$101,664/año.${showKids?' Los hijos menores de 10 años son más baratos de asegurar.':''}`
@@ -1704,6 +1720,7 @@ function gmmStepHospital(){
   <h3 class="step-title"><span data-cms-html="auto.step_title.4">Nivel hospitalario - Todo México</span></h3>
   ${microHTML(`Aquí no tienes que elegir nada: puedes usar el hospital que prefieras <strong>el día que lo necesites</strong>. El nivel del hospital que elijas ese día define cuánto pones tú de tu bolsa. Abajo ves los 4 niveles con el mismo ejemplo para comparar.`)}
   ${comparativeTiersHTML(200000)}
+  ${insiderHTML(`El secreto de este seguro es el <strong>tope</strong>: no importa si la cuenta del hospital es de $200 mil o de $2 millones, tú nunca pagas más que tu deducible + el tope del nivel. Ese tope es lo que te protege de una cuenta catastrófica.`)}
   ${explainerHTML({_cmsKey:'auto.exp.4', intro:'4 niveles de red hospitalaria',
     body:`El plan <strong>Personaliza Variable</strong> tiene <strong>4 niveles</strong> de red hospitalaria, y puedes elegir el hospital de tu preferencia <strong>al momento de que lo necesites usar</strong>. El hospital que elijas, determina cuánto absorbes tú en cada evento (deducible + coaseguro hasta el tope).`,
     bullets:[
@@ -1791,6 +1808,7 @@ function gmmStepDeductible(){
       <span><span class="viz-dot ins"></span><span data-cms-html="gmm.viz.legend_ins">Lo que paga GNP</span></span>
     </div>
   </div>
+  ${insiderHTML(`Elegir deducible alto es una apuesta: <strong>ahorras cada año que no usas el seguro, pero el día que lo uses pones esa cantidad completa de tu bolsa</strong> (y puede tocarte hasta 2 veces en un año, si son padecimientos distintos). Regla de agente: tu deducible ideal es lo que podrías pagar mañana sin pedir prestado. Y un dato que pocos usan: tu plan incluye <strong>Cero Deducible por Accidente</strong>, si lo tuyo es un accidente no pagas deducible.`)}
   ${explainerHTML({_cmsKey:'auto.exp.5', intro:'10 opciones del Nivel '+tier,
     body:`GNP te da <strong>10 opciones de deducible</strong>. Empezando desde <strong>$21,000</strong> pesos mexicanos hasta <strong>$233,000</strong>.`,
     example:`Eliges un hospital de Nivel ${tier} y la cuenta fue de ${fmtMx(ex)}. Deducible ${fmtMx(val)}. Coaseguro ${co}% — tú pones <strong>${fmtMx(Math.round(youTotal))}</strong>, GNP cubre <strong>${fmtMx(Math.round(insTotal))}</strong>. Mira la barra cómo cambia conforme eliges.`,
@@ -1834,6 +1852,7 @@ function gmmStepSum(){
         <div class="opt-body"><div class="opt-label">${l}</div><div class="opt-meta">${m}</div></div>
       </button>`).join('')}
   </div>
+  ${insiderHTML(`Subir la suma asegurada es <strong>la mejora más barata de toda la póliza</strong> (del orden de $200 al año). Bajarla casi no ahorra y te deja expuesto en el peor escenario: aquí no es donde se recorta.`)}
   ${explainerHTML({_cmsKey:'auto.exp.6', intro:'Tu tope anual reinstalable',
     body:`Es el <strong>máximo que GNP pagará</strong> en gastos médicos al año. En Personaliza Variable la suma se <strong>reinstala cada año</strong> automáticamente, así que vuelve a estar disponible aunque la hayas usado el año anterior.`,
     rec:`Recomendado: <strong>$40,800,000</strong> para cubrir cualquier posible evento o enfermedad catastrófica. Bajar la suma casi no abarata la anualidad (a veces ~$200 al año) pero te deja expuesto a un gasto grande, por eso conviene mantenerla alta.`
@@ -1861,6 +1880,7 @@ function gmmStepAddons(){
     </div>
     <p style="margin-top:10px;font-size:13px;color:var(--gray-400)"><span data-cms-html="gmm.optional.note">Estas coberturas dependen de edad y otros factores, por eso el costo se cotiza directamente con Andy. Marcarlas no cambia el monto que ves.</span></p>
   </div>
+  ${insiderHTML(`El beneficio estrella ya viene incluido: <strong>Cero Deducible por Accidente</strong>. En una fractura o un choque, GNP paga desde el primer peso. Muchos asegurados no lo saben y pagan un deducible que no debían pagar.`)}
   ${explainerHTML({_cmsKey:'auto.exp.7', intro:'Lo que ya incluye tu plan',
     body:`El plan base ya incluye <strong>Asistencia en Viajes</strong>, <strong>Membresía Médica Móvil</strong> (orientación médica telefónica, orientación por videollamada, consulta médica a domicilio, ambulancia por emergencia, traslados programados a costo preferencial, concierge para referencias médicas y hospitalarias) y <strong>Ayuda para Maternidad básica</strong>.`,
     rec:`Agrega <strong>Maternidad Plus</strong> si planeas embarazo en los próximos 2-3 años, vale la pena. (10 meses de período de espera).`
@@ -2142,6 +2162,7 @@ function autoStepCoverage(){
       <span class="opt-pill" style="background:var(--orange-dark);color:#fff"><span data-cms-html="auto.opt_pill.ampliaTotal">+18%</span></span>
     </button>
   </div>
+  ${insiderHTML(`Piensa el precio al revés: la diferencia anual entre Limitada y Amplia <strong>se paga sola con un solo choque</strong>. Y "Solo RC" significa que si el accidente es tu culpa, tu propio coche lo pagas tú completo.`)}
   ${explainerHTML({_cmsKey:'auto.exp.10', intro:'La decisión más importante del seguro de auto',
     body:`Hay <strong>4 niveles</strong> de cobertura. La diferencia entre ellos es enorme — define qué cubre y qué no cuando hay un siniestro.`,
     bullets:[
@@ -2180,6 +2201,7 @@ function autoStepDeductible(){
         <div class="opt-body"><div class="opt-label">${v}%</div><div class="opt-meta">${v===3?T('auto.deductible.damage.alta', 'anualidad un poco mayor'):v===5?T('auto.deductible.damage.estandar','estándar'):T('auto.deductible.damage.baja','anualidad baja')}</div></div>
       </button>`).join('')}
   </div>
+  ${insiderHTML(`¿Y el famoso <strong>"deducible cero"</strong>? Existe como extra (lo ves en el siguiente paso): pagas más al año, pero si te roban el auto o es pérdida total <strong>no pones ni un peso</strong>. Conviene cuando tu auto vale mucho (el porcentaje se vuelve mucho dinero) o cuando no tienes un colchón para un golpe de $15-30 mil de un día para otro.`)}
   ${explainerHTML({_cmsKey:'auto.exp.12', intro:'¿Cuánto pones tú si pasa algo?',
     body:`En auto, el deducible <strong>NO es un monto fijo</strong> — es un <strong>porcentaje del valor de tu auto</strong>. Cuando hay siniestro, tú pones ese porcentaje y la aseguradora paga el resto.`,
     example:`Auto valor $300,000 con deducible robo 10%: si te lo roban, tú pones $30,000 y la aseguradora $270,000. Con deducible robo 5%: pones solo $15,000 pero pagaste anualidad más alta todo el año.`,
@@ -2294,6 +2316,7 @@ const GENERIC_FLOWS = {
           <input type="range" min="0" max="9" value="${state.mascota.petAge}" class="slider" id="petAgeSlider">
           <div class="slider-marks"><span data-cms-html="auto.slider_mark.74">3 meses</span><span data-cms-html="auto.slider_mark.75">5</span><span data-cms-html="auto.slider_mark.76">9 años</span></div>
         </div>
+        ${insiderHTML(`Igual que en las personas: lo que tu mascota ya tenga al contratar no se cubre. Asegurarla joven significa que <strong>las enfermedades de la vejez la agarran ya cubierta</strong>, con la anualidad más barata.`)}
         ${explainerHTML({_cmsKey:'auto.exp.14', intro:'Sobre GNP Mi Mascota',
           body:`Cubre <strong>gastos médicos veterinarios</strong> por accidente o enfermedad — cirugías, hospitalización, análisis. También incluye RC (si tu perro muerde a alguien), orientación vet 24/7 y cremación.<br><br><strong>Mascotas elegibles:</strong> perros y gatos entre 3 meses y 9 años. Razas peligrosas (Pitbull, Rottweiler, etc.) tienen condiciones especiales.`,
           example:`<strong>Periodos de espera:</strong> 10 días para accidentes, 180 días para enfermedades. Si contratas hoy, los accidentes están cubiertos en 10 días, pero las enfermedades hasta dentro de 6 meses.`,
@@ -2398,6 +2421,7 @@ const GENERIC_FLOWS = {
               </div>
             </button>`).join('')}
         </div>
+        ${insiderHTML(`La diferencia contra ahorrar en el banco: aquí tu familia queda protegida <strong>desde el día 1</strong> con un seguro de vida por una suma mucho mayor a lo que llevas aportado. El banco te da lo que juntaste; esto te respalda desde la primera aportación.`)}
         ${explainerHTML({_cmsKey:'auto.exp.18', intro:'Los 4 productos reales de Andy',
           body:`GNP tiene <strong>4 productos de ahorro/inversión</strong>. Cada uno está diseñado para un objetivo distinto: flexibilidad, control activo, beneficio fiscal, o disciplina forzada. Todos incluyen <strong>seguro de vida</strong> desde el primer día.`
         })}
@@ -2433,6 +2457,7 @@ const GENERIC_FLOWS = {
           <div class="slider-marks"><span data-cms-html="ahorro.slider_mark.contrib.12k">$12k</span><span data-cms-html="ahorro.slider_mark.contrib.50k">$50k</span><span data-cms-html="ahorro.slider_mark.contrib.120k">$120k</span><span data-cms-html="ahorro.slider_mark.contrib.240k">$240k</span></div>
         </div>
         <p class="step-help" style="margin-top:8px;font-size:13px;color:var(--gray-700)"><span data-cms-html="ahorro.equivale_prefix">Equivale a</span> ~$${fmt(Math.round(state.ahorro.annualContribution/12))}<span data-cms-html="ahorro.equivale_suffix">/mes si prefieres pago mensual.</span></p>
+        ${insiderHTML(`La trampa clásica es comprometerse al monto "ideal" y abandonarlo al segundo año. <strong>Un plan modesto que sí terminas le gana siempre a uno grande abandonado.</strong> Empieza donde no te duela y súbelo después.`)}
         ${explainerHTML({_cmsKey:'auto.exp.20', intro:'Casos reales del PDF de Andy',
           body:`En ${p.name} aportas durante un plazo definido y luego dejas el dinero crecer. <strong>Aportas anual</strong> (puedes pagar mensual, trimestral o semestral si prefieres). <strong>Cualquier monto cuenta</strong> — lo crítico es la consistencia.${state.ahorro.product==='CONSOLIDA'?' <strong>Tope fiscal 2026:</strong> hasta 10% de tu ingreso anual o ~$213,973 (5 UMA), lo que sea menor.':''}`,
           rec:`Si recién empiezas y tienes 30+ años para retiro, $24,000-$36,000/año ($2k-$3k/mes) es un arranque sólido.`
@@ -2559,6 +2584,7 @@ const GENERIC_FLOWS = {
           <input type="range" min="0" max="17" value="${state.educativo.menorAge}" class="slider" id="edMenorAgeSlider">
           <div class="slider-marks"><span data-cms-html="educativo.edades.menor_mark.0">0</span><span data-cms-html="educativo.edades.menor_mark.6">6</span><span data-cms-html="educativo.edades.menor_mark.12">12</span><span data-cms-html="educativo.edades.menor_mark.17">17</span></div>
         </div>
+        ${insiderHTML(`Esto tiene lo que una cuenta de banco jamás tendrá: si el titular fallece o se incapacita, <strong>GNP sigue pagando las aportaciones</strong> y el menor recibe su dinero completo. El futuro del menor queda blindado contra lo que te pase a ti.`)}
         ${explainerHTML({_cmsKey:'auto.exp.24', intro:'Tus datos y los del menor',
           body:`Para cotizar tu plan Educativo necesitamos la edad del <strong>contratante</strong> (titular del seguro) y la edad del <strong>menor</strong> beneficiario. Estos datos determinan la fecha de entrega y la anualidad exacta.`
         })}`,
@@ -2646,6 +2672,7 @@ const GENERIC_FLOWS = {
           <input type="range" min="500000" max="10000000" step="100000" value="${state.patrimonial.homeValue}" class="slider" id="hvSlider">
           <div class="slider-marks"><span data-cms-html="patrimonial.homeValue.mark.500k">$500k</span><span data-cms-html="patrimonial.homeValue.mark.2m">$2M</span><span data-cms-html="patrimonial.homeValue.mark.5m">$5M</span><span data-cms-html="patrimonial.homeValue.mark.10m">$10M</span></div>
         </div>
+        ${insiderHTML(`El terreno no se asegura porque <strong>el terreno no se quema</strong>. Asegurar tu casa a su precio de venta es pagar de más cada año por dinero que la aseguradora nunca te va a dar.`)}
         ${explainerHTML({
           _cmsKey:'wizards.patrimonial.steps.homeValue',
           intro:'Sobre el seguro de hogar',
@@ -2661,6 +2688,7 @@ const GENERIC_FLOWS = {
           <input type="range" min="50000" max="2000000" step="50000" value="${state.patrimonial.contentsValue}" class="slider" id="cvSlider">
           <div class="slider-marks"><span data-cms-html="patrimonial.contentsValue.mark.50k">$50k</span><span data-cms-html="patrimonial.contentsValue.mark.500k">$500k</span><span data-cms-html="patrimonial.contentsValue.mark.1m">$1M</span><span data-cms-html="patrimonial.contentsValue.mark.2m">$2M</span></div>
         </div>
+        ${insiderHTML(`Consejo que vale oro el día de un robo: dedica 5 minutos HOY a fotografiar lo valioso y guardar facturas. <strong>Esa evidencia es la diferencia entre que te repongan todo o discutir meses.</strong>`)}
         ${explainerHTML({
           _cmsKey:'wizards.patrimonial.steps.contentsValue',
           intro:'Lo que hay dentro',
