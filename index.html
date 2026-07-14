@@ -592,6 +592,16 @@ img{max-width:100%;display:block}
 .quote-period{font-size:13px;color:rgba(255,255,255,.6);margin-bottom:20px}
 .quote-monthly{font-size:17px;font-weight:800;color:var(--orange);margin:2px 0 6px}
 .quote-monthly-final{font-size:20px;text-align:center;margin:6px 0 10px}
+.quote-benefit{
+  margin:10px 0 4px;padding:12px 14px;border-radius:12px;
+  background:rgba(242,181,68,.14);border:1.5px solid rgba(242,181,68,.5);
+}
+.quote-benefit .qb-label{display:block;font-size:12px;font-weight:900;letter-spacing:.8px;text-transform:uppercase;color:#F2B544}
+.quote-benefit .qb-value{display:block;font-size:26px;font-weight:900;color:#fff;line-height:1.2}
+.quote-benefit .qb-nota{display:block;font-size:12px;color:rgba(255,255,255,.75)}
+.quote-benefit-final{text-align:center;background:rgba(242,181,68,.12);border-color:#F2B544}
+.quote-benefit-final .qb-value{color:var(--navy);font-size:30px}
+.quote-benefit-final .qb-nota{color:var(--gray-700)}
 .step-micro{
   font-size:17px;line-height:1.55;color:var(--navy);
   background:var(--gray-50);border-left:4px solid var(--orange);
@@ -1120,6 +1130,7 @@ Cada paso que das HOY en Salud, Protección o un Retiro digno, define tu mañana
           <div class="quote-panel-title" id="genQuoteTitle">Plan</div>
           <div class="quote-amount"><span class="currency">$</span><span id="genAmount">—</span></div>
           <div class="quote-monthly" id="genMonthly"></div>
+          <div class="quote-benefit" id="genBenefit" style="display:none"></div>
           <div class="quote-period" data-cms="quote_panel.period_simple">aprox. anual · simulación</div>
           <div class="quote-summary" id="genSummary"></div>
           <div class="quote-disclaimer" data-cms="quote_panel.disclaimer">Pre-cotización informativa. La anualidad final se emite tras suscripción con la aseguradora.</div>
@@ -1182,6 +1193,7 @@ Cada paso que das HOY en Salud, Protección o un Retiro digno, define tu mañana
           <div class="quote-panel-title" style="color:var(--gray-700)" id="fProductName">Plan Gastos Médicos Mayores</div>
           <div class="final-amount"><span class="currency">$</span><span id="fAmount">—</span></div>
           <div class="quote-monthly quote-monthly-final" id="fMonthly"></div>
+          <div class="quote-benefit quote-benefit-final" id="fBenefit" style="display:none"></div>
           <div class="final-period" data-cms="final.card_period">aprox. anual MXN · GNP financia 3 y 6 meses sin intereses el 1er año · simulación basada en tus elecciones</div>
 
           <div class="final-summary">
@@ -2075,7 +2087,7 @@ document.getElementById('gmmBack').addEventListener('click',()=>{
 });
 document.getElementById('gmmNext').addEventListener('click',()=>{
   if(state.gmm.step<gmmSteps.length-1){state.gmm.step++;renderGmm()}
-  else {state.finalAmount=gmmCalcPrice();state.finalSummaryLines=gmmSummaryLines();go('stage-contact')}
+  else {state.finalAmount=gmmCalcPrice();state.finalBenefit=null;state.finalSummaryLines=gmmSummaryLines();go('stage-contact')}
 });
 
 /* ============================================== */
@@ -2292,7 +2304,7 @@ function renderAutoQuote(){
 document.getElementById('autoBack').addEventListener('click',()=>{if(state.auto.step===0)go('stage-hero');else{state.auto.step--;renderAuto()}});
 document.getElementById('autoNext').addEventListener('click',()=>{
   if(state.auto.step<autoSteps.length-1){state.auto.step++;renderAuto()}
-  else {state.finalAmount=autoCalcPrice();state.finalSummaryLines=autoSummaryLines();go('stage-contact')}
+  else {state.finalAmount=autoCalcPrice();state.finalBenefit=null;state.finalSummaryLines=autoSummaryLines();go('stage-contact')}
 });
 
 /* ============================================== */
@@ -2421,7 +2433,7 @@ const GENERIC_FLOWS = {
               </div>
             </button>`).join('')}
         </div>
-        ${insiderHTML(`Si comparas solo la tasa, un CETES o un fondo indexado pueden ganarle. Lo que ninguno de los dos te da: <strong>seguro de vida por una suma mucho mayor a lo aportado desde el día 1</strong> (si faltas en el año 2, tu familia recibe millones, no tus dos aportaciones), rendimiento <strong>libre de impuestos</strong>, entrega garantizada por contrato en los planes garantizados, y en CONSOLIDA <strong>devolución de impuestos cada año</strong> que se suma al rendimiento. Compara el paquete completo, no solo la tasa: son productos para cosas distintas.`)}
+        ${insiderHTML(`Si comparas solo la tasa, un CETES o un fondo indexado pueden ganarle. Lo que ninguno de los dos te da: <strong>seguro de vida por una suma mucho mayor a lo aportado desde el día 1</strong> (si faltas en el año 2, tu familia recibe millones, no tus dos aportaciones), rendimiento <strong>libre de impuestos</strong>, entrega garantizada por contrato en los planes garantizados, y en CONSOLIDA <strong>devolución de impuestos cada año</strong> que se suma al rendimiento. Compara el paquete completo, no solo la tasa: son productos para cosas distintas. Y una precisión de agente honesto: el rendimiento del plan es <strong>proyectado, no una tasa fija</strong> como un CETES; lo que sí es fijo por contrato es el seguro de vida y, en el Educativo, la suma que recibe el menor.`)}
         ${explainerHTML({_cmsKey:'auto.exp.18', intro:'Los 4 productos reales de Andy',
           body:`GNP tiene <strong>4 productos de ahorro/inversión</strong>. Cada uno está diseñado para un objetivo distinto: flexibilidad, control activo, beneficio fiscal, o disciplina forzada. Todos incluyen <strong>seguro de vida</strong> desde el primer día.`
         })}
@@ -2486,6 +2498,19 @@ const GENERIC_FLOWS = {
       document.querySelectorAll('[data-ayears]').forEach(b=>b.addEventListener('click',()=>{state.ahorro.years=parseInt(b.dataset.ayears);renderGeneric();renderGenericQuote()}));
     },
     price:()=>state.ahorro.annualContribution,
+    benefit:()=>{
+      const C = state.ahorro.annualContribution, Y = state.ahorro.years, age = state.ahorro.age;
+      let fv65;
+      if(Y === 10){ fv65 = C * ahorroMult(age, 'm65'); }
+      else {
+        const retiro65 = N('ahorroTables.retiroEdad65', 65);
+        const indexAnual = N('ahorroTables.indexacionAnual', 1.05);
+        const r = ahorroRateFromMult(age), H = Math.max(1, retiro65 - age);
+        let s=0; for(let k=0;k<Y;k++){ s += C*Math.pow(indexAnual,k)*Math.pow(1+r,H-k); }
+        fv65 = s;
+      }
+      return { label:'Recibirías a los '+N('ahorroTables.retiroEdad65', 65)+' años', value:'$'+fmt(Math.round(fv65)), nota:'proyectado, no garantizado · libre de impuestos' };
+    },
     summary:()=>{
       const p = PRODUCTOS_AHORRO[state.ahorro.product];
       const C = state.ahorro.annualContribution, Y = state.ahorro.years, age = state.ahorro.age;
@@ -2516,7 +2541,7 @@ const GENERIC_FLOWS = {
         ['Producto', p.name+' · '+p.tag],
         ['Tu edad', state.ahorro.age+' años'],
         ['Aportación', '$'+fmt(state.ahorro.annualContribution)+'/año durante '+state.ahorro.years+' años'],
-        ['Rendimiento anual implícito', '~'+tasaImplicita+'% compuesto, libre de impuestos'],
+        ['Rendimiento anual implícito', '~'+tasaImplicita+'% compuesto proyectado (no garantizado) · libre de impuestos'],
         ['Total que aportas (indexado '+idxPct+'%)', '$'+fmt(totalAportado)],
         ['Seguro de vida desde día 1', '$'+fmt(Math.round(sumaVida))],
         ['Saldo proyectado a los '+retiroLbl65, '$'+fmt(Math.round(fv65))+' (libre de impuestos)'],
@@ -2643,6 +2668,7 @@ const GENERIC_FLOWS = {
       }));
     },
     price:()=>GENERIC_FLOWS.educativo.primaModelo(state.educativo.plazo),
+    benefit:()=>({ label:'El menor recibe', value:'$'+fmt(state.educativo.proteccion), nota:'suma garantizada por contrato, entregable de los 18 a los 33 años' }),
     summary:()=>{
       const prima = GENERIC_FLOWS.educativo.primaModelo(state.educativo.plazo);
       const yearsAlcanzada = Math.max(1, 18 - state.educativo.menorAge);
@@ -2777,6 +2803,12 @@ function renderGenericQuote(){
   const p = flow.price();
   setAmount(document.getElementById('genAmount'), p);
   setMonthly('genMonthly', p);
+  const bEl = document.getElementById('genBenefit');
+  if(bEl){
+    const b = flow.benefit ? flow.benefit() : null;
+    if(b){ bEl.style.display='block'; bEl.innerHTML = '<span class="qb-label">'+b.label+'</span><span class="qb-value">'+b.value+'</span><span class="qb-nota">'+b.nota+'</span>'; }
+    else bEl.style.display='none';
+  }
   renderSummary('genSummary', flow.summary());
 }
 document.getElementById('genBack').addEventListener('click',()=>{
@@ -2787,7 +2819,7 @@ document.getElementById('genNext').addEventListener('click',()=>{
   const flow = GENERIC_FLOWS[state.type] || GENERIC_FLOWS['ahorro'];
   const cur = state[state.type] || state['ahorro'];
   if(cur.step<flow.steps.length-1){cur.step++;renderGeneric()}
-  else {state.finalAmount=flow.price();state.finalSummaryLines=flow.summary();go('stage-contact')}
+  else {state.finalAmount=flow.price();state.finalBenefit=flow.benefit?flow.benefit():null;state.finalSummaryLines=flow.summary();go('stage-contact')}
 });
 
 /* ============ CONTACT ============ */
@@ -2828,6 +2860,11 @@ function renderFinal(){
   _amountState.set(fAmt, 0);
   setTimeout(()=>setAmount(fAmt, state.finalAmount, 1100), 250);
   setMonthly('fMonthly', state.finalAmount);
+  const fB = document.getElementById('fBenefit');
+  if(fB){
+    if(state.finalBenefit){ fB.style.display='block'; fB.innerHTML = '<span class="qb-label">'+state.finalBenefit.label+'</span><span class="qb-value">'+state.finalBenefit.value+'</span><span class="qb-nota">'+state.finalBenefit.nota+'</span>'; }
+    else fB.style.display='none';
+  }
   // Render summary with subtle stagger via animation delay
   const lines = state.finalSummaryLines;
   document.getElementById('fSummary').innerHTML = lines.map(([l,v],i)=>`<div class="quote-line" style="animation-delay:${.4+i*.07}s"><span class="lbl">${l}</span><span class="val">${v}</span></div>`).join('');
@@ -2838,7 +2875,9 @@ document.getElementById('fWhats').addEventListener('click',()=>{
   let msg = `Hola Andy! Soy ${state.contact.name}.\n\nCompleté la pre-cotización en tu landing:\n\n`;
   msg += `*Producto:* ${product}\n`;
   const labelMonto = (state.type==='ahorro' || state.type==='educativo') ? 'aportación anual' : 'anualidad simulada';
-  msg += `*Pre-cotización:* $${fmt(state.finalAmount)} (${labelMonto})\n\n`;
+  msg += `*Pre-cotización:* $${fmt(state.finalAmount)} (${labelMonto})\n`;
+  if(state.finalBenefit) msg += `*${state.finalBenefit.label}:* ${state.finalBenefit.value} (${state.finalBenefit.nota})\n`;
+  msg += `\n`;
   msg += `*Mi configuración:*\n`;
   state.finalSummaryLines.forEach(([l,v])=>msg+=`• ${stripHtml(l)}: ${stripHtml(v)}\n`);
   msg += `\n*Mis datos:*\n`;
